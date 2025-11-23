@@ -10,7 +10,7 @@ public class UpdateService
 {
     private const string RepoOwner = "ryan-haver";
     private const string RepoName = "wsl-tamer";
-    private const string CurrentVersion = "v1.0.0"; // Should match tag
+    private const string CurrentVersion = "v1.0.2"; // Should match tag
 
     public async Task CheckForUpdatesAsync(bool silent = false)
     {
