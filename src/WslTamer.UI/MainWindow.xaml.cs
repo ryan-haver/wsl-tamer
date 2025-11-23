@@ -61,6 +61,9 @@ public partial class MainWindow : Window
         }
     }
 
+    private System.Drawing.Icon? _greenIcon;
+    private System.Drawing.Icon? _blackIcon;
+
     private void UpdateStatus()
     {
         bool isRunning = _wslService.IsWslRunning();
@@ -70,29 +73,38 @@ public partial class MainWindow : Window
         StatusMenuItem.Foreground = isRunning ? System.Windows.Media.Brushes.Green : System.Windows.Media.Brushes.Black;
 
         // Update Tray Icon
-        // We generate a simple colored circle icon on the fly
-        var color = isRunning ? Color.Green : Color.Black;
-        MyNotifyIcon.Icon = GenerateStatusIcon(color);
+        if (isRunning)
+        {
+             if (_greenIcon == null) _greenIcon = GenerateStatusIcon(System.Drawing.Color.Green);
+             MyNotifyIcon.Icon = _greenIcon;
+        }
+        else
+        {
+             if (_blackIcon == null) _blackIcon = GenerateStatusIcon(System.Drawing.Color.Black);
+             MyNotifyIcon.Icon = _blackIcon;
+        }
         
         // Update Tooltip
         MyNotifyIcon.ToolTipText = $"WSL Tamer\n{(isRunning ? "Running" : "Stopped")}";
     }
 
-    private Icon GenerateStatusIcon(Color color)
+    private System.Drawing.Icon GenerateStatusIcon(System.Drawing.Color color)
     {
         // Create a 16x16 bitmap
-        using var bitmap = new Bitmap(16, 16);
-        using var g = Graphics.FromImage(bitmap);
+        using var bitmap = new System.Drawing.Bitmap(16, 16);
+        using var g = System.Drawing.Graphics.FromImage(bitmap);
         
         // Clear background (transparent)
-        g.Clear(Color.Transparent);
+        g.Clear(System.Drawing.Color.Transparent);
         
         // Draw circle
-        using var brush = new SolidBrush(color);
+        using var brush = new System.Drawing.SolidBrush(color);
         g.FillEllipse(brush, 1, 1, 14, 14);
         
         // Convert to Icon
-        return Icon.FromHandle(bitmap.GetHicon());
+        // Note: GetHicon creates a handle that should ideally be destroyed, 
+        // but since we cache these icons and only create 2 per app lifetime, it's acceptable.
+        return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
     }
 
     private void RefreshProfilesMenu()
