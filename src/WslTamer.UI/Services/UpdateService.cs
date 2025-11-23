@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Diagnostics;
 using System.Windows;
+using System.IO;
 
 namespace WslTamer.UI.Services;
 
@@ -27,18 +28,14 @@ public class UpdateService
                 var result = System.Windows.MessageBox.Show(
                     $"A new version ({release.TagName}) is available!\n\n" +
                     $"Release Notes:\n{release.Body}\n\n" +
-                    "Do you want to download it now?",
+                    "Do you want to install it now?",
                     "Update Available",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = release.HtmlUrl,
-                        UseShellExecute = true
-                    });
+                    await DownloadAndInstallUpdate(release, client);
                 }
             }
             else if (!silent)
@@ -52,6 +49,48 @@ public class UpdateService
             {
                 System.Windows.MessageBox.Show($"Failed to check for updates: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+    }
+
+    private async Task DownloadAndInstallUpdate(GitHubRelease release, HttpClient client)
+    {
+        try
+        {
+            // Find MSI asset
+            var msiAsset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".msi", StringComparison.OrdinalIgnoreCase));
+            
+            if (msiAsset == null)
+            {
+                // Fallback to browser download if no MSI found
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = release.HtmlUrl,
+                    UseShellExecute = true
+                });
+                return;
+            }
+
+            var tempPath = Path.Combine(Path.GetTempPath(), msiAsset.Name);
+            
+            // Download
+            // Note: In a real app, we'd show a progress bar here
+            var data = await client.GetByteArrayAsync(msiAsset.BrowserDownloadUrl);
+            await File.WriteAllBytesAsync(tempPath, data);
+
+            // Install
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "msiexec",
+                Arguments = $"/i \"{tempPath}\" /passive",
+                UseShellExecute = true
+            });
+
+            // Shutdown current app to allow update
+            System.Windows.Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Update failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -82,5 +121,17 @@ public class UpdateService
 
         [JsonPropertyName("body")]
         public string Body { get; set; } = "";
+
+        [JsonPropertyName("assets")]
+        public List<GitHubAsset> Assets { get; set; } = new();
+    }
+
+    private class GitHubAsset
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+
+        [JsonPropertyName("browser_download_url")]
+        public string BrowserDownloadUrl { get; set; } = "";
     }
 }

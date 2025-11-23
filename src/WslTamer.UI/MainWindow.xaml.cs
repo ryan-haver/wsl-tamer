@@ -64,10 +64,35 @@ public partial class MainWindow : Window
     private void UpdateStatus()
     {
         bool isRunning = _wslService.IsWslRunning();
-        StatusMenuItem.Header = isRunning ? "Status: 🟢 Running" : "Status: 🔴 Stopped";
         
-        // Update Tooltip as well
+        // Update Menu Text Color
+        StatusMenuItem.Header = isRunning ? "Status: Running" : "Status: Stopped";
+        StatusMenuItem.Foreground = isRunning ? System.Windows.Media.Brushes.Green : System.Windows.Media.Brushes.Black;
+
+        // Update Tray Icon
+        // We generate a simple colored circle icon on the fly
+        var color = isRunning ? Color.Green : Color.Black;
+        MyNotifyIcon.Icon = GenerateStatusIcon(color);
+        
+        // Update Tooltip
         MyNotifyIcon.ToolTipText = $"WSL Tamer\n{(isRunning ? "Running" : "Stopped")}";
+    }
+
+    private Icon GenerateStatusIcon(Color color)
+    {
+        // Create a 16x16 bitmap
+        using var bitmap = new Bitmap(16, 16);
+        using var g = Graphics.FromImage(bitmap);
+        
+        // Clear background (transparent)
+        g.Clear(Color.Transparent);
+        
+        // Draw circle
+        using var brush = new SolidBrush(color);
+        g.FillEllipse(brush, 1, 1, 14, 14);
+        
+        // Convert to Icon
+        return Icon.FromHandle(bitmap.GetHicon());
     }
 
     private void RefreshProfilesMenu()
