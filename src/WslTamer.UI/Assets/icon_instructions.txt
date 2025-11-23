@@ -1,0 +1,3 @@
+Please place your custom icon file here and name it "app.ico".
+The application will automatically load it.
+If not found, it will use the default system icon.
