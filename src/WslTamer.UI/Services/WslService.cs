@@ -78,6 +78,87 @@ public class WslService
         }
     }
 
+    public List<WslDistribution> GetDistributions()
+    {
+        var distros = new List<WslDistribution>();
+        try
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "wsl.exe",
+                Arguments = "--list --verbose",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                StandardOutputEncoding = Encoding.Unicode
+            };
+
+            using var process = Process.Start(startInfo);
+            if (process == null) return distros;
+
+            var output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit(5000);
+
+            var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            // Skip header line (NAME STATE VERSION)
+            foreach (var line in lines.Skip(1))
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 3) continue;
+
+                bool isDefault = parts[0] == "*";
+                string name = isDefault ? parts[1] : parts[0];
+                string state = isDefault ? parts[2] : parts[1];
+                string versionStr = isDefault ? parts[3] : parts[2];
+
+                if (int.TryParse(versionStr, out int version))
+                {
+                    distros.Add(new WslDistribution
+                    {
+                        Name = name,
+                        State = state,
+                        Version = version,
+                        IsDefault = isDefault
+                    });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error fetching distros: {ex.Message}");
+        }
+
+        return distros;
+    }
+
+    public void SetDefaultDistro(string name)
+    {
+        RunWslCommand($"--set-default {name}");
+    }
+
+    public void TerminateDistro(string name)
+    {
+        RunWslCommand($"--terminate {name}");
+    }
+
+    public void UnregisterDistro(string name)
+    {
+        RunWslCommand($"--unregister {name}");
+    }
+
+    public void RunDistro(string name)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "wsl.exe",
+            Arguments = $"-d {name}",
+            UseShellExecute = true
+        });
+    }
+
     private void RunWslCommand(string arguments)
     {
         var startInfo = new ProcessStartInfo

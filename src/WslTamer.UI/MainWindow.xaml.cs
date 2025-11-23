@@ -14,6 +14,7 @@ public partial class MainWindow : Window
     private readonly ProfileManager _profileManager;
     private readonly AutomationService _automationService;
     private readonly UpdateService _updateService;
+    private readonly StartupService _startupService;
     private readonly DispatcherTimer _statusTimer;
 
     public MainWindow()
@@ -25,6 +26,7 @@ public partial class MainWindow : Window
         _profileManager = new ProfileManager();
         _automationService = new AutomationService(_profileManager, _wslService);
         _updateService = new UpdateService();
+        _startupService = new StartupService();
 
         // Start Automation
         _automationService.Start();
@@ -39,6 +41,8 @@ public partial class MainWindow : Window
         UpdateStatus();
         RefreshProfilesMenu();
         CheckUpdates();
+        
+        TrayStartWithWindows.IsChecked = _startupService.IsStartupEnabled();
     }
 
     private void LoadIcon()
@@ -160,7 +164,7 @@ public partial class MainWindow : Window
 
     private void Settings_Click(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SettingsWindow(_profileManager);
+        var settingsWindow = new SettingsWindow(_profileManager, _wslService);
         settingsWindow.Show();
         settingsWindow.Closed += (s, args) => RefreshProfilesMenu();
     }
@@ -169,5 +173,10 @@ public partial class MainWindow : Window
     {
         MyNotifyIcon.Dispose();
         System.Windows.Application.Current.Shutdown();
+    }
+
+    private void TrayStartWithWindows_Click(object sender, RoutedEventArgs e)
+    {
+        _startupService.SetStartup(TrayStartWithWindows.IsChecked);
     }
 }

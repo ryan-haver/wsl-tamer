@@ -12,14 +12,60 @@ namespace WslTamer.UI;
 public partial class SettingsWindow : Window
 {
     private readonly ProfileManager _profileManager;
+    private readonly WslService _wslService;
     private readonly UpdateService _updateService = new();
+    private readonly StartupService _startupService = new();
     private WslProfile? _selectedProfile;
 
-    public SettingsWindow(ProfileManager profileManager)
+    public SettingsWindow(ProfileManager profileManager, WslService wslService)
     {
         InitializeComponent();
         _profileManager = profileManager;
+        _wslService = wslService;
+        
+        ChkStartOnLogin.IsChecked = _startupService.IsStartupEnabled();
+        
         RefreshProfileList();
+        RefreshDistrosList();
+    }
+
+    private void RefreshDistrosList()
+    {
+        var distros = _wslService.GetDistributions();
+        IcDistros.ItemsSource = distros;
+    }
+
+    private void BtnRefreshDistros_Click(object sender, RoutedEventArgs e)
+    {
+        RefreshDistrosList();
+    }
+
+    private void BtnRunDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            _wslService.RunDistro(name);
+            // Give it a moment to start before refreshing
+            System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
+        }
+    }
+
+    private void BtnStopDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            _wslService.TerminateDistro(name);
+            System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
+        }
+    }
+
+    private void BtnSetDefaultDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            _wslService.SetDefaultDistro(name);
+            RefreshDistrosList();
+        }
     }
 
     private void RefreshProfileList()
@@ -201,5 +247,13 @@ public partial class SettingsWindow : Window
         TxtUpdateStatus.Text = "Checking...";
         await _updateService.CheckForUpdatesAsync();
         TxtUpdateStatus.Text = "Check complete.";
+    }
+
+    private void ChkStartOnLogin_Click(object sender, RoutedEventArgs e)
+    {
+        if (ChkStartOnLogin.IsChecked.HasValue)
+        {
+            _startupService.SetStartup(ChkStartOnLogin.IsChecked.Value);
+        }
     }
 }
