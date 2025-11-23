@@ -19,14 +19,6 @@
   </Fragment>
 
   <Fragment>
-    <ComponentGroup Id="AppComponents" Directory="InstallFolder">
-      <Files Include="..\..\publish\**">
-        <Exclude Files="..\..\publish\*.pdb" />
-      </Files>
-    </ComponentGroup>
-  </Fragment>
-
-  <Fragment>
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut" Guid="*">
         <Shortcut Id="ApplicationStartMenuShortcut"
