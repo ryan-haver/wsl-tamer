@@ -35,6 +35,10 @@ Switch between profiles instantly without restarting Windows:
 
 *(Coming Soon)*
 
+## 🗺️ Roadmap
+
+Check out our [ROADMAP.md](ROADMAP.md) to see what's planned for future releases.
+
 ## 🤝 Contributing
 
 Contributions are welcome!
