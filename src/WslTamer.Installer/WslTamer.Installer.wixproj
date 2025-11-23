@@ -4,6 +4,7 @@
     <OutputType>Package</OutputType>
     <DefineConstants>PublishDir=..\..\publish</DefineConstants>
     <InstallerPlatform>x64</InstallerPlatform>
+    <SuppressIces>ICE61;ICE91</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Heat" Version="5.0.0" />
