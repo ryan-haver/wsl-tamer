@@ -151,6 +151,11 @@ public partial class MainWindow : Window
         await _updateService.CheckForUpdatesAsync(silent: true);
     }
 
+    private void LaunchWsl_Click(object sender, RoutedEventArgs e)
+    {
+        _wslService.LaunchDefaultDistro();
+    }
+
     private void ShutdownWsl_Click(object sender, RoutedEventArgs e)
     {
         _wslService.ShutdownWsl();

@@ -159,6 +159,15 @@ public class WslService
         });
     }
 
+    public void LaunchDefaultDistro()
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "wsl.exe",
+            UseShellExecute = true
+        });
+    }
+
     private void RunWslCommand(string arguments)
     {
         var startInfo = new ProcessStartInfo

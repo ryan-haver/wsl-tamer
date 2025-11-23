@@ -21,6 +21,7 @@
                     <Separator/>
                     <MenuItem Header="Profiles" x:Name="ProfilesMenu"/>
                     <MenuItem Header="Actions">
+                        <MenuItem Header="🚀 Launch WSL" Click="LaunchWsl_Click"/>
                         <MenuItem Header="🛑 Shutdown WSL" Click="ShutdownWsl_Click"/>
                         <MenuItem Header="🧹 Reclaim Memory" Click="ReclaimMemory_Click"/>
                     </MenuItem>
