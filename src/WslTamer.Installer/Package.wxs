@@ -1,16 +1,29 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package Name="WSL Tamer" Manufacturer="Ryan Haver" Version="1.1.0.0" UpgradeCode="A1B2C3D4-E5F6-7890-1234-567890ABCDEF">
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+  <Package Name="WSL Tamer" 
+           Manufacturer="Ryan Haver" 
+           Version="1.1.1.0" 
+           UpgradeCode="0bd638ec-b54e-4c30-a6c8-d0dd2ee969a0"
+           Scope="perUser"
+           ProductCode="*">
+           
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." 
+                  Schedule="afterInstallInitialize"
+                  AllowSameVersionUpgrades="yes"/>
+    
     <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon" SourceFile="..\WslTamer.UI\Assets\app.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/ryan-haver/wsl-tamer" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/ryan-haver/wsl-tamer" />
 
     <Feature Id="Main">
       <ComponentGroupRef Id="AppComponents" />
-      <ComponentRef Id="ApplicationShortcut" />
     </Feature>
   </Package>
 
   <Fragment>
-      <StandardDirectory Id="ProgramFiles64Folder">
+      <StandardDirectory Id="LocalAppDataFolder">
         <Directory Id="InstallFolder" Name="WSL Tamer" />
       </StandardDirectory>
       <StandardDirectory Id="ProgramMenuFolder">
@@ -19,16 +32,41 @@
   </Fragment>
 
   <Fragment>
-    <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="ApplicationShortcut" Guid="*">
+    <ComponentGroup Id="AppComponents" Directory="InstallFolder">
+      <Component Id="MainExecutable" Guid="b64f4b37-758f-4fff-a561-b2ddec029e94">
+        <File Id="WslTamerUI.exe" Source="..\..\publish\WslTamer.UI.exe" />
+        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="MainExecutable" Type="integer" Value="1" KeyPath="yes"/>
+        
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="WSL Tamer"
                   Description="Tame your WSL instances"
-                  Target="[InstallFolder]WslTamer.UI.exe"
-                  WorkingDirectory="InstallFolder" />
+                  Directory="ApplicationProgramsFolder"
+                  WorkingDirectory="InstallFolder"
+                  Icon="AppIcon" 
+                  Target="[InstallFolder]WslTamer.UI.exe"/>
         <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
-        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RemoveFolder Id="RemoveInstallFolder" Directory="InstallFolder" On="uninstall"/>
       </Component>
-    </DirectoryRef>
+      
+      <Component Id="MainDll" Guid="9b28f70f-2b00-4e13-be0e-265e36df510c">
+        <File Id="WslTamerUI.dll" Source="..\..\publish\WslTamer.UI.dll" />
+        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="MainDll" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+
+      <Component Id="DepsJson" Guid="9bd9372a-6d45-4547-adad-655f94ef8ddb">
+        <File Id="WslTamerUI.deps.json" Source="..\..\publish\WslTamer.UI.deps.json" />
+        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="DepsJson" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+
+      <Component Id="RuntimeConfig" Guid="4063bbe1-ee11-42b9-a0f3-f820206faeee">
+        <File Id="WslTamerUI.runtimeconfig.json" Source="..\..\publish\WslTamer.UI.runtimeconfig.json" />
+        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="RuntimeConfig" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+
+      <Component Id="NotifyIconDll" Guid="5627fdc8-84bb-4321-a4e1-46061a370c72">
+        <File Id="Hardcodet.NotifyIcon.Wpf.dll" Source="..\..\publish\Hardcodet.NotifyIcon.Wpf.dll" />
+        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="NotifyIconDll" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </ComponentGroup>
   </Fragment>
 </Wix>

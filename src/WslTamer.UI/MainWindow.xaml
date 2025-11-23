@@ -10,11 +10,13 @@
         ShowInTaskbar="False"
         Visibility="Hidden"
         WindowStyle="None"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Icon="/Assets/app.ico">
     
     <Grid>
         <tb:TaskbarIcon x:Name="MyNotifyIcon"
-                        ToolTipText="WSL Tamer">
+                        ToolTipText="WSL Tamer"
+                        IconSource="/Assets/app.ico">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu x:Name="TrayMenu" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}">
                     <MenuItem Header="Status: Checking..." x:Name="StatusMenuItem" IsEnabled="False" FontWeight="Bold"/>

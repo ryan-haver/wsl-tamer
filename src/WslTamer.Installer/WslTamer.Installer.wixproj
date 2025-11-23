@@ -9,15 +9,6 @@
     <PackageReference Include="WixToolset.Heat" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <HarvestDirectory Include="..\..\publish">
-      <ComponentGroupName>AppComponents</ComponentGroupName>
-      <DirectoryRefId>InstallFolder</DirectoryRefId>
-      <SuppressRootDirectory>true</SuppressRootDirectory>
-      <SuppressRegistry>true</SuppressRegistry>
-      <PreprocessorVariable>var.PublishDir</PreprocessorVariable>
-    </HarvestDirectory>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\WslTamer.UI\WslTamer.UI.csproj" />
   </ItemGroup>
 </Project>
