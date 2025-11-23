@@ -74,17 +74,17 @@ public partial class MainWindow : Window
         
         // Update Menu Text Color
         StatusMenuItem.Header = isRunning ? "Status: Running" : "Status: Stopped";
-        StatusMenuItem.Foreground = isRunning ? System.Windows.Media.Brushes.Green : System.Windows.Media.Brushes.Black;
+        StatusMenuItem.Foreground = isRunning ? System.Windows.Media.Brushes.Green : System.Windows.Media.Brushes.Gray;
 
         // Update Tray Icon
         if (isRunning)
         {
-             if (_greenIcon == null) _greenIcon = GenerateStatusIcon(System.Drawing.Color.Green);
+             if (_greenIcon == null) _greenIcon = GenerateStatusIcon(System.Drawing.Color.FromArgb(0, 255, 0)); // Bright Green
              MyNotifyIcon.Icon = _greenIcon;
         }
         else
         {
-             if (_blackIcon == null) _blackIcon = GenerateStatusIcon(System.Drawing.Color.Black);
+             if (_blackIcon == null) _blackIcon = GenerateStatusIcon(System.Drawing.Color.Gray); // Gray for stopped
              MyNotifyIcon.Icon = _blackIcon;
         }
         
@@ -92,22 +92,36 @@ public partial class MainWindow : Window
         MyNotifyIcon.ToolTipText = $"WSL Tamer\n{(isRunning ? "Running" : "Stopped")}";
     }
 
-    private System.Drawing.Icon GenerateStatusIcon(System.Drawing.Color color)
+    private System.Drawing.Icon GenerateStatusIcon(System.Drawing.Color themeColor)
     {
-        // Create a 16x16 bitmap
-        using var bitmap = new System.Drawing.Bitmap(16, 16);
+        int size = 32; // Use 32x32 for better visibility
+        using var bitmap = new System.Drawing.Bitmap(size, size);
         using var g = System.Drawing.Graphics.FromImage(bitmap);
         
-        // Clear background (transparent)
-        g.Clear(System.Drawing.Color.Transparent);
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+        // Background (Dark Circle)
+        using var bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(12, 12, 12));
+        g.FillEllipse(bgBrush, 0, 0, size - 1, size - 1);
+
+        // Border
+        using var pen = new System.Drawing.Pen(themeColor, 2);
+        g.DrawEllipse(pen, 1, 1, size - 3, size - 3);
+
+        // Text ">_"
+        using var font = new System.Drawing.Font("Consolas", 11, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+        using var textBrush = new System.Drawing.SolidBrush(themeColor);
         
-        // Draw circle
-        using var brush = new System.Drawing.SolidBrush(color);
-        g.FillEllipse(brush, 1, 1, 14, 14);
+        var format = new System.Drawing.StringFormat
+        {
+            Alignment = System.Drawing.StringAlignment.Center,
+            LineAlignment = System.Drawing.StringAlignment.Center
+        };
+
+        // Draw text centered
+        g.DrawString(">_", font, textBrush, new System.Drawing.RectangleF(0, 1, size, size), format);
         
-        // Convert to Icon
-        // Note: GetHicon creates a handle that should ideally be destroyed, 
-        // but since we cache these icons and only create 2 per app lifetime, it's acceptable.
         return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
     }
 
