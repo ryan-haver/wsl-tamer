@@ -3,6 +3,7 @@
     <OutputName>WslTamer</OutputName>
     <OutputType>Package</OutputType>
     <DefineConstants>PublishDir=..\..\publish</DefineConstants>
+    <InstallerPlatform>x64</InstallerPlatform>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Heat" Version="5.0.0" />
