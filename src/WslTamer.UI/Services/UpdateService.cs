@@ -10,7 +10,7 @@ public class UpdateService
 {
     private const string RepoOwner = "ryan-haver";
     private const string RepoName = "wsl-tamer";
-    private const string CurrentVersion = "v0.1.0"; // Should match tag
+    private const string CurrentVersion = "v1.0.0"; // Should match tag
 
     public async Task CheckForUpdatesAsync(bool silent = false)
     {
@@ -57,12 +57,19 @@ public class UpdateService
 
     private bool IsNewerVersion(string tagName)
     {
-        // Simple string comparison for now, assuming vX.Y.Z format
-        // Remove 'v' prefix
-        var current = CurrentVersion.TrimStart('v');
-        var latest = tagName.TrimStart('v');
-        
-        return string.Compare(latest, current, StringComparison.OrdinalIgnoreCase) > 0;
+        try
+        {
+            var current = Version.Parse(CurrentVersion.TrimStart('v'));
+            var latest = Version.Parse(tagName.TrimStart('v'));
+            return latest > current;
+        }
+        catch
+        {
+            // Fallback to string comparison if parsing fails
+            var current = CurrentVersion.TrimStart('v');
+            var latest = tagName.TrimStart('v');
+            return string.Compare(latest, current, StringComparison.OrdinalIgnoreCase) > 0;
+        }
     }
 
     private class GitHubRelease
