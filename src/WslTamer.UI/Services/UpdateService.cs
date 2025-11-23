@@ -11,7 +11,6 @@ public class UpdateService
 {
     private const string RepoOwner = "ryan-haver";
     private const string RepoName = "wsl-tamer";
-    private const string CurrentVersion = "v1.0.7"; // Should match tag
 
     public async Task CheckForUpdatesAsync(bool silent = false)
     {
@@ -98,14 +97,16 @@ public class UpdateService
     {
         try
         {
-            var current = Version.Parse(CurrentVersion.TrimStart('v'));
+            var currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var current = currentVersion ?? new Version(1, 0, 0);
+            
             var latest = Version.Parse(tagName.TrimStart('v'));
             return latest > current;
         }
         catch
         {
             // Fallback to string comparison if parsing fails
-            var current = CurrentVersion.TrimStart('v');
+            var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "1.0.0";
             var latest = tagName.TrimStart('v');
             return string.Compare(latest, current, StringComparison.OrdinalIgnoreCase) > 0;
         }
