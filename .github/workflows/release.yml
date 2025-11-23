@@ -27,6 +27,12 @@ jobs:
     - name: Publish
       run: dotnet publish src/WslTamer.UI/WslTamer.UI.csproj --configuration Release --runtime win-x64 --self-contained false --output ./publish
 
+    - name: Install WiX
+      run: dotnet tool install --global wix
+
+    - name: Build Installer
+      run: wix build src/WslTamer.Installer/WslTamer.Installer.wixproj -o ./WslTamer.msi
+
     - name: Zip Release
       run: Compress-Archive -Path ./publish/* -DestinationPath WslTamer-win-x64.zip
 
@@ -34,6 +40,8 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: WslTamer-win-x64.zip
+        files: |
+          WslTamer-win-x64.zip
+          WslTamer.msi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

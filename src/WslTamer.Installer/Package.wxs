@@ -1,0 +1,42 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="WSL Tamer" Manufacturer="Ryan Haver" Version="1.0.3.0" UpgradeCode="A1B2C3D4-E5F6-7890-1234-567890ABCDEF">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="AppComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+      <StandardDirectory Id="ProgramFiles64Folder">
+        <Directory Id="InstallFolder" Name="WSL Tamer" />
+      </StandardDirectory>
+      <StandardDirectory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="WSL Tamer"/>
+      </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="AppComponents" Directory="InstallFolder">
+      <Files Include="..\..\publish\**">
+        <Exclude Files="..\..\publish\*.pdb" />
+      </Files>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="WSL Tamer"
+                  Description="Tame your WSL instances"
+                  Target="[InstallFolder]WslTamer.UI.exe"
+                  WorkingDirectory="InstallFolder" />
+        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
