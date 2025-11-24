@@ -36,6 +36,12 @@
         <ui:TitleBar Grid.Row="0" Title="WSL Tamer Settings" Icon="/Assets/app.ico" />
 
         <TabControl Grid.Row="1" Margin="10">
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="Padding" Value="20,10"/>
+                </Style>
+            </TabControl.ItemContainerStyle>
             <TabItem Header="General">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
