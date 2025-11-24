@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     private readonly AutomationService _automationService;
     private readonly UpdateService _updateService;
     private readonly StartupService _startupService;
+    private readonly ThemeService _themeService;
     private readonly DispatcherTimer _statusTimer;
 
     public MainWindow()
@@ -27,6 +28,7 @@ public partial class MainWindow : Window
         _automationService = new AutomationService(_profileManager, _wslService);
         _updateService = new UpdateService();
         _startupService = new StartupService();
+        _themeService = new ThemeService();
 
         // Start Automation
         _automationService.Start();
@@ -190,7 +192,7 @@ public partial class MainWindow : Window
 
     private void Settings_Click(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SettingsWindow(_profileManager, _wslService);
+        var settingsWindow = new SettingsWindow(_profileManager, _wslService, _themeService);
         settingsWindow.Show();
         settingsWindow.Closed += (s, args) => RefreshProfilesMenu();
     }

@@ -18,7 +18,9 @@
                         ToolTipText="WSL Tamer"
                         IconSource="/Assets/app.ico">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu x:Name="TrayMenu" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}">
+                <ContextMenu x:Name="TrayMenu" 
+                             Background="{DynamicResource WindowBackgroundBrush}" 
+                             Foreground="{DynamicResource WindowForegroundBrush}">
                     <MenuItem Header="Status: Checking..." x:Name="StatusMenuItem" IsEnabled="False" FontWeight="Bold"/>
                     <Separator/>
                     <MenuItem Header="Profiles" x:Name="ProfilesMenu"/>

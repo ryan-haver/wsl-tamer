@@ -9,6 +9,7 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
 - [x] **Profile Management**: Create, edit, and delete resource profiles (RAM/CPU).
 - [x] **System Tray**: Quick access to profiles and WSL shutdown.
 - [x] **Auto-Updates**: Self-updating via GitHub Releases.
+- [x] **Background Mode**: Run WSL in headless mode ("Start Background") to keep services alive.
 - [ ] **Disk Compaction**: Implement `Optimize-VHD` to shrink `.vhdx` files and reclaim disk space.
 - [ ] **Onboarding**: A "First Run" wizard to help users set up their initial profiles.
 
@@ -42,6 +43,8 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
   - **Networking**: Toggle between NAT, Mirrored, and Bridged modes (WSL 2.0+).
   - **Swap**: Configure swap file size and location.
   - **Graphics**: Toggle vGPU and console visibility.
+- [ ] **Hardware Passthrough**:
+  - **USB/Disk Mounting**: GUI for `wsl --mount` to attach physical disks or USB drives.
 
 ## 🧠 Phase 4: Automation & Intelligence (The "Tamer")
 
@@ -53,7 +56,24 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
 - [ ] **Smart Throttling**: Dynamically adjust memory limits based on total system memory pressure.
 - [ ] **Time-Based Triggers**: Schedule profiles (e.g., "Eco Mode" at 10 PM).
 
-## 📊 Phase 5: Monitoring & Insights
+## 🌐 Phase 5: Advanced Networking (New)
+
+*Goal: Solve the "I can't access my server" problems.*
+
+- [ ] **Port Forwarding Manager**: GUI for `netsh interface portproxy` to expose WSL ports to the LAN.
+- [ ] **DNS Fixer**: One-click fix for common DNS resolution issues (overwrite `/etc/resolv.conf`).
+- [ ] **SSH Helper**: Auto-configure SSH server in WSL and manage keys.
+- [ ] **Bridge Mode Helper**: Simplified setup for Bridged networking (making WSL appear as a separate device on LAN).
+
+## 🛡️ Phase 6: Data Protection & Enterprise (New)
+
+*Goal: Ensure data safety and portability.*
+
+- [ ] **Scheduled Backups**: Automated snapshots of specific distros to a backup location.
+- [ ] **Cloud Sync**: Sync profiles and triggers across multiple machines via OneDrive/Google Drive.
+- [ ] **Snapshot Management**: Create and rollback ZFS/Btrfs snapshots (if supported by distro).
+
+## 📊 Phase 7: Monitoring & Insights
 
 *Goal: Give users visibility into what WSL is doing.*
 

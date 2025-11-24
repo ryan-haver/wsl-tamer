@@ -7,10 +7,39 @@
         xmlns:converters="clr-namespace:WslTamer.UI.Converters"
         mc:Ignorable="d"
         Title="WSL Tamer Settings" Height="450" Width="600"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource WindowForegroundBrush}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:StateToColorConverter x:Key="StateToColorConverter"/>
+        
+        <Style TargetType="GroupBox">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="{DynamicResource ListBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+        </Style>
     </Window.Resources>
     <Grid Margin="10">
         <TabControl>

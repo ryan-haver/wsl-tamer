@@ -13,20 +13,24 @@ public partial class SettingsWindow : Window
 {
     private readonly ProfileManager _profileManager;
     private readonly WslService _wslService;
+    private readonly ThemeService _themeService;
     private readonly UpdateService _updateService = new();
     private readonly StartupService _startupService = new();
     private WslProfile? _selectedProfile;
 
-    public SettingsWindow(ProfileManager profileManager, WslService wslService)
+    public SettingsWindow(ProfileManager profileManager, WslService wslService, ThemeService themeService)
     {
         InitializeComponent();
         _profileManager = profileManager;
         _wslService = wslService;
+        _themeService = themeService;
         
         ChkStartOnLogin.IsChecked = _startupService.IsStartupEnabled();
         
         RefreshProfileList();
         RefreshDistrosList();
+
+        Loaded += (s, e) => _themeService.ApplyThemeToWindow(this, _themeService.CurrentTheme);
     }
 
     public event Action<bool>? OnStartupSettingChanged;
