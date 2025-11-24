@@ -9,7 +9,7 @@ namespace WslTamer.UI.Services;
 
 public class UpdateService
 {
-    private const string RepoOwner = "ryan-haver";
+    private const string RepoOwner = "wsl-tamer";
     private const string RepoName = "wsl-tamer";
 
     public async Task CheckForUpdatesAsync(bool silent = false)

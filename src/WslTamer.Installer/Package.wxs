@@ -1,7 +1,7 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="WSL Tamer" 
-           Manufacturer="Ryan Haver" 
-           Version="1.2.2.0" 
+           Manufacturer="WSL Tamer Team" 
+           Version="1.2.3.0" 
            UpgradeCode="0bd638ec-b54e-4c30-a6c8-d0dd2ee969a0"
            Scope="perUser"
            ProductCode="*">
@@ -14,12 +14,18 @@
 
     <Icon Id="AppIcon" SourceFile="..\WslTamer.UI\Assets\app.ico"/>
     <Property Id="ARPPRODUCTICON" Value="AppIcon" />
-    <Property Id="ARPHELPLINK" Value="https://github.com/ryan-haver/wsl-tamer" />
-    <Property Id="ARPURLINFOABOUT" Value="https://github.com/ryan-haver/wsl-tamer" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/wsl-tamer/wsl-tamer" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/wsl-tamer/wsl-tamer" />
 
     <Feature Id="Main">
       <ComponentGroupRef Id="AppComponents" />
     </Feature>
+
+    <CustomAction Id="LaunchApp" FileRef="WslTamerUI.exe" ExeCommand="" Return="asyncNoWait" Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom Action="LaunchApp" After="InstallFinalize" Condition="NOT Installed" />
+    </InstallExecuteSequence>
   </Package>
 
   <Fragment>
@@ -35,7 +41,7 @@
     <ComponentGroup Id="AppComponents" Directory="InstallFolder">
       <Component Id="MainExecutable" Guid="b64f4b37-758f-4fff-a561-b2ddec029e94">
         <File Id="WslTamerUI.exe" Source="..\..\publish\WslTamer.UI.exe" />
-        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="MainExecutable" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\WslTamer\WslTamer" Name="MainExecutable" Type="integer" Value="1" KeyPath="yes"/>
         
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="WSL Tamer"
@@ -50,22 +56,22 @@
       
       <Component Id="MainDll" Guid="9b28f70f-2b00-4e13-be0e-265e36df510c">
         <File Id="WslTamerUI.dll" Source="..\..\publish\WslTamer.UI.dll" />
-        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="MainDll" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\WslTamer\WslTamer" Name="MainDll" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
 
       <Component Id="DepsJson" Guid="9bd9372a-6d45-4547-adad-655f94ef8ddb">
         <File Id="WslTamerUI.deps.json" Source="..\..\publish\WslTamer.UI.deps.json" />
-        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="DepsJson" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\WslTamer\WslTamer" Name="DepsJson" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
 
       <Component Id="RuntimeConfig" Guid="4063bbe1-ee11-42b9-a0f3-f820206faeee">
         <File Id="WslTamerUI.runtimeconfig.json" Source="..\..\publish\WslTamer.UI.runtimeconfig.json" />
-        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="RuntimeConfig" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\WslTamer\WslTamer" Name="RuntimeConfig" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
 
       <Component Id="NotifyIconDll" Guid="5627fdc8-84bb-4321-a4e1-46061a370c72">
         <File Id="Hardcodet.NotifyIcon.Wpf.dll" Source="..\..\publish\Hardcodet.NotifyIcon.Wpf.dll" />
-        <RegistryValue Root="HKCU" Key="Software\RyanHaver\WslTamer" Name="NotifyIconDll" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\WslTamer\WslTamer" Name="NotifyIconDll" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </ComponentGroup>
   </Fragment>

@@ -25,10 +25,10 @@
                     <Separator/>
                     <MenuItem Header="Profiles" x:Name="ProfilesMenu"/>
                     <MenuItem Header="Actions">
-                        <MenuItem Header="💻 Open Terminal" Click="LaunchWsl_Click"/>
-                        <MenuItem Header="👻 Start Background" Click="StartBackground_Click"/>
-                        <MenuItem Header="🛑 Shutdown WSL" Click="ShutdownWsl_Click"/>
-                        <MenuItem Header="🧹 Reclaim Memory" Click="ReclaimMemory_Click"/>
+                        <MenuItem Header="Open Terminal" Click="LaunchWsl_Click"/>
+                        <MenuItem Header="Start Background" Click="StartBackground_Click"/>
+                        <MenuItem Header="Shutdown WSL" Click="ShutdownWsl_Click"/>
+                        <MenuItem Header="Reclaim Memory" Click="ReclaimMemory_Click"/>
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Settings" Click="Settings_Click"/>
