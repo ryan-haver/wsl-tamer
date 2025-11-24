@@ -10,7 +10,7 @@
     <Authors>WSL Tamer Team</Authors>
     <Company>WSL Tamer Team</Company>
     <Product>WSL Tamer</Product>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
