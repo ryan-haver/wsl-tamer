@@ -207,6 +207,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="24"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     
                                     <!-- Checkmark -->
@@ -224,9 +225,42 @@
                                                       VerticalAlignment="Center" 
                                                       Margin="8,0,0,0"
                                                       RecognizesAccessKey="True"/>
+
+                                    <!-- Arrow for Submenu -->
+                                    <Path x:Name="RightArrow" 
+                                          Grid.Column="2"
+                                          Visibility="Collapsed"
+                                          Data="M 0,0 L 4,4 L 0,8" 
+                                          Stroke="{TemplateBinding Foreground}" 
+                                          StrokeThickness="2" 
+                                          VerticalAlignment="Center" 
+                                          HorizontalAlignment="Right"
+                                          Margin="10,0,0,0"/>
+
+                                    <!-- Popup for Submenu -->
+                                    <Popup x:Name="PART_Popup" 
+                                           AllowsTransparency="True" 
+                                           Focusable="False" 
+                                           IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                                           Placement="Right" 
+                                           PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
+                                        <Border Background="{DynamicResource WindowBackgroundBrush}" 
+                                                BorderBrush="{DynamicResource ControlBorderBrush}" 
+                                                BorderThickness="1" 
+                                                Padding="2">
+                                            <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto">
+                                                <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" 
+                                                                Grid.IsSharedSizeScope="True" 
+                                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </Popup>
                                 </Grid>
                             </Border>
                             <ControlTemplate.Triggers>
+                                <Trigger Property="Role" Value="SubmenuHeader">
+                                    <Setter TargetName="RightArrow" Property="Visibility" Value="Visible"/>
+                                </Trigger>
                                 <Trigger Property="IsHighlighted" Value="True">
                                     <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlMouseOverBrush}"/>
                                 </Trigger>
