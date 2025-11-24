@@ -1,7 +1,7 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="WSL Tamer" 
            Manufacturer="WSL Tamer Team" 
-           Version="1.4.4.0" 
+           Version="1.5.0.0" 
            UpgradeCode="0bd638ec-b54e-4c30-a6c8-d0dd2ee969a0"
            Scope="perUser"
            ProductCode="*">
