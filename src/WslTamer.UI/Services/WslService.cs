@@ -199,6 +199,83 @@ public class WslService
         }
     }
 
+    public void CloneDistro(string sourceName, string newName, string newLocation)
+    {
+        // 1. Create a temporary file for the export
+        string tempFile = Path.Combine(Path.GetTempPath(), $"{sourceName}_clone_{Guid.NewGuid()}.tar");
+
+        try
+        {
+            // 2. Export the source distro
+            ExportDistro(sourceName, tempFile);
+
+            // 3. Import as new distro
+            ImportDistro(newName, newLocation, tempFile);
+        }
+        finally
+        {
+            // 4. Cleanup
+            if (File.Exists(tempFile))
+            {
+                try { File.Delete(tempFile); } catch { /* Best effort cleanup */ }
+            }
+        }
+    }
+
+    public void MoveDistro(string name, string newLocation)
+    {
+        // 1. Create a temporary file for the export
+        string tempFile = Path.Combine(Path.GetTempPath(), $"{name}_move_{Guid.NewGuid()}.tar");
+
+        try
+        {
+            // 2. Export the source distro
+            ExportDistro(name, tempFile);
+
+            // Verify export succeeded
+            if (!File.Exists(tempFile) || new FileInfo(tempFile).Length == 0)
+            {
+                throw new Exception("Export failed or produced an empty file. Aborting move.");
+            }
+
+            // 3. Unregister the original distro
+            UnregisterDistro(name);
+
+            // 4. Import to new location with same name
+            ImportDistro(name, newLocation, tempFile);
+        }
+        catch (Exception)
+        {
+            // If something goes wrong after unregistering, the user still has the tempFile.
+            // We should probably throw the exception up, but maybe append info about the temp file location
+            // if the original is gone.
+            // For now, the UI will catch the exception and show the message.
+            // If the original is gone, the user can manually import the temp file.
+            throw;
+        }
+        finally
+        {
+            // 5. Cleanup ONLY if everything succeeded? 
+            // Or should we keep it if it failed?
+            // If ImportDistro throws, we are in the catch block, then finally.
+            // If we delete in finally, we lose the backup.
+            
+            // Let's only delete if we didn't throw? 
+            // But finally runs anyway.
+            
+            // We can check if the new distro exists?
+            // Or we can just leave the temp file if there was an error?
+            // But we don't know if there was an error in finally easily without tracking state.
+        }
+        
+        // Let's do cleanup explicitly at the end of the try block, and NOT in finally.
+        // That way if an exception occurs, the file remains.
+        if (File.Exists(tempFile))
+        {
+            try { File.Delete(tempFile); } catch { /* Best effort cleanup */ }
+        }
+    }
+
     public void RunDistro(string name)
     {
         try

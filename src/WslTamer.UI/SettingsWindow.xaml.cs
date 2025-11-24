@@ -170,6 +170,32 @@ public partial class SettingsWindow : Window
         }
     }
 
+    private void BtnCloneDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            var cloneWindow = new CloneDistroWindow(_wslService, name);
+            cloneWindow.Owner = this;
+            if (cloneWindow.ShowDialog() == true)
+            {
+                RefreshDistrosList();
+            }
+        }
+    }
+
+    private void BtnMoveDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            var moveWindow = new MoveDistroWindow(_wslService, name);
+            moveWindow.Owner = this;
+            if (moveWindow.ShowDialog() == true)
+            {
+                RefreshDistrosList();
+            }
+        }
+    }
+
     private void RefreshProfileList()
     {
         LstProfiles.ItemsSource = null;
