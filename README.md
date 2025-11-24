@@ -14,11 +14,6 @@ Switch between profiles instantly without restarting Windows:
 * **Balanced:** The sweet spot (e.g., 8GB - 12GB). Perfect for daily development.
 * **Unleashed:** Unlocks full system resources for heavy compilation or ML tasks.
 
-### Automation & Triggers
-
-* **Process Triggers:** Automatically switch profiles when you launch specific apps (e.g., switch to "Unleashed" when `code.exe` starts).
-* **Power Triggers:** Automatically switch to "Eco Mode" when on battery power.
-
 ### Distro Management
 
 * **Dashboard:** View all installed distributions and their running state.
