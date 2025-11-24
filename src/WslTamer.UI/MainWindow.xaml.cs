@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     private readonly UpdateService _updateService;
     private readonly StartupService _startupService;
     private readonly ThemeService _themeService;
+    private readonly HardwareService _hardwareService;
     private readonly DispatcherTimer _statusTimer;
 
     public MainWindow()
@@ -29,6 +30,7 @@ public partial class MainWindow : Window
         _updateService = new UpdateService();
         _startupService = new StartupService();
         _themeService = new ThemeService();
+        _hardwareService = new HardwareService();
 
         // Start Automation
         _automationService.Start();
@@ -45,6 +47,115 @@ public partial class MainWindow : Window
         CheckUpdates();
         
         TrayStartWithWindows.IsChecked = _startupService.IsStartupEnabled();
+        TrayMenu.Opened += TrayMenu_Opened;
+    }
+
+    private async void TrayMenu_Opened(object sender, RoutedEventArgs e)
+    {
+        await RefreshMountedDevices();
+    }
+
+    private async Task RefreshMountedDevices()
+    {
+        try
+        {
+            // Clear existing device items (keep the static ones)
+            // We have MountedDevicesMenu (Header) and MountedDevicesSeparator
+            // We want to add items between MountedDevicesMenu and MountedDevicesSeparator?
+            // Or just populate MountedDevicesMenu.Items?
+            
+            // The user wants a section.
+            // Let's use the MountedDevicesMenu as a container if we want a submenu, 
+            // OR we can insert items into the main menu.
+            // The user screenshot shows top-level items.
+            
+            // Let's find the index of MountedDevicesMenu
+            int startIndex = TrayMenu.Items.IndexOf(MountedDevicesMenu);
+            int separatorIndex = TrayMenu.Items.IndexOf(MountedDevicesSeparator);
+            
+            // Remove any previously added dynamic items (between header and separator)
+            // Actually, let's just use the MountedDevicesMenu as a header label (disabled)
+            // and insert items after it.
+            
+            // Clean up previous dynamic items
+            // We need a way to identify them. We can use Tags.
+            
+            var itemsToRemove = new List<object>();
+            foreach (var item in TrayMenu.Items)
+            {
+                if (item is MenuItem mi && mi.Tag is string tag && tag == "MountedDevice")
+                {
+                    itemsToRemove.Add(item);
+                }
+            }
+            
+            foreach (var item in itemsToRemove)
+            {
+                TrayMenu.Items.Remove(item);
+            }
+
+            // Get Disks
+            var disks = await _hardwareService.GetPhysicalDisksAsync();
+            
+            // Filter for mounted disks? 
+            // Since we can't easily check mount status without admin/powershell complex checks,
+            // and the user specifically asked for "unmounting devices that are mounted",
+            // we will list ALL disks but maybe mark them?
+            // Or just list them all and let the user choose.
+            // For now, listing all is safer than listing none.
+            
+            if (disks.Count > 0)
+            {
+                MountedDevicesMenu.Visibility = Visibility.Visible;
+                MountedDevicesSeparator.Visibility = Visibility.Visible;
+                
+                // Re-find index as we might have removed items
+                int insertIndex = TrayMenu.Items.IndexOf(MountedDevicesMenu) + 1;
+
+                foreach (var disk in disks)
+                {
+                    var item = new MenuItem
+                    {
+                        Header = $"Eject {disk.Model}",
+                        Tag = "MountedDevice",
+                        ToolTip = "Click to unmount this disk from WSL"
+                    };
+                    
+                    // Sub-item for details (tabulated)
+                    var detailsItem = new MenuItem
+                    {
+                        Header = $"{disk.DeviceId} - {disk.Size}",
+                        IsEnabled = false
+                    };
+                    item.Items.Add(detailsItem);
+
+                    item.Click += async (s, a) => 
+                    {
+                        try
+                        {
+                            await _hardwareService.UnmountDiskAsync(disk.DeviceId);
+                            MyNotifyIcon.ShowBalloonTip("WSL Tamer", $"Unmounted {disk.Model}", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                            await RefreshMountedDevices();
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Windows.MessageBox.Show($"Failed to unmount: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    };
+
+                    TrayMenu.Items.Insert(insertIndex++, item);
+                }
+            }
+            else
+            {
+                MountedDevicesMenu.Visibility = Visibility.Collapsed;
+                MountedDevicesSeparator.Visibility = Visibility.Collapsed;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error refreshing mounted devices: {ex.Message}");
+        }
     }
 
     private void LoadIcon()
