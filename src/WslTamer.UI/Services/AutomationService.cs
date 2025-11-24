@@ -70,7 +70,10 @@ public class AutomationService
         {
             case TriggerType.Process:
                 return IsProcessRunning(rule.TriggerValue);
+            case TriggerType.Network:
+                return CheckNetwork(rule.TriggerValue);
             case TriggerType.PowerState:
+                // Deprecated/Hidden in UI but kept for compatibility
                 return CheckPowerState(rule.TriggerValue);
             case TriggerType.Time:
                 // Not implemented yet
@@ -103,6 +106,47 @@ public class AutomationService
         {
             return powerStatus.PowerLineStatus == PowerLineStatus.Online;
         }
+        return false;
+    }
+
+    private bool CheckNetwork(string targetSsid)
+    {
+        try
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "netsh",
+                    Arguments = "wlan show interfaces",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            string output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach(var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (trimmed.StartsWith("SSID") && trimmed.Contains(":"))
+                {
+                    var parts = trimmed.Split(new[] { ':' }, 2);
+                    if (parts.Length == 2)
+                    {
+                        var currentSsid = parts[1].Trim();
+                        if (string.Equals(currentSsid, targetSsid, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        catch { }
         return false;
     }
 }

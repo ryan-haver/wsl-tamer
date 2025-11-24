@@ -359,6 +359,7 @@ public partial class SettingsWindow : Window
     {
         _selectedProfile = LstProfiles.SelectedItem as WslProfile;
         PnlEditor.IsEnabled = _selectedProfile != null;
+        PnlNoProfile.Visibility = _selectedProfile != null ? Visibility.Collapsed : Visibility.Visible;
 
         if (_selectedProfile != null)
         {
@@ -506,18 +507,19 @@ public partial class SettingsWindow : Window
         TriggerType triggerType;
         string value = TxtTriggerValue.Text;
 
+        if (string.IsNullOrWhiteSpace(value))
+        {
+             System.Windows.MessageBox.Show("Please enter a value for the trigger.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+             return;
+        }
+
         switch (typeIndex)
         {
             case 0:
                 triggerType = TriggerType.Process;
                 break;
             case 1:
-                triggerType = TriggerType.PowerState;
-                value = "OnBattery";
-                break;
-            case 2:
-                triggerType = TriggerType.PowerState;
-                value = "PluggedIn";
+                triggerType = TriggerType.Network;
                 break;
             default:
                 return;

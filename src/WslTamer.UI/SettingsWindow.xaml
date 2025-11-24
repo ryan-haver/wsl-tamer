@@ -107,62 +107,79 @@
                     </DockPanel>
                     
                     <!-- Profile Editor -->
-                    <StackPanel Grid.Column="1" Margin="10,0,0,0" Name="PnlEditor" IsEnabled="False">
-                        <Label Content="Profile Name"/>
-                        <TextBox Name="TxtName" Margin="0,0,0,10"/>
-                        
-                        <Label Content="Memory Limit (e.g. 4GB, 512MB)"/>
-                        <TextBox Name="TxtMemory" Margin="0,0,0,10" ToolTip="Maximum RAM allocated to WSL."/>
-                        
-                        <Label Content="Processors (0 = Default)"/>
-                        <TextBox Name="TxtProcessors" Margin="0,0,0,10" ToolTip="Number of CPU cores assigned to WSL."/>
-                        
-                        <Label Content="Swap (e.g. 2GB, 0 to disable)"/>
-                        <TextBox Name="TxtSwap" Margin="0,0,0,10" ToolTip="Virtual memory size (e.g., 2GB). Set to 0 to disable."/>
-                        
-                        <CheckBox Name="ChkLocalhost" Content="Localhost Forwarding" Margin="0,0,0,10" ToolTip="Access WSL network services from Windows via localhost."/>
+                    <Grid Grid.Column="1" Margin="10,0,0,0">
+                        <StackPanel Name="PnlEditor" IsEnabled="False">
+                            <Label Content="Profile Name"/>
+                            <TextBox Name="TxtName" Margin="0,0,0,10"/>
+                            
+                            <Label Content="Memory Limit (e.g. 4GB, 512MB)"/>
+                            <TextBox Name="TxtMemory" Margin="0,0,0,10" ToolTip="Maximum RAM allocated to WSL."/>
+                            
+                            <Label Content="Processors (0 = Default)"/>
+                            <TextBox Name="TxtProcessors" Margin="0,0,0,10" ToolTip="Number of CPU cores assigned to WSL."/>
+                            
+                            <Label Content="Swap (e.g. 2GB, 0 to disable)"/>
+                            <TextBox Name="TxtSwap" Margin="0,0,0,10" ToolTip="Virtual memory size (e.g., 2GB). Set to 0 to disable."/>
+                            
+                            <CheckBox Name="ChkLocalhost" Content="Localhost Forwarding" Margin="0,0,0,10" ToolTip="Access WSL network services from Windows via localhost."/>
 
-                        <GroupBox Header="Advanced Global Settings (.wslconfig)" Margin="0,0,0,10">
-                            <StackPanel Margin="5">
-                                <Label Content="Kernel Path (Leave empty for default)"/>
-                                <TextBox Name="TxtKernelPath" Margin="0,0,0,5" ToolTip="Path to a custom Linux kernel image."/>
+                            <GroupBox Header="Advanced Global Settings (.wslconfig)" Margin="0,0,0,10">
+                                <StackPanel Margin="5">
+                                    <Label Content="Kernel Path (Leave empty for default)"/>
+                                    <TextBox Name="TxtKernelPath" Margin="0,0,0,5" ToolTip="Path to a custom Linux kernel image."/>
 
-                                <Label Content="Networking Mode"/>
-                                <ComboBox Name="CboNetworkingMode" Margin="0,0,0,5" ToolTip="NAT (Default), Mirrored (New in WSL2), or Bridged.">
-                                    <ComboBoxItem Content="NAT"/>
-                                    <ComboBoxItem Content="Mirrored"/>
-                                    <ComboBoxItem Content="Bridged"/>
-                                </ComboBox>
-
-                                <CheckBox Name="ChkGuiApplications" Content="Enable GUI Applications (WSLg)" Margin="0,5,0,5" ToolTip="Enable support for Linux GUI apps (WSLg)."/>
-                                <CheckBox Name="ChkDebugConsole" Content="Show Debug Console" Margin="0,0,0,5" ToolTip="Show the WSL2 kernel debug console on startup."/>
-                            </StackPanel>
-                        </GroupBox>
-
-                        <GroupBox Header="Auto-Switch Triggers" Margin="0,10,0,10">
-                            <StackPanel Margin="5">
-                                <ListBox Name="LstTriggers" Height="80" Margin="0,0,0,5">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Description}" Foreground="{DynamicResource WindowForegroundBrush}"/>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <ComboBox Name="CboTriggerType" Width="100" Margin="0,0,5,0">
-                                        <ComboBoxItem Content="Process Start"/>
-                                        <ComboBoxItem Content="On Battery"/>
-                                        <ComboBoxItem Content="Plugged In"/>
+                                    <Label Content="Networking Mode"/>
+                                    <ComboBox Name="CboNetworkingMode" Margin="0,0,0,5" ToolTip="NAT (Default), Mirrored (New in WSL2), or Bridged.">
+                                        <ComboBoxItem Content="NAT"/>
+                                        <ComboBoxItem Content="Mirrored"/>
+                                        <ComboBoxItem Content="Bridged"/>
                                     </ComboBox>
-                                    <TextBox Name="TxtTriggerValue" Width="100" Margin="0,0,5,0" ToolTip="Process Name (e.g. code.exe)"/>
-                                    <Button Content="Add" Width="50" Click="BtnAddTrigger_Click"/>
-                                    <Button Content="Del" Width="50" Margin="5,0,0,0" Click="BtnDeleteTrigger_Click"/>
+
+                                    <CheckBox Name="ChkGuiApplications" Content="Enable GUI Applications (WSLg)" Margin="0,5,0,5" ToolTip="Enable support for Linux GUI apps (WSLg)."/>
+                                    <CheckBox Name="ChkDebugConsole" Content="Show Debug Console" Margin="0,0,0,5" ToolTip="Show the WSL2 kernel debug console on startup."/>
                                 </StackPanel>
-                            </StackPanel>
-                        </GroupBox>
+                            </GroupBox>
+
+                            <GroupBox Header="Auto-Switch Triggers" Margin="0,10,0,10">
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="Automatically apply this profile when:" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5" FontStyle="Italic"/>
+                                    <ListBox Name="LstTriggers" Height="80" Margin="0,0,0,5" BorderBrush="{DynamicResource ControlBorderBrush}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Description}" Foreground="{DynamicResource WindowForegroundBrush}"/>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <ComboBox Name="CboTriggerType" Width="140" Margin="0,0,5,0" SelectedIndex="0">
+                                            <ComboBoxItem Content="Process Start" ToolTip="Trigger when a specific process starts (e.g. code.exe)"/>
+                                            <ComboBoxItem Content="Connected to Network" ToolTip="Trigger when connected to a specific Wi-Fi SSID"/>
+                                        </ComboBox>
+                                        <TextBox Name="TxtTriggerValue" Width="120" Margin="0,0,5,0" ToolTip="Value (e.g. 'code.exe' or 'MyHomeWiFi')"/>
+                                        <Button Content="Add" Width="50" Click="BtnAddTrigger_Click"/>
+                                        <Button Content="Del" Width="50" Margin="5,0,0,0" Click="BtnDeleteTrigger_Click"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                            
+                            <Button Content="Save Changes" HorizontalAlignment="Right" Width="100" Click="BtnSaveProfile_Click"/>
+                        </StackPanel>
                         
-                        <Button Content="Save Changes" HorizontalAlignment="Right" Width="100" Click="BtnSaveProfile_Click"/>
-                    </StackPanel>
+                        <!-- Empty State Overlay -->
+                        <Border Name="PnlNoProfile" Background="{DynamicResource WindowBackgroundBrush}" Visibility="Visible">
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="Select a profile to configure" 
+                                           Foreground="{DynamicResource TextSecondaryBrush}" 
+                                           FontSize="16" 
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="or create a new one" 
+                                           Foreground="{DynamicResource TextSecondaryBrush}" 
+                                           FontSize="12" 
+                                           HorizontalAlignment="Center"
+                                           Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </Grid>
             </TabItem>
             
@@ -179,7 +196,8 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                                     <Button Content="Refresh USB" Click="BtnRefreshUsb_Click" Margin="0,0,10,0" ToolTip="Scan for connected USB devices."/>
                                     <TextBlock Name="TxtUsbStatus" VerticalAlignment="Center" Foreground="Gray"/>
-                                    <TextBlock Name="TxtUsbInstallLink" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed">
+                                    <TextBlock Name="TxtUsbInstallLink" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"
+                                               ToolTip="After installing usbipd-win, you must restart WSL Tamer for changes to take effect.">
                                         <Hyperlink NavigateUri="https://github.com/dorssel/usbipd-win/releases" RequestNavigate="Hyperlink_RequestNavigate">
                                             Install usbipd-win
                                         </Hyperlink>

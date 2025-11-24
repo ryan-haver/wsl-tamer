@@ -22,7 +22,8 @@ public enum TriggerType
 {
     Time,
     Process,
-    PowerState
+    PowerState,
+    Network
 }
 
 public enum PowerStateTrigger
