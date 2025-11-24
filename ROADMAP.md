@@ -25,25 +25,25 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
   - [x] **Unregister**: Delete a distro and its data.
 - [ ] **Lifecycle Operations**:
   - [x] **Import/Export**: Backup distros to `.tar` files and restore them.
-  - **Clone**: Duplicate a distro (great for testing environments).
-  - **Move**: easy wizard to move a distro's `.vhdx` to another drive.
+  - [x] **Clone**: Duplicate a distro (great for testing environments).
+  - [x] **Move**: easy wizard to move a distro's `.vhdx` to another drive.
 
 ## ⚙️ Phase 3: Deep Configuration (The "Settings" Replacement)
 
 *Goal: GUI for every possible config file, eliminating the need for text editors.*
 
-- [ ] **Per-Distro Settings (`wsl.conf`)**:
+- [x] **Per-Distro Settings (`wsl.conf`)**:
   - **Boot**: Enable/Disable `systemd`.
   - **Automount**: Configure how Windows drives are mounted (`drfs`, metadata options).
   - **Network**: Set hostname and DNS generation.
   - **User**: Set the default login user.
   - **Interop**: Toggle Windows path appending and execution of Windows binaries.
-- [ ] **Advanced Global Settings (`.wslconfig`)**:
+- [x] **Advanced Global Settings (`.wslconfig`)**:
   - **Kernel**: Select custom Linux kernels.
   - **Networking**: Toggle between NAT, Mirrored, and Bridged modes (WSL 2.0+).
   - **Swap**: Configure swap file size and location.
   - **Graphics**: Toggle vGPU and console visibility.
-- [ ] **Hardware Passthrough**:
+- [x] **Hardware Passthrough**:
   - **USB/Disk Mounting**: GUI for `wsl --mount` to attach physical disks or USB drives.
 
 ## 🧠 Phase 4: Automation & Intelligence (The "Tamer")
