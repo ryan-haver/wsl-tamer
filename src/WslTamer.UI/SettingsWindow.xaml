@@ -40,8 +40,8 @@
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="Width" Value="Auto"/>
                     <Setter Property="MinWidth" Value="0"/>
-                    <Setter Property="Padding" Value="10,5"/>
-                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Padding" Value="12,6"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 </Style>
             </TabControl.ItemContainerStyle>
             <TabItem Header="General">
@@ -130,52 +130,58 @@
                     </Grid.ColumnDefinitions>
                     
                     <!-- Profile List -->
-                    <DockPanel Grid.Column="0">
-                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,0">
-                            <Button Name="BtnAddProfile" Content="Add" Margin="0,0,10,0" Click="BtnAddProfile_Click"/>
-                            <Button Name="BtnRemoveProfile" Content="Remove" Click="BtnRemoveProfile_Click"/>
-                        </StackPanel>
-                        <ListBox Name="LstProfiles" DisplayMemberPath="Name" SelectionChanged="LstProfiles_SelectionChanged"
-                                 AllowDrop="True"
-                                 PreviewMouseLeftButtonDown="LstProfiles_PreviewMouseLeftButtonDown"
-                                 Drop="LstProfiles_Drop"
-                                 MouseMove="LstProfiles_MouseMove"/>
-                    </DockPanel>
+                    <GroupBox Header="Profiles" Grid.Column="0" Margin="0,0,5,0">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,0">
+                                <Button Name="BtnAddProfile" Content="Add" Margin="0,0,10,0" Click="BtnAddProfile_Click"/>
+                                <Button Name="BtnRemoveProfile" Content="Remove" Click="BtnRemoveProfile_Click"/>
+                            </StackPanel>
+                            <ListBox Name="LstProfiles" DisplayMemberPath="Name" SelectionChanged="LstProfiles_SelectionChanged"
+                                     AllowDrop="True"
+                                     PreviewMouseLeftButtonDown="LstProfiles_PreviewMouseLeftButtonDown"
+                                     Drop="LstProfiles_Drop"
+                                     MouseMove="LstProfiles_MouseMove"/>
+                        </DockPanel>
+                    </GroupBox>
                     
                     <!-- Profile Editor -->
                     <Grid Grid.Column="1" Margin="10,0,0,0">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel Name="PnlEditor" IsEnabled="False">
-                                <Label Content="Profile Name"/>
-                                <TextBox Name="TxtName" Margin="0,0,0,10"/>
-                                
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Memory Limit"/>
-                                    <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Maximum RAM allocated to the WSL 2 VM. Examples: 4GB, 512MB."/>
-                                </StackPanel>
-                                <TextBox Name="TxtMemory" Margin="0,0,0,10"/>
-                                
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Processors"/>
-                                    <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Number of CPU cores assigned to WSL. Set to 0 for default (all cores)."/>
-                                </StackPanel>
-                                <TextBox Name="TxtProcessors" Margin="0,0,0,10"/>
-                                
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Swap"/>
-                                    <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Virtual memory size (e.g., 2GB). Set to 0 to disable swap."/>
-                                </StackPanel>
-                                <TextBox Name="TxtSwap" Margin="0,0,0,10"/>
-                                
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <CheckBox Name="ChkLocalhost" Content="Localhost Forwarding"/>
-                                    <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Access WSL network services from Windows via localhost."/>
-                                </StackPanel>
+                                <GroupBox Header="Settings" Margin="0,0,0,10">
+                                    <StackPanel Margin="5">
+                                        <Label Content="Profile Name"/>
+                                        <TextBox Name="TxtName" Margin="0,0,0,10"/>
+                                        
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Memory Limit"/>
+                                            <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Maximum RAM allocated to the WSL 2 VM. Examples: 4GB, 512MB."/>
+                                        </StackPanel>
+                                        <TextBox Name="TxtMemory" Margin="0,0,0,10"/>
+                                        
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Processors"/>
+                                            <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Number of CPU cores assigned to WSL. Set to 0 for default (all cores)."/>
+                                        </StackPanel>
+                                        <TextBox Name="TxtProcessors" Margin="0,0,0,10"/>
+                                        
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Swap"/>
+                                            <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Virtual memory size (e.g., 2GB). Set to 0 to disable swap."/>
+                                        </StackPanel>
+                                        <TextBox Name="TxtSwap" Margin="0,0,0,10"/>
+                                        
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <CheckBox Name="ChkLocalhost" Content="Localhost Forwarding"/>
+                                            <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Access WSL network services from Windows via localhost."/>
+                                        </StackPanel>
 
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <CheckBox Name="ChkDefaultProfile" Content="Set as Default Automation Profile"/>
-                                    <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="This profile will be applied when no automation rules are active."/>
-                                </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <CheckBox Name="ChkDefaultProfile" Content="Set as Default Automation Profile"/>
+                                            <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="This profile will be applied when no automation rules are active."/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </GroupBox>
 
                                 <GroupBox Header="Advanced Global Settings (.wslconfig)" Margin="0,0,0,10">
                                     <StackPanel Margin="5">
