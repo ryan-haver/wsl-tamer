@@ -208,16 +208,25 @@
                                         <ColumnDefinition Width="24"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     
-                                    <!-- Checkmark -->
-                                    <Path x:Name="CheckMark" 
-                                          Visibility="Collapsed" 
-                                          Data="M 2,6 L 6,10 L 14,2" 
-                                          Stroke="{TemplateBinding Foreground}" 
-                                          StrokeThickness="2" 
-                                          VerticalAlignment="Center" 
-                                          HorizontalAlignment="Center"/>
+                                    <!-- Icon / Checkmark -->
+                                    <Grid Grid.Column="0">
+                                        <ContentPresenter x:Name="Icon" 
+                                                          ContentSource="Icon" 
+                                                          HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center" 
+                                                          Width="16" 
+                                                          Height="16"/>
+                                        <Path x:Name="CheckMark" 
+                                              Visibility="Collapsed" 
+                                              Data="M 2,6 L 6,10 L 14,2" 
+                                              Stroke="{TemplateBinding Foreground}" 
+                                              StrokeThickness="2" 
+                                              VerticalAlignment="Center" 
+                                              HorizontalAlignment="Center"/>
+                                    </Grid>
                                           
                                     <!-- Header -->
                                     <ContentPresenter Grid.Column="1" 
@@ -226,9 +235,18 @@
                                                       Margin="8,0,0,0"
                                                       RecognizesAccessKey="True"/>
 
+                                    <!-- Input Gesture Text -->
+                                    <TextBlock x:Name="InputGestureText"
+                                               Grid.Column="2"
+                                               Text="{TemplateBinding InputGestureText}"
+                                               Margin="20,0,10,0"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Visibility="Visible"/>
+
                                     <!-- Arrow for Submenu -->
                                     <Path x:Name="RightArrow" 
-                                          Grid.Column="2"
+                                          Grid.Column="3"
                                           Visibility="Collapsed"
                                           Data="M 0,0 L 4,4 L 0,8" 
                                           Stroke="{TemplateBinding Foreground}" 
@@ -266,9 +284,16 @@
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
                                     <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                    <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                                <Trigger Property="InputGestureText" Value="">
+                                    <Setter TargetName="InputGestureText" Property="Visibility" Value="Collapsed"/>
+                                </Trigger>
+                                <Trigger Property="InputGestureText" Value="{x:Null}">
+                                    <Setter TargetName="InputGestureText" Property="Visibility" Value="Collapsed"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
