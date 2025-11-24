@@ -42,7 +42,7 @@ public partial class SettingsWindow : FluentWindow
                  {
                      try
                      {
-                         RootNavigation.Navigate("General");
+                         RootNavigation.Navigate(typeof(GeneralPage));
                      }
                      catch (Exception ex)
                      {

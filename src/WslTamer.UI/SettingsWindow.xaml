@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WslTamer.UI"
+        xmlns:views="clr-namespace:WslTamer.UI.Views"
         xmlns:converters="clr-namespace:WslTamer.UI.Converters"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
@@ -42,11 +43,31 @@
                            IsPaneOpen="True"
                            SelectionChanged="RootNavigation_SelectionChanged">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="General" Icon="Settings24" Tag="General" />
-                <ui:NavigationViewItem Content="Distributions" Icon="AppGeneric24" Tag="Distributions" />
-                <ui:NavigationViewItem Content="Profiles" Icon="Person24" Tag="Profiles" />
-                <ui:NavigationViewItem Content="Hardware" Icon="UsbStick24" Tag="Hardware" />
-                <ui:NavigationViewItem Content="About" Icon="Info24" Tag="About" />
+                <ui:NavigationViewItem Content="General" Tag="General" TargetPageType="{x:Type views:GeneralPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Settings24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Distributions" Tag="Distributions" TargetPageType="{x:Type views:DistributionsPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="AppGeneric24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Profiles" Tag="Profiles" TargetPageType="{x:Type views:ProfilesPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Person24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Hardware" Tag="Hardware" TargetPageType="{x:Type views:HardwarePage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="UsbStick24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="About" Tag="About" TargetPageType="{x:Type views:AboutPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Info24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             
             <ui:NavigationView.ContentOverlay>
