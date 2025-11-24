@@ -383,6 +383,11 @@ public class WslService
 
         try
         {
+            // Get all installed distros to check against running list
+            // This avoids localization issues with "There are no running distributions" message
+            var distros = GetDistributions();
+            if (distros.Count == 0) return false;
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = "wsl.exe",
@@ -401,7 +406,8 @@ public class WslService
             
             if (string.IsNullOrWhiteSpace(output)) return false;
             
-            return !output.Contains("There are no running distributions");
+            // Check if any installed distro name is present in the output
+            return distros.Any(d => output.Contains(d.Name));
         }
         catch
         {

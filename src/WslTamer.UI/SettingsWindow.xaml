@@ -39,6 +39,7 @@
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MinWidth" Value="0"/>
                     <Setter Property="Padding" Value="15,8"/>
                 </Style>
             </TabControl.ItemContainerStyle>
@@ -72,8 +73,8 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
-                        <Button Content="Import Distro" Click="BtnImportDistro_Click" Margin="0,0,10,0" ToolTip="Import a distribution from a .tar file."/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,10">
+                        <Button Content="Import Distro" MinWidth="100" Click="BtnImportDistro_Click" Margin="0,0,10,0" ToolTip="Import a distribution from a .tar file."/>
                         <Button Content="Refresh" MinWidth="80" Click="BtnRefreshDistros_Click" ToolTip="Reload the list of distributions."/>
                     </StackPanel>
                     
