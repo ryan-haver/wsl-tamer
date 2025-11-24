@@ -99,7 +99,7 @@
                         ToolTipText="WSL Tamer"
                         IconSource="/Assets/app.ico">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu x:Name="TrayMenu">
+                <ContextMenu x:Name="TrayMenu" Placement="MousePoint">
                     <MenuItem Header="Status: Checking..." x:Name="StatusMenuItem" IsEnabled="False" FontWeight="Bold"/>
                     <Separator/>
                     <MenuItem Header="Profiles" x:Name="ProfilesMenu"/>
@@ -114,6 +114,8 @@
                     <Separator x:Name="MountedDevicesSeparator" Visibility="Collapsed"/>
                     <MenuItem Header="Settings" Click="Settings_Click"/>
                     <MenuItem Header="Start with Windows" x:Name="TrayStartWithWindows" IsCheckable="True" Click="TrayStartWithWindows_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Version 1.4.3" IsEnabled="False" Foreground="Gray" FontSize="10"/>
                     <MenuItem Header="Exit" Click="Exit_Click"/>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>

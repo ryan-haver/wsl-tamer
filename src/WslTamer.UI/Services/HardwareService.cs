@@ -168,11 +168,11 @@ public class HardwareService
         var disks = new List<PhysicalDisk>();
         try
         {
-            // Use wmic to get disks
+            // Use PowerShell to get disks (more reliable than wmic)
             var startInfo = new ProcessStartInfo
             {
-                FileName = "wmic",
-                Arguments = "diskdrive list brief",
+                FileName = "powershell",
+                Arguments = "-NoProfile -Command \"Get-PhysicalDisk | Select-Object DeviceId, FriendlyName, Size | ConvertTo-Json\"",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true
@@ -184,33 +184,48 @@ public class HardwareService
             var output = await process.StandardOutput.ReadToEndAsync();
             await process.WaitForExitAsync();
 
-            var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            // Header: Caption  DeviceID  Model  Partitions  Size
+            if (string.IsNullOrWhiteSpace(output)) return disks;
+
+            // Parse JSON manually to avoid adding Newtonsoft/System.Text.Json dependency if not present
+            // Or just use System.Text.Json since we are on .NET 8
             
-            foreach (var line in lines.Skip(1))
+            try 
             {
-                if (string.IsNullOrWhiteSpace(line)) continue;
-                
-                // WMIC output has fixed width or tab separated? Usually multiple spaces.
-                // It's easier to use PowerShell for structured object output, but wmic is faster to call.
-                // Let's try parsing simply.
-                
-                var parts = line.Split(new[] { "  " }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length < 3) continue;
-
-                // We need DeviceID (e.g. \\.\PHYSICALDRIVE0)
-                var deviceId = parts.FirstOrDefault(p => p.Contains("PHYSICALDRIVE"));
-                if (deviceId == null) continue;
-
-                var model = parts[0].Trim(); // Usually the first column
-                var size = parts.Last().Trim(); // Usually the last column
-
-                disks.Add(new PhysicalDisk
+                var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                // Handle single object or array
+                if (output.Trim().StartsWith("["))
                 {
-                    DeviceId = deviceId.Trim(),
-                    Model = model,
-                    Size = FormatBytes(size)
-                });
+                    var diskList = System.Text.Json.JsonSerializer.Deserialize<List<DiskInfo>>(output, options);
+                    if (diskList != null)
+                    {
+                        foreach (var d in diskList)
+                        {
+                            disks.Add(new PhysicalDisk
+                            {
+                                DeviceId = $"\\\\.\\PHYSICALDRIVE{d.DeviceId}",
+                                Model = d.FriendlyName,
+                                Size = FormatBytes(d.Size.ToString())
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    var disk = System.Text.Json.JsonSerializer.Deserialize<DiskInfo>(output, options);
+                    if (disk != null)
+                    {
+                        disks.Add(new PhysicalDisk
+                        {
+                            DeviceId = $"\\\\.\\PHYSICALDRIVE{disk.DeviceId}",
+                            Model = disk.FriendlyName,
+                            Size = FormatBytes(disk.Size.ToString())
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"JSON Parse Error: {ex.Message}");
             }
         }
         catch (Exception ex)
@@ -218,6 +233,13 @@ public class HardwareService
             Debug.WriteLine($"Error listing disks: {ex.Message}");
         }
         return disks;
+    }
+
+    private class DiskInfo
+    {
+        public object DeviceId { get; set; } // Can be string or int
+        public string FriendlyName { get; set; }
+        public object Size { get; set; } // Can be long
     }
 
     public async Task MountDiskAsync(string diskPath, string distroName)
