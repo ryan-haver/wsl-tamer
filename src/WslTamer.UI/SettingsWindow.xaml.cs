@@ -6,10 +6,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using WslTamer.UI.Models;
 using WslTamer.UI.Services;
+using Wpf.Ui.Controls;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxImage = System.Windows.MessageBoxImage;
+using MessageBoxResult = System.Windows.MessageBoxResult;
 
 namespace WslTamer.UI;
 
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : FluentWindow
 {
     private readonly ProfileManager _profileManager;
     private readonly WslService _wslService;
@@ -32,7 +36,7 @@ public partial class SettingsWindow : Window
         RefreshDistrosList();
         RefreshHardwareLists();
 
-        Loaded += (s, e) => _themeService.ApplyThemeToWindow(this, _themeService.CurrentTheme);
+        // Loaded += (s, e) => _themeService.ApplyThemeToWindow(this, _themeService.CurrentTheme);
         
         // Set Version
         var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;

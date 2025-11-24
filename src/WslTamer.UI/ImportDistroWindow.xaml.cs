@@ -3,10 +3,13 @@ using System.IO;
 using System.Windows;
 using Microsoft.Win32;
 using WslTamer.UI.Services;
+using Wpf.Ui.Controls;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxImage = System.Windows.MessageBoxImage;
 
 namespace WslTamer.UI;
 
-public partial class ImportDistroWindow : Window
+public partial class ImportDistroWindow : FluentWindow
 {
     private readonly WslService _wslService;
 

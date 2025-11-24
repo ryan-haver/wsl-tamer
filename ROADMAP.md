@@ -81,6 +81,15 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
 - [ ] **Process Explorer**: View and kill running Linux processes directly from the Windows UI.
 - [ ] **Notifications**: Rich toast notifications when profiles change or resources are low.
 
+## 🎨 Phase 8: UI Beautification (New)
+
+*Goal: Modernize the look and feel to match Windows 11 aesthetics.*
+
+- [ ] **Modern Styling**: Apply a consistent design language (e.g., Mica/Acrylic effects, rounded corners).
+- [ ] **Iconography**: Replace text buttons with modern icons where appropriate.
+- [ ] **Animations**: Add subtle transitions for smoother interactions.
+- [ ] **Responsive Layout**: Ensure the UI scales gracefully.
+
 ## 📦 Distribution
 
 - [x] MSI Installer.

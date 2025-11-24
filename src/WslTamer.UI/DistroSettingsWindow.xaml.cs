@@ -2,10 +2,13 @@ using System;
 using System.Windows;
 using WslTamer.UI.Models;
 using WslTamer.UI.Services;
+using Wpf.Ui.Controls;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxImage = System.Windows.MessageBoxImage;
 
 namespace WslTamer.UI;
 
-public partial class DistroSettingsWindow : Window
+public partial class DistroSettingsWindow : FluentWindow
 {
     private readonly WslService _wslService;
     private readonly string _distroName;
