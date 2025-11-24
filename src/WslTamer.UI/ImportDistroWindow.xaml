@@ -1,0 +1,66 @@
+<Window x:Class="WslTamer.UI.ImportDistroWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WslTamer.UI"
+        mc:Ignorable="d"
+        Title="Import Distribution" Height="300" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource WindowForegroundBrush}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Distro Name -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <Label Content="Distribution Name" Padding="0,0,0,5"/>
+            <TextBox Name="TxtName" />
+        </StackPanel>
+
+        <!-- Install Location -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+            <Label Content="Install Location" Padding="0,0,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Name="TxtLocation" Grid.Column="0" Margin="0,0,5,0"/>
+                <Button Content="..." Grid.Column="1" Width="30" Click="BtnBrowseLocation_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Tar File -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,15">
+            <Label Content="Tar File Source" Padding="0,0,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Name="TxtTarFile" Grid.Column="0" Margin="0,0,5,0"/>
+                <Button Content="..." Grid.Column="1" Width="30" Click="BtnBrowseTar_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Progress -->
+        <StackPanel Grid.Row="3" VerticalAlignment="Center" Name="PnlProgress" Visibility="Collapsed">
+            <ProgressBar IsIndeterminate="True" Height="10" Margin="0,0,0,5"/>
+            <TextBlock Text="Importing... This may take a while." HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Cancel" Width="80" Margin="0,0,10,0" Click="BtnCancel_Click" Name="BtnCancel"/>
+            <Button Content="Import" Width="80" Click="BtnImport_Click" Name="BtnImport" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

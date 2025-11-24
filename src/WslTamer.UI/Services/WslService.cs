@@ -149,6 +149,56 @@ public class WslService
         RunWslCommand($"--unregister {name}");
     }
 
+    public void ExportDistro(string name, string filePath)
+    {
+        // This can take a long time, so we should probably run it with a longer timeout or no timeout
+        // For now, we'll use a specific process start to avoid the default timeout
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "wsl.exe",
+            Arguments = $"--export {name} \"{filePath}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = Process.Start(startInfo);
+        if (process == null) throw new Exception("Failed to start export process");
+        
+        process.WaitForExit(); // Wait indefinitely for export
+        
+        if (process.ExitCode != 0)
+        {
+            throw new Exception($"Export failed with exit code {process.ExitCode}");
+        }
+    }
+
+    public void ImportDistro(string name, string installLocation, string tarFile)
+    {
+        // Ensure install location exists
+        if (!Directory.Exists(installLocation))
+        {
+            Directory.CreateDirectory(installLocation);
+        }
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "wsl.exe",
+            Arguments = $"--import {name} \"{installLocation}\" \"{tarFile}\" --version 2",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = Process.Start(startInfo);
+        if (process == null) throw new Exception("Failed to start import process");
+        
+        process.WaitForExit(); // Wait indefinitely for import
+        
+        if (process.ExitCode != 0)
+        {
+            throw new Exception($"Import failed with exit code {process.ExitCode}");
+        }
+    }
+
     public void RunDistro(string name)
     {
         try

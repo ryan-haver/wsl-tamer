@@ -37,7 +37,10 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Button Content="Refresh" HorizontalAlignment="Right" Click="BtnRefreshDistros_Click" Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+                        <Button Content="Import Distro" Click="BtnImportDistro_Click" Margin="0,0,10,0"/>
+                        <Button Content="Refresh" Click="BtnRefreshDistros_Click"/>
+                    </StackPanel>
                     
                     <ScrollViewer Grid.Row="1">
                         <ItemsControl Name="IcDistros">
@@ -48,7 +51,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1" CornerRadius="5" Margin="5" Width="250" Padding="10">
+                                    <Border BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1" CornerRadius="5" Margin="5" Width="260" Padding="10">
                                         <StackPanel>
                                             <DockPanel LastChildFill="False">
                                                 <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16"/>
@@ -57,10 +60,14 @@
                                             <TextBlock Text="{Binding State}" Margin="0,5,0,0" Foreground="{Binding IsRunning, Converter={StaticResource StateToColorConverter}}"/>
                                             <TextBlock Text="{Binding Version, StringFormat='WSL {0}'}" Margin="0,0,0,10" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                             
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,5">
                                                 <Button Content="Run" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnRunDistro_Click"/>
                                                 <Button Content="Stop" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnStopDistro_Click"/>
                                                 <Button Content="Set Default" Tag="{Binding Name}" Click="BtnSetDefaultDistro_Click"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                <Button Content="Export" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnExportDistro_Click"/>
+                                                <Button Content="Unregister" Tag="{Binding Name}" Click="BtnUnregisterDistro_Click" Background="#33FF0000" BorderBrush="Red"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </Border>

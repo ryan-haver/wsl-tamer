@@ -103,6 +103,73 @@ public partial class SettingsWindow : Window
         }
     }
 
+    private async void BtnUnregisterDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            if (System.Windows.MessageBox.Show(
+                $"Are you sure you want to UNREGISTER '{name}'?\n\nThis will permanently delete the distribution and all its files.\nThis action cannot be undone.", 
+                "Confirm Unregister", 
+                MessageBoxButton.YesNo, 
+                MessageBoxImage.Warning, 
+                MessageBoxResult.No) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    await System.Threading.Tasks.Task.Run(() => _wslService.UnregisterDistro(name));
+                    RefreshDistrosList();
+                    System.Windows.MessageBox.Show($"Distribution '{name}' has been unregistered.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Failed to unregister distro: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    }
+
+    private async void BtnExportDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = $"Export {name}",
+                Filter = "Tarball (*.tar)|*.tar",
+                FileName = $"{name}_backup.tar"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    // Show a busy indicator or at least disable the UI?
+                    // For now, we'll just show a message that it started
+                    var filePath = dialog.FileName;
+                    
+                    // Run in background
+                    await System.Threading.Tasks.Task.Run(() => _wslService.ExportDistro(name, filePath));
+                    
+                    System.Windows.MessageBox.Show($"Export complete!\nSaved to: {filePath}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Export failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    }
+
+    private void BtnImportDistro_Click(object sender, RoutedEventArgs e)
+    {
+        var importWindow = new ImportDistroWindow(_wslService);
+        importWindow.Owner = this;
+        if (importWindow.ShowDialog() == true)
+        {
+            RefreshDistrosList();
+        }
+    }
+
     private void RefreshProfileList()
     {
         LstProfiles.ItemsSource = null;

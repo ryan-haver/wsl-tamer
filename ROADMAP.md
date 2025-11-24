@@ -22,9 +22,9 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
 - [x] **Action Center**:
   - **Run**: Launch distro in default terminal.
   - **Terminate**: Stop a specific distro without killing the entire WSL engine.
-  - [ ] **Unregister**: Delete a distro and its data.
+  - [x] **Unregister**: Delete a distro and its data.
 - [ ] **Lifecycle Operations**:
-  - **Import/Export**: Backup distros to `.tar` files and restore them.
+  - [x] **Import/Export**: Backup distros to `.tar` files and restore them.
   - **Clone**: Duplicate a distro (great for testing environments).
   - **Move**: easy wizard to move a distro's `.vhdx` to another drive.
 
