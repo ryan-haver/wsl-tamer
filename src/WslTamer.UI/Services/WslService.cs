@@ -590,4 +590,20 @@ public class WslService
         if (bool.TryParse(value, out bool result)) return result;
         return null;
     }
+
+    public void MountFolder(string distroName, string windowsPath, string linuxPath)
+    {
+        // 1. Ensure linux path exists
+        RunWslCommand($"-d {distroName} -u root mkdir -p \"{linuxPath}\"");
+
+        // 2. Mount
+        // Note: Windows paths in WSL mount command need to be escaped or quoted properly.
+        // drvfs handles standard Windows paths like C:\Foo
+        RunWslCommand($"-d {distroName} -u root mount -t drvfs \"{windowsPath}\" \"{linuxPath}\"");
+    }
+
+    public void UnmountFolder(string distroName, string linuxPath)
+    {
+        RunWslCommand($"-d {distroName} -u root umount \"{linuxPath}\"");
+    }
 }

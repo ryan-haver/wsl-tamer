@@ -235,6 +235,45 @@
                             </Grid>
                         </GroupBox>
 
+                        <!-- Folder Mounts -->
+                        <GroupBox Header="Folder Mounts (drvfs)" Margin="0,0,0,10">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Mount a Windows folder into a specific WSL distribution." Margin="0,0,0,5"/>
+                                <Grid Margin="0,0,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Distro:" VerticalAlignment="Center" Width="100"/>
+                                    <ComboBox Name="CboMountDistro" Grid.Column="1" Margin="5,0" DisplayMemberPath="Name" SelectedValuePath="Name"/>
+                                    <Button Content="Refresh" Grid.Column="2" Click="BtnRefreshMountDistros_Click" Padding="5,2"/>
+                                </Grid>
+                                
+                                <Grid Margin="0,0,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Windows Path:" VerticalAlignment="Center" Width="100"/>
+                                    <TextBox Name="TxtWindowsPath" Grid.Column="1" Margin="5,0" VerticalContentAlignment="Center"/>
+                                    <Button Content="Browse..." Grid.Column="2" Click="BtnBrowseFolder_Click" Padding="5,2"/>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="WSL Path:" VerticalAlignment="Center" Width="100"/>
+                                    <TextBox Name="TxtWslPath" Grid.Column="1" Margin="5,0" ToolTip="e.g. /mnt/myfolder" VerticalContentAlignment="Center"/>
+                                </Grid>
+
+                                <Button Content="Mount Folder" HorizontalAlignment="Right" Click="BtnMountFolder_Click" Width="100"/>
+                            </StackPanel>
+                        </GroupBox>
+
                         <!-- PCIe Passthrough -->
                         <GroupBox Header="PCIe Passthrough (Advanced - DDA)">
                             <StackPanel Margin="5">

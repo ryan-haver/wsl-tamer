@@ -39,6 +39,7 @@ public partial class SettingsWindow : Window
     {
         await RefreshUsbList();
         await RefreshDiskList();
+        RefreshMountDistrosList();
     }
 
     private async System.Threading.Tasks.Task RefreshUsbList()
@@ -541,6 +542,62 @@ public partial class SettingsWindow : Window
             var settingsWindow = new DistroSettingsWindow(_wslService, name);
             settingsWindow.Owner = this;
             settingsWindow.ShowDialog();
+        }
+    }
+
+    private void RefreshMountDistrosList()
+    {
+        var distros = _wslService.GetDistributions();
+        CboMountDistro.ItemsSource = distros.Select(d => d.Name).ToList();
+        if (CboMountDistro.Items.Count > 0)
+        {
+            CboMountDistro.SelectedIndex = 0;
+        }
+    }
+
+    private void BtnRefreshMountDistros_Click(object sender, RoutedEventArgs e)
+    {
+        RefreshMountDistrosList();
+    }
+
+    private void BtnBrowseFolder_Click(object sender, RoutedEventArgs e)
+    {
+        using var dialog = new System.Windows.Forms.FolderBrowserDialog();
+        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            TxtWindowsPath.Text = dialog.SelectedPath;
+            try 
+            {
+                var folderName = new System.IO.DirectoryInfo(dialog.SelectedPath).Name;
+                TxtWslPath.Text = $"/mnt/wsl/{folderName}"; 
+            }
+            catch
+            {
+                TxtWslPath.Text = "/mnt/wsl/mountpoint";
+            }
+        }
+    }
+
+    private async void BtnMountFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var distro = CboMountDistro.SelectedItem as string;
+        var winPath = TxtWindowsPath.Text;
+        var linuxPath = TxtWslPath.Text;
+
+        if (string.IsNullOrEmpty(distro) || string.IsNullOrEmpty(winPath) || string.IsNullOrEmpty(linuxPath))
+        {
+            System.Windows.MessageBox.Show("Please select a distro and provide both Windows and WSL paths.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        try
+        {
+            await System.Threading.Tasks.Task.Run(() => _wslService.MountFolder(distro, winPath, linuxPath));
+            System.Windows.MessageBox.Show("Folder mounted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Mount failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }
