@@ -52,4 +52,5 @@ public class AppConfig
     public List<WslProfile> Profiles { get; set; } = new();
     public List<AutomationRule> Rules { get; set; } = new();
     public Guid? CurrentProfileId { get; set; }
+    public Guid? DefaultProfileId { get; set; }
 }

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Diagnostics;
 using WslTamer.UI.Models;
 using WslTamer.UI.Services;
 using Wpf.Ui.Controls;
@@ -221,6 +222,40 @@ public partial class SettingsWindow : FluentWindow
         System.Windows.MessageBox.Show("Memory reclaim command sent.", "WSL Tamer", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
+    private void BtnKillAll_Click(object sender, RoutedEventArgs e)
+    {
+        if (System.Windows.MessageBox.Show("Are you sure you want to forcefully kill ALL WSL processes?\nThis may result in data loss.", "Confirm Kill All", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        {
+            _wslService.KillAllWsl();
+            System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
+        }
+    }
+
+    private void BtnOpenExplorer_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = @"\\wsl$",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Failed to open Explorer: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void BtnInstallDistro_Click(object sender, RoutedEventArgs e)
+    {
+        var registryWindow = new DistroRegistryWindow(_wslService);
+        registryWindow.Owner = this;
+        registryWindow.ShowDialog();
+        RefreshDistrosList();
+    }
+
     private void RefreshDistrosList()
     {
         var distros = _wslService.GetDistributions();
@@ -373,6 +408,10 @@ public partial class SettingsWindow : FluentWindow
             TxtSwap.Text = _selectedProfile.Swap;
             ChkLocalhost.IsChecked = _selectedProfile.LocalhostForwarding;
             
+            // Default Profile Check
+            var defaultId = _profileManager.GetDefaultProfileId();
+            ChkDefaultProfile.IsChecked = defaultId.HasValue && defaultId.Value == _selectedProfile.Id;
+            
             // Advanced Global Settings
             TxtKernelPath.Text = _selectedProfile.KernelPath;
             ChkGuiApplications.IsChecked = _selectedProfile.GuiApplications;
@@ -438,6 +477,19 @@ public partial class SettingsWindow : FluentWindow
                 
             _selectedProfile.Swap = TxtSwap.Text;
             _selectedProfile.LocalhostForwarding = ChkLocalhost.IsChecked ?? true;
+
+            // Default Profile Logic
+            if (ChkDefaultProfile.IsChecked == true)
+            {
+                _profileManager.SetDefaultProfileId(_selectedProfile.Id);
+            }
+            else
+            {
+                if (_profileManager.GetDefaultProfileId() == _selectedProfile.Id)
+                {
+                    _profileManager.SetDefaultProfileId(null);
+                }
+            }
 
             // Advanced Global Settings
             _selectedProfile.KernelPath = TxtKernelPath.Text;

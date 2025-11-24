@@ -372,48 +372,149 @@ public class WslService
         }
     }
     
-    public bool IsWslRunning()
+    public async Task<bool> IsWslRunningAsync()
     {
         // Check for WSL2 VM process first (fast and reliable for WSL2)
-        if (Process.GetProcessesByName("vmmem").Length > 0 || 
-            Process.GetProcessesByName("vmmemWSL").Length > 0)
+        // We use a task to run this on a background thread to avoid UI blocking
+        return await Task.Run(() => 
         {
-            return true;
-        }
+            try
+            {
+                // Optimization: Check for vmmem process first
+                if (Process.GetProcessesByName("vmmemWSL").Length > 0) return true;
+                
+                // Fallback to wsl --list --running
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "wsl.exe",
+                    Arguments = "--list --running",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    StandardOutputEncoding = Encoding.Unicode
+                };
+                
+                using var process = Process.Start(startInfo);
+                if (process == null) return false;
+                
+                var output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit(2000); 
+                
+                if (string.IsNullOrWhiteSpace(output)) return false;
+                
+                // Check if any installed distro name is present in the output
+                // We need to get installed distros, but calling GetDistributions() here might be recursive or slow.
+                // Simpler check: does the output contain any text other than the header?
+                // "Windows Subsystem for Linux Distributions:" or similar header might be present.
+                // The output of --list --running is usually:
+                // NAME            STATE           VERSION
+                // Ubuntu          Running         2
+                
+                var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                // If we have more than 1 line (header), something is running.
+                // But sometimes header is localized.
+                // Let's just check if "Running" is in the output? No, state is "Running".
+                // If there are lines and they contain "Running", it's likely true.
+                
+                return lines.Length > 1;
+            }
+            catch
+            {
+                return false;
+            }
+        });
+    }
 
+    public async Task<List<WslDistribution>> GetOnlineDistributionsAsync()
+    {
+        return await Task.Run(() =>
+        {
+            var distros = new List<WslDistribution>();
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "wsl.exe",
+                    Arguments = "--list --online",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    StandardOutputEncoding = Encoding.Unicode
+                };
+
+                using var process = Process.Start(startInfo);
+                if (process == null) return distros;
+
+                var output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit(5000);
+
+                var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                // Output format:
+                // NAME                                   FRIENDLY NAME
+                // Ubuntu                                 Ubuntu
+                // Debian                                 Debian GNU/Linux
+                
+                foreach (var line in lines.Skip(1))
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    var parts = line.Split(new[] { "   " }, StringSplitOptions.RemoveEmptyEntries); // Split by multiple spaces
+                    if (parts.Length >= 1)
+                    {
+                        distros.Add(new WslDistribution
+                        {
+                            Name = parts[0].Trim(),
+                            State = parts.Length > 1 ? parts[1].Trim() : parts[0].Trim(), // Use Friendly Name as State for now
+                            IsDefault = false,
+                            Version = 0 // Unknown
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching online distros: {ex.Message}");
+            }
+            return distros;
+        });
+    }
+
+    public void InstallDistro(string name)
+    {
+        // Opens in a new window to show progress
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "wt.exe",
+            Arguments = $"wsl.exe --install -d {name}",
+            UseShellExecute = true
+        });
+    }
+
+    public void KillAllWsl()
+    {
+        // Force kill wsl service/processes
         try
         {
-            // Get all installed distros to check against running list
-            // This avoids localization issues with "There are no running distributions" message
-            var distros = GetDistributions();
-            if (distros.Count == 0) return false;
-
-            var startInfo = new ProcessStartInfo
+            Process.Start(new ProcessStartInfo
             {
-                FileName = "wsl.exe",
-                Arguments = "--list --running",
-                UseShellExecute = false,
+                FileName = "taskkill",
+                Arguments = "/F /IM wsl.exe /T",
+                UseShellExecute = true,
                 CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                StandardOutputEncoding = Encoding.Unicode
-            };
-            
-            using var process = Process.Start(startInfo);
-            if (process == null) return false;
-            
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit(2000); 
-            
-            if (string.IsNullOrWhiteSpace(output)) return false;
-            
-            // Check if any installed distro name is present in the output
-            return distros.Any(d => output.Contains(d.Name));
+                Verb = "runas" // Admin might be needed
+            });
+             Process.Start(new ProcessStartInfo
+            {
+                FileName = "taskkill",
+                Arguments = "/F /IM wslservice.exe /T",
+                UseShellExecute = true,
+                CreateNoWindow = true,
+                Verb = "runas"
+            });
         }
-        catch
-        {
-            return false;
-        }
+        catch { }
     }
+
 
     public WslConf GetDistroConfig(string distroName)
     {

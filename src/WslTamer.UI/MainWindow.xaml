@@ -29,7 +29,7 @@
                         <MenuItem Header="Reclaim Memory" Click="ReclaimMemory_Click"/>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="Mounted Devices" x:Name="MountedDevicesMenu"/>
+                    <MenuItem Header="Mounted Devices" x:Name="MountedDevicesMenu" IsEnabled="False"/>
                     <Separator x:Name="MountedDevicesSeparator"/>
                     <MenuItem Header="Settings" Click="Settings_Click"/>
                     <MenuItem Header="Start with Windows" x:Name="TrayStartWithWindows" IsCheckable="True" Click="TrayStartWithWindows_Click"/>

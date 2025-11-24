@@ -35,11 +35,13 @@ public class AutomationService
     private void CheckRules(object? sender, EventArgs e)
     {
         var rules = _profileManager.GetRules().Where(r => r.IsEnabled).ToList();
+        bool matchFound = false;
         
         foreach (var rule in rules)
         {
             if (EvaluateRule(rule))
             {
+                matchFound = true;
                 // If rule matches and we haven't already applied this profile recently
                 // (Simple logic: if multiple rules match, first one wins. 
                 // Ideally we need a priority system or state machine)
@@ -60,6 +62,21 @@ public class AutomationService
                 }
                 // If we already applied it, we still return to "hold" this state
                 return;
+            }
+        }
+
+        // If no rules matched, revert to Default Profile if one is set
+        if (!matchFound)
+        {
+            var defaultId = _profileManager.GetDefaultProfileId();
+            if (defaultId.HasValue && _lastAppliedProfileId != defaultId.Value)
+            {
+                var profile = _profileManager.GetProfile(defaultId.Value);
+                if (profile != null)
+                {
+                    _wslService.ApplyProfile(profile);
+                    _lastAppliedProfileId = defaultId.Value;
+                }
             }
         }
     }

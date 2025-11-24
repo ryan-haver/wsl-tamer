@@ -217,9 +217,9 @@ public partial class MainWindow : Window
     private System.Drawing.Icon? _greenIcon;
     private System.Drawing.Icon? _blackIcon;
 
-    private void UpdateStatus()
+    private async void UpdateStatus()
     {
-        bool isRunning = _wslService.IsWslRunning();
+        bool isRunning = await _wslService.IsWslRunningAsync();
         
         // Update Menu Text Color
         StatusMenuItem.Header = isRunning ? "Status: Running" : "Status: Stopped";
@@ -288,9 +288,9 @@ public partial class MainWindow : Window
             if (isMatch) matchFound = true;
             
             item.IsChecked = isMatch;
-            item.Click += (s, a) => 
+            item.Click += async (s, a) => 
             {
-                ApplyProfile(profile);
+                await ApplyProfile(profile);
                 RefreshProfilesMenu();
             };
             ProfilesMenu.Items.Add(item);
@@ -327,11 +327,11 @@ public partial class MainWindow : Window
         return true;
     }
 
-    private void ApplyProfile(WslProfile profile)
+    private async Task ApplyProfile(WslProfile profile)
     {
         if (_wslService.ApplyProfile(profile))
         {
-            if (_wslService.IsWslRunning())
+            if (await _wslService.IsWslRunningAsync())
             {
                 var result = System.Windows.MessageBox.Show(
                     $"Profile '{profile.Name}' applied.\nWSL needs to restart for changes to take effect.\nRestart now?", 

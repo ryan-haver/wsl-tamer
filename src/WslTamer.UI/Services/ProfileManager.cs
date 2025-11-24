@@ -84,6 +84,14 @@ public class ProfileManager
         return _config.Profiles.FirstOrDefault(p => p.Id == id);
     }
 
+    public Guid? GetDefaultProfileId() => _config.DefaultProfileId;
+
+    public void SetDefaultProfileId(Guid? id)
+    {
+        _config.DefaultProfileId = id;
+        SaveConfig();
+    }
+
     private AppConfig LoadConfig()
     {
         if (!File.Exists(_configPath))
