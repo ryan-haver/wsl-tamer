@@ -39,7 +39,7 @@
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="Width" Value="Auto"/>
-                    <Setter Property="Padding" Value="20,10"/>
+                    <Setter Property="Padding" Value="15,8"/>
                 </Style>
             </TabControl.ItemContainerStyle>
             <TabItem Header="General">
@@ -52,13 +52,13 @@
                         
                         <GroupBox Header="Global Actions" Margin="0,10,0,0">
                             <WrapPanel Margin="5">
-                                <Button Content="Open Terminal" Padding="10,5" Margin="0,0,10,10" Click="BtnLaunchWsl_Click"
+                                <Button Content="Open Terminal" MinWidth="120" Margin="0,0,10,10" Click="BtnLaunchWsl_Click"
                                         ToolTip="Open the default WSL distribution."/>
-                                <Button Content="Start Background" Padding="10,5" Margin="0,0,10,10" Click="BtnStartBackground_Click"
+                                <Button Content="Start Background" MinWidth="120" Margin="0,0,10,10" Click="BtnStartBackground_Click"
                                         ToolTip="Start WSL without a window to keep background services running."/>
-                                <Button Content="Shutdown WSL" Padding="10,5" Margin="0,0,10,10" Click="BtnShutdownWsl_Click"
+                                <Button Content="Shutdown WSL" MinWidth="120" Margin="0,0,10,10" Click="BtnShutdownWsl_Click"
                                         ToolTip="Immediately stop all running WSL distributions."/>
-                                <Button Content="Reclaim Memory" Padding="10,5" Margin="0,0,10,10" Click="BtnReclaimMemory_Click"
+                                <Button Content="Reclaim Memory" MinWidth="120" Margin="0,0,10,10" Click="BtnReclaimMemory_Click"
                                         ToolTip="Force Linux to drop caches and return unused RAM to Windows."/>
                             </WrapPanel>
                         </GroupBox>
@@ -74,7 +74,7 @@
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
                         <Button Content="Import Distro" Click="BtnImportDistro_Click" Margin="0,0,10,0" ToolTip="Import a distribution from a .tar file."/>
-                        <Button Content="Refresh" Click="BtnRefreshDistros_Click" ToolTip="Reload the list of distributions."/>
+                        <Button Content="Refresh" MinWidth="80" Click="BtnRefreshDistros_Click" ToolTip="Reload the list of distributions."/>
                     </StackPanel>
                     
                     <ScrollViewer Grid.Row="1">
@@ -124,9 +124,9 @@
                     
                     <!-- Profile List -->
                     <DockPanel Grid.Column="0">
-                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
-                            <Button Name="BtnAddProfile" Content="Add" Width="60" Margin="0,0,5,0" Click="BtnAddProfile_Click"/>
-                            <Button Name="BtnRemoveProfile" Content="Remove" MinWidth="60" Padding="10,5" Click="BtnRemoveProfile_Click"/>
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,0">
+                            <Button Name="BtnAddProfile" Content="Add" MinWidth="80" Margin="0,0,10,0" Click="BtnAddProfile_Click"/>
+                            <Button Name="BtnRemoveProfile" Content="Remove" MinWidth="80" Click="BtnRemoveProfile_Click"/>
                         </StackPanel>
                         <ListBox Name="LstProfiles" DisplayMemberPath="Name" SelectionChanged="LstProfiles_SelectionChanged"
                                  AllowDrop="True"
@@ -217,7 +217,7 @@
                                     </StackPanel>
                                 </GroupBox>
                                 
-                                <Button Content="Save Changes" HorizontalAlignment="Right" Width="100" Click="BtnSaveProfile_Click"/>
+                                <Button Content="Save Changes" HorizontalAlignment="Right" MinWidth="120" Click="BtnSaveProfile_Click"/>
                             </StackPanel>
                         </ScrollViewer>
                         
@@ -354,7 +354,7 @@
                                     <TextBox Name="TxtWslPath" Grid.Column="1" Margin="5,0" VerticalContentAlignment="Center"/>
                                 </Grid>
 
-                                <Button Content="Mount Folder" HorizontalAlignment="Right" Click="BtnMountFolder_Click" Width="100"/>
+                                <Button Content="Mount Folder" HorizontalAlignment="Right" Click="BtnMountFolder_Click" MinWidth="120"/>
                             </StackPanel>
                         </GroupBox>
 
@@ -388,7 +388,7 @@
                         <GroupBox Header="Updates">
                             <StackPanel Margin="5">
                                 <CheckBox Name="ChkAutoCheckUpdates" Content="Automatically check for updates on startup" IsChecked="True" Margin="0,0,0,10" ToolTip="Enable automatic update checks when the application starts."/>
-                                <Button Content="Check for Updates" HorizontalAlignment="Left" Click="BtnCheckUpdates_Click" ToolTip="Check for updates immediately."/>
+                                <Button Content="Check for Updates" HorizontalAlignment="Left" MinWidth="120" Click="BtnCheckUpdates_Click" ToolTip="Check for updates immediately."/>
                                 <TextBlock Name="TxtUpdateStatus" Margin="0,10,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </GroupBox>
