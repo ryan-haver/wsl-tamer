@@ -285,4 +285,10 @@ public partial class SettingsWindow : Window
         _wslService.LaunchDefaultDistro();
         System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
     }
+
+    private void BtnStartBackground_Click(object sender, RoutedEventArgs e)
+    {
+        _wslService.StartWslBackground();
+        System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
+    }
 }

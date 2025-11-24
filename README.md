@@ -26,6 +26,7 @@ Switch between profiles instantly without restarting Windows:
 
 ### Quick Actions
 
+* **Start Background:** Start WSL in headless mode (no terminal window) to keep background services running.
 * **Start/Stop WSL:** One-click shutdown to free up resources immediately.
 * **Reclaim Memory:** Force Linux to drop caches and return RAM to Windows.
 * **Compact Disk:** Shrink the .vhdx virtual disk file to reclaim disk space.

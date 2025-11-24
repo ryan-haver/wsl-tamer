@@ -170,6 +170,13 @@ public partial class MainWindow : Window
         _wslService.LaunchDefaultDistro();
     }
 
+    private void StartBackground_Click(object sender, RoutedEventArgs e)
+    {
+        _wslService.StartWslBackground();
+        // Give it a moment to start before updating status
+        System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(UpdateStatus));
+    }
+
     private void ShutdownWsl_Click(object sender, RoutedEventArgs e)
     {
         _wslService.ShutdownWsl();

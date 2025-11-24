@@ -20,7 +20,8 @@
                     
                     <GroupBox Header="Global Actions" Margin="0,10,0,0">
                         <StackPanel Orientation="Horizontal" Margin="5">
-                            <Button Content="Launch WSL" Padding="10,5" Margin="0,0,10,0" Click="BtnLaunchWsl_Click"/>
+                            <Button Content="Open Terminal" Padding="10,5" Margin="0,0,10,0" Click="BtnLaunchWsl_Click"/>
+                            <Button Content="Start Background" Padding="10,5" Margin="0,0,10,0" Click="BtnStartBackground_Click"/>
                             <Button Content="Shutdown WSL" Padding="10,5" Margin="0,0,10,0" Click="BtnShutdownWsl_Click"/>
                             <Button Content="Reclaim Memory" Padding="10,5" Click="BtnReclaimMemory_Click"/>
                         </StackPanel>

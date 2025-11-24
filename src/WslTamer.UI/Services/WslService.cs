@@ -151,21 +151,69 @@ public class WslService
 
     public void RunDistro(string name)
     {
-        Process.Start(new ProcessStartInfo
+        try
         {
-            FileName = "wsl.exe",
-            Arguments = $"-d {name}",
-            UseShellExecute = true
-        });
+            // Try to launch with Windows Terminal
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "wt.exe",
+                Arguments = $"wsl.exe -d {name}",
+                UseShellExecute = true
+            });
+        }
+        catch
+        {
+            // Fallback to legacy console
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "wsl.exe",
+                Arguments = $"-d {name}",
+                UseShellExecute = true
+            });
+        }
     }
 
     public void LaunchDefaultDistro()
     {
-        Process.Start(new ProcessStartInfo
+        try
         {
-            FileName = "wsl.exe",
-            UseShellExecute = true
-        });
+            // Try to launch with Windows Terminal
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "wt.exe",
+                UseShellExecute = true
+            });
+        }
+        catch
+        {
+            // Fallback to legacy console
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "wsl.exe",
+                UseShellExecute = true
+            });
+        }
+    }
+
+    public void StartWslBackground()
+    {
+        try
+        {
+            // Start a background process (sleep infinity) to keep the distro alive
+            // We use nohup and & to detach it so wsl.exe returns but the distro stays up
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "wsl.exe",
+                Arguments = "-e sh -c \"nohup sleep infinity > /dev/null 2>&1 &\"",
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            Process.Start(startInfo);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Failed to start background process: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private void RunWslCommand(string arguments)
