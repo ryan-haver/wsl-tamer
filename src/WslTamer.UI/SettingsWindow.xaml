@@ -13,33 +13,6 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:StateToColorConverter x:Key="StateToColorConverter"/>
-        
-        <Style TargetType="GroupBox">
-            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
-        </Style>
-        <Style TargetType="TabItem">
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
-        </Style>
-        <Style TargetType="ListBox">
-            <Setter Property="Background" Value="{DynamicResource ListBackgroundBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
-        </Style>
-        <Style TargetType="TextBox">
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
-        </Style>
-        <Style TargetType="Label">
-            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
-        </Style>
-        <Style TargetType="CheckBox">
-            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
-        </Style>
-        <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
-        </Style>
     </Window.Resources>
     <Grid Margin="10">
         <TabControl>
@@ -75,14 +48,14 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Margin="5" Width="250" Padding="10">
+                                    <Border BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1" CornerRadius="5" Margin="5" Width="250" Padding="10">
                                         <StackPanel>
                                             <DockPanel LastChildFill="False">
                                                 <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16"/>
                                                 <TextBlock Text="★" Visibility="{Binding IsDefault, Converter={StaticResource BooleanToVisibilityConverter}}" DockPanel.Dock="Right" Foreground="Gold" ToolTip="Default Distribution"/>
                                             </DockPanel>
                                             <TextBlock Text="{Binding State}" Margin="0,5,0,0" Foreground="{Binding IsRunning, Converter={StaticResource StateToColorConverter}}"/>
-                                            <TextBlock Text="{Binding Version, StringFormat='WSL {0}'}" Margin="0,0,0,10" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding Version, StringFormat='WSL {0}'}" Margin="0,0,0,10" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                             
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                                 <Button Content="Run" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnRunDistro_Click"/>
