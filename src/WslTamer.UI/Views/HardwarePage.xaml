@@ -1,0 +1,159 @@
+<UserControl x:Class="WslTamer.UI.Views.HardwarePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:converters="clr-namespace:WslTamer.UI.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:BooleanToAttachConverter x:Key="BooleanToAttachConverter"/>
+        <Style x:Key="HelpIcon" TargetType="ui:SymbolIcon">
+            <Setter Property="Symbol" Value="Info24"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Help"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+        </Style>
+    </UserControl.Resources>
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <!-- USB Devices -->
+            <GroupBox Header="USB Devices (Requires usbipd-win)" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <Button Content="Refresh USB" Click="BtnRefreshUsb_Click" Margin="0,0,10,0" ToolTip="Scan for connected USB devices."/>
+                        <TextBlock Name="TxtUsbStatus" VerticalAlignment="Center" Foreground="Gray"/>
+                        <TextBlock Name="TxtUsbInstallLink" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"
+                                   ToolTip="After installing usbipd-win, you must restart WSL Tamer for changes to take effect.">
+                            <Hyperlink NavigateUri="https://github.com/dorssel/usbipd-win/releases" RequestNavigate="Hyperlink_RequestNavigate">
+                                Install usbipd-win
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                    <DataGrid Name="DgUsbDevices" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Bus ID" Binding="{Binding BusId}" Width="60"/>
+                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                            <DataGridTextColumn Header="State" Binding="{Binding State}" Width="100"/>
+                            <DataGridTemplateColumn Header="Action" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding IsAttached, Converter={StaticResource BooleanToAttachConverter}}" 
+                                                Click="BtnToggleUsb_Click" 
+                                                Tag="{Binding BusId}"
+                                                ToolTip="Attach/Detach this USB device to/from WSL."/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+
+            <!-- Physical Disks -->
+            <GroupBox Header="Physical Disks" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="150"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <Button Content="Refresh Disks" Click="BtnRefreshDisks_Click" Margin="0,0,10,0" ToolTip="Scan for physical disks."/>
+                        <Label Content="Distro:" VerticalAlignment="Center"/>
+                        <ComboBox Name="CboDiskDistro" Width="120" Margin="5,0,10,0" DisplayMemberPath="Name" SelectedValuePath="Name"/>
+                        <TextBlock Text="Warning: Mounting disks requires Admin privileges." VerticalAlignment="Center" Foreground="Orange"/>
+                    </StackPanel>
+                    <DataGrid Name="DgDisks" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Device ID" Binding="{Binding DeviceId}" Width="150"/>
+                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
+                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="80"/>
+                            <DataGridTemplateColumn Header="Action" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Mount" Click="BtnMountDisk_Click" Tag="{Binding DeviceId}" ToolTip="Mount this physical disk into WSL."/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Action" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Unmount" Click="BtnUnmountDisk_Click" Tag="{Binding DeviceId}" ToolTip="Unmount this disk from WSL."/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+
+            <!-- Folder Mounts -->
+            <GroupBox Header="Folder Mounts (drvfs)" Margin="0,0,0,10">
+                <StackPanel Margin="5">
+                    <TextBlock Text="Mount a Windows folder into a specific WSL distribution." Margin="0,0,0,5"/>
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Distro:" VerticalAlignment="Center" Width="100"/>
+                        <ComboBox Name="CboMountDistro" Grid.Column="1" Margin="5,0" DisplayMemberPath="Name" SelectedValuePath="Name"/>
+                        <Button Content="Refresh" Grid.Column="2" Click="BtnRefreshMountDistros_Click" Padding="5,2"/>
+                    </Grid>
+                    
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Windows Path:" VerticalAlignment="Center" Width="100"/>
+                        <TextBox Name="TxtWindowsPath" Grid.Column="1" Margin="5,0" VerticalContentAlignment="Center"/>
+                        <Button Content="Browse..." Grid.Column="2" Click="BtnBrowseFolder_Click" Padding="5,2"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Width="100">
+                            <Label Content="WSL Path:" Padding="0"/>
+                            <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="The path inside Linux where the folder will appear (e.g. /mnt/myfolder)."/>
+                        </StackPanel>
+                        <TextBox Name="TxtWslPath" Grid.Column="1" Margin="5,0" VerticalContentAlignment="Center"/>
+                    </Grid>
+
+                    <Button Content="Mount Folder" HorizontalAlignment="Right" Click="BtnMountFolder_Click" MinWidth="120"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- PCIe Passthrough -->
+            <GroupBox Header="PCIe Passthrough (Advanced - DDA)">
+                <StackPanel Margin="5">
+                    <TextBlock Text="Discrete Device Assignment (DDA) allows passing PCIe devices to WSL." TextWrapping="Wrap" Margin="0,0,0,5"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBlock Text="Requirements:" FontWeight="Bold" Margin="0,0,5,0"/>
+                        <TextBlock Text="SR-IOV" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,10,0" Cursor="Help"
+                                   ToolTip="Single Root I/O Virtualization (SR-IOV) must be enabled in your BIOS/UEFI settings."/>
+                        <TextBlock Text="IOMMU" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,10,0" Cursor="Help"
+                                   ToolTip="IOMMU (Intel VT-d or AMD-Vi) must be enabled in your BIOS/UEFI settings."/>
+                        <TextBlock Text="Admin" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Cursor="Help"
+                                   ToolTip="Requires Administrator privileges to detach devices from Windows."/>
+                    </StackPanel>
+                    <TextBlock Text="Warning: Detaching a device (e.g. GPU) from Windows may cause instability." Foreground="Orange" TextWrapping="Wrap" Margin="0,0,0,5"/>
+                    <Button Content="Manage PCIe Devices (Coming Soon)" IsEnabled="False" HorizontalAlignment="Left" ToolTip="Future feature: Manage DDA devices."/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

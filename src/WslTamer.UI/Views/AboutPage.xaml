@@ -1,0 +1,23 @@
+<UserControl x:Class="WslTamer.UI.Views.AboutPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Text="WSL Tamer" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Name="TxtVersion" Text="Version 1.0.0" FontSize="14" Margin="0,0,0,20"/>
+            
+            <GroupBox Header="Updates">
+                <StackPanel Margin="5">
+                    <CheckBox Name="ChkAutoCheckUpdates" Content="Automatically check for updates on startup" IsChecked="True" Margin="0,0,0,10" ToolTip="Enable automatic update checks when the application starts."/>
+                    <Button Content="Check for Updates" HorizontalAlignment="Left" MinWidth="120" Click="BtnCheckUpdates_Click" ToolTip="Check for updates immediately."/>
+                    <TextBlock Name="TxtUpdateStatus" Margin="0,10,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
