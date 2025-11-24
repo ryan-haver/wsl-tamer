@@ -29,13 +29,17 @@ Switch between profiles instantly without restarting Windows:
 * **Start Background:** Start WSL in headless mode (no terminal window) to keep background services running.
 * **Start/Stop WSL:** One-click shutdown to free up resources immediately.
 * **Reclaim Memory:** Force Linux to drop caches and return RAM to Windows.
-* **Compact Disk:** Shrink the .vhdx virtual disk file to reclaim disk space.
 
 ### System Tray Integration
 
 * **Dynamic Icon:** Visual indicator of WSL state (Green = Running, Gray = Stopped).
 * **Right-click context menu:** For all actions.
 * **Auto-start:** Option to start automatically with Windows.
+
+### User Interface
+
+* **Dark Mode:** Automatically respects your Windows system theme settings.
+* **Modern UI:** Clean, WPF-based interface.
 
 ## Tech Stack
 
@@ -45,7 +49,7 @@ Switch between profiles instantly without restarting Windows:
 ## Installation
 
 1. Go to the [Releases](https://github.com/ryan-haver/wsl-tamer/releases) page.
-2. Download the latest `WslTamer.msi`.
+2. Download the latest installer: **[WslTamer-v1.2.2.msi](https://github.com/ryan-haver/wsl-tamer/releases/download/v1.2.2/WslTamer.msi)**
 3. Run the installer.
 
 ## Roadmap
