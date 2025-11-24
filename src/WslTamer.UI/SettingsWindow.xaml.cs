@@ -5,10 +5,11 @@ using WslTamer.UI.Models;
 using WslTamer.UI.Services;
 using WslTamer.UI.Views;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Abstractions;
 
 namespace WslTamer.UI;
 
-public partial class SettingsWindow : FluentWindow
+public partial class SettingsWindow : FluentWindow, IServiceProvider
 {
     private readonly ProfileManager _profileManager;
     private readonly WslService _wslService;
@@ -30,6 +31,8 @@ public partial class SettingsWindow : FluentWindow
         _profileManager = profileManager;
         _wslService = wslService;
         _themeService = themeService;
+        
+        RootNavigation.SetServiceProvider(this);
         
         // Set initial page
         RootNavigation.Loaded += (s, e) => 
@@ -53,47 +56,25 @@ public partial class SettingsWindow : FluentWindow
         };
     }
 
+    public object? GetService(Type serviceType)
+    {
+        if (serviceType == typeof(GeneralPage))
+            return _generalPage ??= new GeneralPage(_wslService, _startupService);
+        if (serviceType == typeof(DistributionsPage))
+            return _distributionsPage ??= new DistributionsPage(_wslService);
+        if (serviceType == typeof(ProfilesPage))
+            return _profilesPage ??= new ProfilesPage(_profileManager);
+        if (serviceType == typeof(HardwarePage))
+            return _hardwarePage ??= new HardwarePage(_hardwareService, _wslService);
+        if (serviceType == typeof(AboutPage))
+            return _aboutPage ??= new AboutPage(_updateService);
+            
+        return null;
+    }
+
     private void RootNavigation_SelectionChanged(NavigationView sender, RoutedEventArgs args)
     {
-        if (ContentFrame == null) return;
-
-        if (sender.SelectedItem is NavigationViewItem selectedItem)
-        {
-            string tag = selectedItem.Tag as string ?? string.Empty;
-            
-            switch (tag)
-            {
-                case "General":
-                    if (_generalPage == null)
-                        _generalPage = new GeneralPage(_wslService, _startupService);
-                    ContentFrame.Content = _generalPage;
-                    break;
-                    
-                case "Distributions":
-                    if (_distributionsPage == null)
-                        _distributionsPage = new DistributionsPage(_wslService);
-                    ContentFrame.Content = _distributionsPage;
-                    break;
-                    
-                case "Profiles":
-                    if (_profilesPage == null)
-                        _profilesPage = new ProfilesPage(_profileManager);
-                    ContentFrame.Content = _profilesPage;
-                    break;
-                    
-                case "Hardware":
-                    if (_hardwarePage == null)
-                        _hardwarePage = new HardwarePage(_hardwareService, _wslService);
-                    ContentFrame.Content = _hardwarePage;
-                    break;
-                    
-                case "About":
-                    if (_aboutPage == null)
-                        _aboutPage = new AboutPage(_updateService);
-                    ContentFrame.Content = _aboutPage;
-                    break;
-            }
-        }
+        // Handled by NavigationView and GetPage
     }
 
     public event Action<bool>? OnStartupSettingChanged;
