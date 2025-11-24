@@ -13,5 +13,6 @@ public class PhysicalDisk
     public string DeviceId { get; set; } = string.Empty; // e.g., \\.\PHYSICALDRIVE1
     public string Model { get; set; } = string.Empty;
     public string Size { get; set; } = string.Empty;
+    public string SerialNumber { get; set; } = string.Empty;
     public bool IsMounted { get; set; }
 }

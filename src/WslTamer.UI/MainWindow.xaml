@@ -115,7 +115,7 @@
                     <MenuItem Header="Settings" Click="Settings_Click"/>
                     <MenuItem Header="Start with Windows" x:Name="TrayStartWithWindows" IsCheckable="True" Click="TrayStartWithWindows_Click"/>
                     <Separator/>
-                    <MenuItem Header="Version 1.4.3" IsEnabled="False" Foreground="Gray" FontSize="10"/>
+                    <MenuItem Header="Version 1.4.4" IsEnabled="False" Foreground="Gray" FontSize="10"/>
                     <MenuItem Header="Exit" Click="Exit_Click"/>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>

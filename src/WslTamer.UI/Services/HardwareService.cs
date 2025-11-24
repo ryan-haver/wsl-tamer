@@ -172,7 +172,7 @@ public class HardwareService
             var startInfo = new ProcessStartInfo
             {
                 FileName = "powershell",
-                Arguments = "-NoProfile -Command \"Get-PhysicalDisk | Select-Object DeviceId, FriendlyName, Size | ConvertTo-Json\"",
+                Arguments = "-NoProfile -Command \"Get-PhysicalDisk | Select-Object DeviceId, FriendlyName, Size, SerialNumber | ConvertTo-Json\"",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true
@@ -204,7 +204,8 @@ public class HardwareService
                             {
                                 DeviceId = $"\\\\.\\PHYSICALDRIVE{d.DeviceId}",
                                 Model = d.FriendlyName,
-                                Size = FormatBytes(d.Size.ToString())
+                                Size = FormatBytes(d.Size.ToString()),
+                                SerialNumber = d.SerialNumber
                             });
                         }
                     }
@@ -218,7 +219,8 @@ public class HardwareService
                         {
                             DeviceId = $"\\\\.\\PHYSICALDRIVE{disk.DeviceId}",
                             Model = disk.FriendlyName,
-                            Size = FormatBytes(disk.Size.ToString())
+                            Size = FormatBytes(disk.Size.ToString()),
+                            SerialNumber = disk.SerialNumber
                         });
                     }
                 }
@@ -235,11 +237,52 @@ public class HardwareService
         return disks;
     }
 
+    public async Task<List<PhysicalDisk>> GetMountedDisksAsync()
+    {
+        var allDisks = await GetPhysicalDisksAsync();
+        if (allDisks.Count == 0) return new List<PhysicalDisk>();
+
+        try
+        {
+            // Get serials from WSL
+            // We use 'wsl -e' to run in the default distro.
+            // lsblk -d (no dependencies/partitions) -n (no header) -o SERIAL (only serial column)
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "wsl.exe",
+                Arguments = "-e lsblk -d -n -o SERIAL",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true
+            };
+
+            using var process = Process.Start(startInfo);
+            if (process == null) return new List<PhysicalDisk>();
+
+            var output = await process.StandardOutput.ReadToEndAsync();
+            await process.WaitForExitAsync();
+
+            if (process.ExitCode != 0) return new List<PhysicalDisk>();
+
+            var mountedSerials = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                                       .Select(s => s.Trim())
+                                       .Where(s => !string.IsNullOrWhiteSpace(s))
+                                       .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return allDisks.Where(d => mountedSerials.Contains(d.SerialNumber)).ToList();
+        }
+        catch
+        {
+            return new List<PhysicalDisk>();
+        }
+    }
+
     private class DiskInfo
     {
         public object DeviceId { get; set; } // Can be string or int
         public string FriendlyName { get; set; }
         public object Size { get; set; } // Can be long
+        public string SerialNumber { get; set; }
     }
 
     public async Task MountDiskAsync(string diskPath, string distroName)

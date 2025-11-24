@@ -95,7 +95,7 @@ public partial class MainWindow : Window
             }
 
             // Get Disks
-            var disks = await _hardwareService.GetPhysicalDisksAsync();
+            var disks = await _hardwareService.GetMountedDisksAsync();
             
             // Filter for mounted disks? 
             // Since we can't easily check mount status without admin/powershell complex checks,
