@@ -48,6 +48,33 @@ public partial class MainWindow : Window
         
         TrayStartWithWindows.IsChecked = _startupService.IsStartupEnabled();
         TrayMenu.Opened += TrayMenu_Opened;
+
+        // Check for usbipd
+        if (!_hardwareService.IsUsbIpdInstalled())
+        {
+            // Only prompt once per session or check a setting? 
+            // For now, just prompt on startup.
+            Dispatcher.InvokeAsync(() => 
+            {
+                var result = System.Windows.MessageBox.Show(
+                    "usbipd-win is not installed. It is required for USB device support.\nDo you want to install it now?",
+                    "Missing Dependency",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+                    
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("winget", "install dorssel.usbipd-win") { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Windows.MessageBox.Show($"Failed to start installer: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            });
+        }
     }
 
     private async void TrayMenu_Opened(object sender, RoutedEventArgs e)
@@ -245,12 +272,54 @@ public partial class MainWindow : Window
     private void RefreshProfilesMenu()
     {
         ProfilesMenu.Items.Clear();
-        foreach (var profile in _profileManager.GetProfiles())
+        var currentConfig = _wslService.GetCurrentConfig();
+        var profiles = _profileManager.GetProfiles();
+        bool matchFound = false;
+
+        foreach (var profile in profiles)
         {
-            var item = new MenuItem { Header = profile.Name };
-            item.Click += (s, a) => ApplyProfile(profile);
+            var item = new MenuItem { Header = profile.Name, IsCheckable = true };
+            bool isMatch = CompareProfiles(currentConfig, profile);
+            if (isMatch) matchFound = true;
+            
+            item.IsChecked = isMatch;
+            item.Click += (s, a) => 
+            {
+                ApplyProfile(profile);
+                RefreshProfilesMenu();
+            };
             ProfilesMenu.Items.Add(item);
         }
+
+        var noneItem = new MenuItem { Header = "None", IsCheckable = true, IsChecked = !matchFound };
+        // Clicking None doesn't apply anything, just shows state
+        ProfilesMenu.Items.Insert(0, new Separator());
+        ProfilesMenu.Items.Insert(0, noneItem);
+    }
+
+    private bool CompareProfiles(WslProfile current, WslProfile target)
+    {
+        if (string.IsNullOrWhiteSpace(target.Memory) != string.IsNullOrWhiteSpace(current.Memory)) return false;
+        if (!string.IsNullOrWhiteSpace(target.Memory) && target.Memory != current.Memory) return false;
+
+        if (target.Processors != current.Processors) return false;
+        
+        if (string.IsNullOrWhiteSpace(target.Swap) != string.IsNullOrWhiteSpace(current.Swap)) return false;
+        if (!string.IsNullOrWhiteSpace(target.Swap) && target.Swap != current.Swap) return false;
+
+        if (target.LocalhostForwarding != current.LocalhostForwarding) return false;
+        
+        // Advanced
+        if (string.IsNullOrWhiteSpace(target.KernelPath) != string.IsNullOrWhiteSpace(current.KernelPath)) return false;
+        if (!string.IsNullOrWhiteSpace(target.KernelPath) && target.KernelPath != current.KernelPath) return false;
+
+        if (string.IsNullOrWhiteSpace(target.NetworkingMode) != string.IsNullOrWhiteSpace(current.NetworkingMode)) return false;
+        if (!string.IsNullOrWhiteSpace(target.NetworkingMode) && target.NetworkingMode != current.NetworkingMode) return false;
+
+        if (target.GuiApplications != current.GuiApplications) return false;
+        if (target.DebugConsole != current.DebugConsole) return false;
+
+        return true;
     }
 
     private void ApplyProfile(WslProfile profile)

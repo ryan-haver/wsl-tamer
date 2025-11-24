@@ -606,4 +606,47 @@ public class WslService
     {
         RunWslCommand($"-d {distroName} -u root umount \"{linuxPath}\"");
     }
+
+    public WslProfile GetCurrentConfig()
+    {
+        var profile = new WslProfile { Name = "Current Configuration" };
+        
+        if (!File.Exists(_wslConfigPath)) return profile;
+
+        try
+        {
+            var lines = File.ReadAllLines(_wslConfigPath);
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed) || trimmed.StartsWith("#") || trimmed.StartsWith("[")) continue;
+
+                var parts = trimmed.Split(new[] { '=' }, 2);
+                if (parts.Length != 2) continue;
+
+                var key = parts[0].Trim().ToLowerInvariant();
+                var value = parts[1].Trim();
+
+                switch (key)
+                {
+                    case "memory": profile.Memory = value; break;
+                    case "processors": 
+                        if (int.TryParse(value, out int p)) profile.Processors = p; 
+                        break;
+                    case "swap": profile.Swap = value; break;
+                    case "localhostforwarding": profile.LocalhostForwarding = value.ToLower() == "true"; break;
+                    case "kernel": profile.KernelPath = value; break;
+                    case "networkingmode": profile.NetworkingMode = value; break;
+                    case "guiapplications": profile.GuiApplications = value.ToLower() == "true"; break;
+                    case "debugconsole": profile.DebugConsole = value.ToLower() == "true"; break;
+                }
+            }
+        }
+        catch
+        {
+            // Ignore errors reading config
+        }
+
+        return profile;
+    }
 }

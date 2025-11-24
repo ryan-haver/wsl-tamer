@@ -144,7 +144,7 @@
                                 <ListBox Name="LstTriggers" Height="80" Margin="0,0,0,5">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding Description}"/>
+                                            <TextBlock Text="{Binding Description}" Foreground="{DynamicResource WindowForegroundBrush}"/>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>

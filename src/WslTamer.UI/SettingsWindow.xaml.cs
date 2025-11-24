@@ -41,8 +41,6 @@ public partial class SettingsWindow : Window
 
     private async void RefreshHardwareLists()
     {
-        await RefreshUsbList();
-        await RefreshDiskList();
         RefreshMountDistrosList();
         
         // Populate Disk Distro Combo
@@ -53,6 +51,18 @@ public partial class SettingsWindow : Window
             var defaultDistro = distros.FirstOrDefault(d => d.IsDefault);
             CboDiskDistro.SelectedItem = defaultDistro ?? distros.First();
         }
+
+        try 
+        {
+            await RefreshUsbList();
+        }
+        catch { /* Ignore USB errors */ }
+
+        try
+        {
+            await RefreshDiskList();
+        }
+        catch { /* Ignore Disk errors */ }
     }
 
     private async System.Threading.Tasks.Task RefreshUsbList()
@@ -569,7 +579,7 @@ public partial class SettingsWindow : Window
     private void RefreshMountDistrosList()
     {
         var distros = _wslService.GetDistributions();
-        CboMountDistro.ItemsSource = distros.Select(d => d.Name).ToList();
+        CboMountDistro.ItemsSource = distros;
         if (CboMountDistro.Items.Count > 0)
         {
             CboMountDistro.SelectedIndex = 0;
