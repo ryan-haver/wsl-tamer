@@ -1,0 +1,40 @@
+name: Update Documentation
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Update README Version
+        run: |
+          VERSION=${{ github.event.release.tag_name }}
+          echo "Updating README to version $VERSION"
+          
+          # Update the display text
+          sed -i "s/WslTamer-v[0-9.]*\.msi/WslTamer-${VERSION}.msi/g" README.md
+          
+          # Update the download link
+          sed -i "s|releases/download/v[0-9.]*/WslTamer.msi|releases/download/${VERSION}/WslTamer.msi|g" README.md
+          
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Only commit if there are changes
+          if [[ -n $(git status -s) ]]; then
+            git add README.md
+            git commit -m "docs: update readme to point to ${VERSION}"
+            git push
+          else
+            echo "No changes to commit"
+          fi
