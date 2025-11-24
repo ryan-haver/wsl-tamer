@@ -14,6 +14,7 @@ public partial class SettingsWindow : Window
     private readonly ProfileManager _profileManager;
     private readonly WslService _wslService;
     private readonly ThemeService _themeService;
+    private readonly HardwareService _hardwareService = new();
     private readonly UpdateService _updateService = new();
     private readonly StartupService _startupService = new();
     private WslProfile? _selectedProfile;
@@ -29,8 +30,128 @@ public partial class SettingsWindow : Window
         
         RefreshProfileList();
         RefreshDistrosList();
+        RefreshHardwareLists();
 
         Loaded += (s, e) => _themeService.ApplyThemeToWindow(this, _themeService.CurrentTheme);
+    }
+
+    private async void RefreshHardwareLists()
+    {
+        await RefreshUsbList();
+        await RefreshDiskList();
+    }
+
+    private async System.Threading.Tasks.Task RefreshUsbList()
+    {
+        if (!_hardwareService.IsUsbIpdInstalled())
+        {
+            TxtUsbStatus.Text = "usbipd-win not installed.";
+            return;
+        }
+
+        TxtUsbStatus.Text = "Refreshing...";
+        var devices = await _hardwareService.GetUsbDevicesAsync();
+        DgUsbDevices.ItemsSource = devices;
+        TxtUsbStatus.Text = $"{devices.Count} devices found.";
+    }
+
+    private async System.Threading.Tasks.Task RefreshDiskList()
+    {
+        var disks = await _hardwareService.GetPhysicalDisksAsync();
+        DgDisks.ItemsSource = disks;
+    }
+
+    private async void BtnRefreshUsb_Click(object sender, RoutedEventArgs e)
+    {
+        await RefreshUsbList();
+    }
+
+    private async void BtnToggleUsb_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string busId)
+        {
+            var device = (DgUsbDevices.ItemsSource as System.Collections.Generic.List<UsbDevice>)?.FirstOrDefault(d => d.BusId == busId);
+            if (device == null) return;
+
+            try
+            {
+                if (device.IsAttached)
+                {
+                    await _hardwareService.DetachUsbDeviceAsync(busId);
+                }
+                else
+                {
+                    // We need to know which distro to attach to.
+                    // For now, let's use the default distro or ask the user.
+                    // A simple input dialog or using the default is easiest for now.
+                    // Let's use the default distro.
+                    var distros = _wslService.GetDistributions();
+                    var defaultDistro = distros.FirstOrDefault(d => d.IsDefault)?.Name;
+                    
+                    if (string.IsNullOrEmpty(defaultDistro))
+                    {
+                        System.Windows.MessageBox.Show("No default distribution found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    await _hardwareService.AttachUsbDeviceAsync(busId, defaultDistro);
+                }
+                await RefreshUsbList();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Operation failed: {ex.Message}\nNote: Attaching requires Admin privileges.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+
+    private async void BtnRefreshDisks_Click(object sender, RoutedEventArgs e)
+    {
+        await RefreshDiskList();
+    }
+
+    private async void BtnMountDisk_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string deviceId)
+        {
+            try
+            {
+                // Use default distro
+                var distros = _wslService.GetDistributions();
+                var defaultDistro = distros.FirstOrDefault(d => d.IsDefault)?.Name;
+                
+                if (string.IsNullOrEmpty(defaultDistro))
+                {
+                    System.Windows.MessageBox.Show("No default distribution found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                await _hardwareService.MountDiskAsync(deviceId, defaultDistro);
+                System.Windows.MessageBox.Show("Disk mounted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                await RefreshDiskList();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Mount failed: {ex.Message}\nNote: Mounting requires Admin privileges.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+
+    private async void BtnUnmountDisk_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string deviceId)
+        {
+            try
+            {
+                await _hardwareService.UnmountDiskAsync(deviceId);
+                System.Windows.MessageBox.Show("Disk unmounted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                await RefreshDiskList();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Unmount failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 
     public event Action<bool>? OnStartupSettingChanged;
@@ -215,6 +336,20 @@ public partial class SettingsWindow : Window
             TxtSwap.Text = _selectedProfile.Swap;
             ChkLocalhost.IsChecked = _selectedProfile.LocalhostForwarding;
             
+            // Advanced Global Settings
+            TxtKernelPath.Text = _selectedProfile.KernelPath;
+            ChkGuiApplications.IsChecked = _selectedProfile.GuiApplications;
+            ChkDebugConsole.IsChecked = _selectedProfile.DebugConsole;
+
+            foreach (ComboBoxItem item in CboNetworkingMode.Items)
+            {
+                if (item.Content.ToString() == _selectedProfile.NetworkingMode)
+                {
+                    CboNetworkingMode.SelectedItem = item;
+                    break;
+                }
+            }
+            
             RefreshTriggersList();
         }
     }
@@ -266,6 +401,16 @@ public partial class SettingsWindow : Window
                 
             _selectedProfile.Swap = TxtSwap.Text;
             _selectedProfile.LocalhostForwarding = ChkLocalhost.IsChecked ?? true;
+
+            // Advanced Global Settings
+            _selectedProfile.KernelPath = TxtKernelPath.Text;
+            _selectedProfile.GuiApplications = ChkGuiApplications.IsChecked ?? true;
+            _selectedProfile.DebugConsole = ChkDebugConsole.IsChecked ?? false;
+
+            if (CboNetworkingMode.SelectedItem is ComboBoxItem selectedItem)
+            {
+                _selectedProfile.NetworkingMode = selectedItem.Content.ToString();
+            }
 
             _profileManager.UpdateProfile(_selectedProfile);
             RefreshProfileList();
@@ -387,5 +532,15 @@ public partial class SettingsWindow : Window
     {
         _wslService.StartWslBackground();
         System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
+    }
+
+    private void BtnDistroSettings_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        {
+            var settingsWindow = new DistroSettingsWindow(_wslService, name);
+            settingsWindow.Owner = this;
+            settingsWindow.ShowDialog();
+        }
     }
 }

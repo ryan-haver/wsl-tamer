@@ -1,0 +1,75 @@
+<Window x:Class="WslTamer.UI.DistroSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WslTamer.UI"
+        mc:Ignorable="d"
+        Title="Distro Settings" Height="400" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource WindowForegroundBrush}">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TabControl Grid.Row="0">
+            <!-- Boot Settings -->
+            <TabItem Header="Boot">
+                <StackPanel Margin="10">
+                    <CheckBox Name="ChkSystemd" Content="Enable Systemd" Margin="0,0,0,10" ToolTip="Enable systemd init system (required for many services like Snap, Docker)."/>
+                    <Label Content="Boot Command (runs on startup)"/>
+                    <TextBox Name="TxtBootCommand" Margin="0,0,0,10" ToolTip="Command to run when the distribution starts."/>
+                    <TextBlock Text="Note: Enabling Systemd requires a WSL restart." Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- Network Settings -->
+            <TabItem Header="Network">
+                <StackPanel Margin="10">
+                    <Label Content="Hostname"/>
+                    <TextBox Name="TxtHostname" Margin="0,0,0,10" ToolTip="Set the hostname for this distribution."/>
+                    <CheckBox Name="ChkGenerateHosts" Content="Generate /etc/hosts" Margin="0,0,0,10" ToolTip="Automatically update /etc/hosts with Windows hosts."/>
+                    <CheckBox Name="ChkGenerateResolvConf" Content="Generate /etc/resolv.conf" Margin="0,0,0,10" ToolTip="Automatically generate DNS configuration."/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- Automount Settings -->
+            <TabItem Header="Automount">
+                <StackPanel Margin="10">
+                    <CheckBox Name="ChkAutomountEnabled" Content="Enable Automounting" Margin="0,0,0,10" ToolTip="Automatically mount Windows drives (C:, D:, etc.)."/>
+                    <CheckBox Name="ChkMountFsTab" Content="Process /etc/fstab" Margin="0,0,0,10" ToolTip="Process the /etc/fstab file for additional mounts."/>
+                    <Label Content="Root Mount Path (default: /mnt/)"/>
+                    <TextBox Name="TxtMountRoot" Margin="0,0,0,10" ToolTip="Directory where Windows drives are mounted (e.g., /mnt/)."/>
+                    <Label Content="Mount Options (e.g. metadata,uid=1000)"/>
+                    <TextBox Name="TxtMountOptions" Margin="0,0,0,10" ToolTip="Options passed to the drvfs mount command."/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- Interop Settings -->
+            <TabItem Header="Interop">
+                <StackPanel Margin="10">
+                    <CheckBox Name="ChkInteropEnabled" Content="Enable Windows Interop" Margin="0,0,0,10" ToolTip="Allow launching Windows executables from Linux."/>
+                    <CheckBox Name="ChkAppendPath" Content="Append Windows PATH" Margin="0,0,0,10" ToolTip="Add Windows PATH environment variables to Linux PATH."/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- User Settings -->
+            <TabItem Header="User">
+                <StackPanel Margin="10">
+                    <Label Content="Default User"/>
+                    <TextBox Name="TxtDefaultUser" Margin="0,0,0,10" ToolTip="The user to log in as by default."/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Cancel" Width="80" Margin="0,0,10,0" Click="BtnCancel_Click" Name="BtnCancel" ToolTip="Discard changes."/>
+            <Button Content="Save" Width="80" Click="BtnSave_Click" Name="BtnSave" IsDefault="True" ToolTip="Write changes to /etc/wsl.conf and close."/>
+        </StackPanel>
+    </Grid>
+</Window>

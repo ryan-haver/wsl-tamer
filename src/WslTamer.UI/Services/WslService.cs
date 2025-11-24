@@ -39,9 +39,15 @@ public class WslService
                 
             config.AppendLine($"localhostForwarding={(profile.LocalhostForwarding ? "true" : "false")}");
 
-            // Preserve existing custom configurations if possible? 
-            // For now, we overwrite to ensure the profile is strictly applied, 
-            // but we removed the hardcoded 'guiApplications=false'.
+            // Advanced Global Settings
+            if (!string.IsNullOrWhiteSpace(profile.KernelPath))
+                config.AppendLine($"kernel={profile.KernelPath}");
+
+            if (!string.IsNullOrWhiteSpace(profile.NetworkingMode))
+                config.AppendLine($"networkingMode={profile.NetworkingMode}");
+
+            config.AppendLine($"guiApplications={(profile.GuiApplications ? "true" : "false")}");
+            config.AppendLine($"debugConsole={(profile.DebugConsole ? "true" : "false")}");
 
             File.WriteAllText(_wslConfigPath, config.ToString());
             return true;
@@ -401,5 +407,187 @@ public class WslService
         {
             return false;
         }
+    }
+
+    public WslConf GetDistroConfig(string distroName)
+    {
+        try
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "wsl.exe",
+                Arguments = $"-d {distroName} -u root cat /etc/wsl.conf",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                StandardOutputEncoding = Encoding.UTF8
+            };
+
+            using var process = Process.Start(startInfo);
+            if (process == null) return new WslConf();
+
+            var output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit(2000);
+
+            if (process.ExitCode != 0) return new WslConf();
+
+            return ParseWslConf(output);
+        }
+        catch
+        {
+            return new WslConf();
+        }
+    }
+
+    public void SaveDistroConfig(string distroName, WslConf config)
+    {
+        var content = SerializeWslConf(config);
+        
+        // Convert to LF just in case
+        content = content.Replace("\r\n", "\n");
+
+        try
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "wsl.exe",
+                Arguments = $"-d {distroName} -u root sh -c \"cat > /etc/wsl.conf\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardInput = true
+            };
+            
+            using var process = Process.Start(startInfo);
+            if (process != null)
+            {
+                process.StandardInput.Write(content);
+                process.StandardInput.Close();
+                process.WaitForExit(5000);
+                
+                if (process.ExitCode != 0)
+                {
+                    throw new Exception("Failed to write wsl.conf");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to save config: {ex.Message}");
+        }
+    }
+
+    private WslConf ParseWslConf(string content)
+    {
+        var conf = new WslConf();
+        var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        string currentSection = "";
+
+        foreach (var line in lines)
+        {
+            var trimmed = line.Trim();
+            if (string.IsNullOrWhiteSpace(trimmed) || trimmed.StartsWith("#")) continue;
+
+            if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
+            {
+                currentSection = trimmed.Substring(1, trimmed.Length - 2).ToLowerInvariant();
+                continue;
+            }
+
+            var parts = trimmed.Split(new[] { '=' }, 2);
+            if (parts.Length != 2) continue;
+
+            var key = parts[0].Trim().ToLowerInvariant();
+            var value = parts[1].Trim();
+            
+            if (value.StartsWith("\"") && value.EndsWith("\""))
+                value = value.Substring(1, value.Length - 2);
+
+            switch (currentSection)
+            {
+                case "boot":
+                    if (key == "systemd") conf.Boot.Systemd = ParseBool(value);
+                    if (key == "command") conf.Boot.Command = value;
+                    break;
+                case "automount":
+                    if (key == "enabled") conf.Automount.Enabled = ParseBool(value);
+                    if (key == "mountfstab") conf.Automount.MountFsTab = ParseBool(value);
+                    if (key == "root") conf.Automount.Root = value;
+                    if (key == "options") conf.Automount.Options = value;
+                    break;
+                case "network":
+                    if (key == "generatehosts") conf.Network.GenerateHosts = ParseBool(value);
+                    if (key == "generateresolvconf") conf.Network.GenerateResolvConf = ParseBool(value);
+                    if (key == "hostname") conf.Network.Hostname = value;
+                    break;
+                case "interop":
+                    if (key == "enabled") conf.Interop.Enabled = ParseBool(value);
+                    if (key == "appendwindowspath") conf.Interop.AppendWindowsPath = ParseBool(value);
+                    break;
+                case "user":
+                    if (key == "default") conf.User.Default = value;
+                    break;
+            }
+        }
+        return conf;
+    }
+
+    private string SerializeWslConf(WslConf conf)
+    {
+        var sb = new StringBuilder();
+
+        // Boot
+        if (conf.Boot.Systemd.HasValue || !string.IsNullOrEmpty(conf.Boot.Command))
+        {
+            sb.AppendLine("[boot]");
+            if (conf.Boot.Systemd.HasValue) sb.AppendLine($"systemd={conf.Boot.Systemd.Value.ToString().ToLower()}");
+            if (!string.IsNullOrEmpty(conf.Boot.Command)) sb.AppendLine($"command=\"{conf.Boot.Command}\"");
+            sb.AppendLine();
+        }
+
+        // Automount
+        if (conf.Automount.Enabled.HasValue || conf.Automount.MountFsTab.HasValue || !string.IsNullOrEmpty(conf.Automount.Root) || !string.IsNullOrEmpty(conf.Automount.Options))
+        {
+            sb.AppendLine("[automount]");
+            if (conf.Automount.Enabled.HasValue) sb.AppendLine($"enabled={conf.Automount.Enabled.Value.ToString().ToLower()}");
+            if (conf.Automount.MountFsTab.HasValue) sb.AppendLine($"mountFsTab={conf.Automount.MountFsTab.Value.ToString().ToLower()}");
+            if (!string.IsNullOrEmpty(conf.Automount.Root)) sb.AppendLine($"root=\"{conf.Automount.Root}\"");
+            if (!string.IsNullOrEmpty(conf.Automount.Options)) sb.AppendLine($"options=\"{conf.Automount.Options}\"");
+            sb.AppendLine();
+        }
+
+        // Network
+        if (conf.Network.GenerateHosts.HasValue || conf.Network.GenerateResolvConf.HasValue || !string.IsNullOrEmpty(conf.Network.Hostname))
+        {
+            sb.AppendLine("[network]");
+            if (conf.Network.GenerateHosts.HasValue) sb.AppendLine($"generateHosts={conf.Network.GenerateHosts.Value.ToString().ToLower()}");
+            if (conf.Network.GenerateResolvConf.HasValue) sb.AppendLine($"generateResolvConf={conf.Network.GenerateResolvConf.Value.ToString().ToLower()}");
+            if (!string.IsNullOrEmpty(conf.Network.Hostname)) sb.AppendLine($"hostname=\"{conf.Network.Hostname}\"");
+            sb.AppendLine();
+        }
+
+        // Interop
+        if (conf.Interop.Enabled.HasValue || conf.Interop.AppendWindowsPath.HasValue)
+        {
+            sb.AppendLine("[interop]");
+            if (conf.Interop.Enabled.HasValue) sb.AppendLine($"enabled={conf.Interop.Enabled.Value.ToString().ToLower()}");
+            if (conf.Interop.AppendWindowsPath.HasValue) sb.AppendLine($"appendWindowsPath={conf.Interop.AppendWindowsPath.Value.ToString().ToLower()}");
+            sb.AppendLine();
+        }
+
+        // User
+        if (!string.IsNullOrEmpty(conf.User.Default))
+        {
+            sb.AppendLine("[user]");
+            sb.AppendLine($"default={conf.User.Default}");
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
+
+    private bool? ParseBool(string value)
+    {
+        if (bool.TryParse(value, out bool result)) return result;
+        return null;
     }
 }

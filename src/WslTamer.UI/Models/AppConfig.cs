@@ -10,6 +10,12 @@ public class WslProfile
     public int Processors { get; set; } = 2;
     public string Swap { get; set; } = "0"; // 0 to disable, or size like 8GB
     public bool LocalhostForwarding { get; set; } = true;
+
+    // Advanced Global Settings (.wslconfig)
+    public string KernelPath { get; set; } = string.Empty; // Path to custom kernel
+    public string NetworkingMode { get; set; } = "NAT"; // NAT, Mirrored, Bridged
+    public bool GuiApplications { get; set; } = true; // Enable WSLg
+    public bool DebugConsole { get; set; } = false; // Show debug console
 }
 
 public enum TriggerType

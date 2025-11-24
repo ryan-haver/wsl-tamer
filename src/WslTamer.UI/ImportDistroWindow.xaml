@@ -22,7 +22,7 @@
         <!-- Distro Name -->
         <StackPanel Grid.Row="0" Margin="0,0,0,15">
             <Label Content="Distribution Name" Padding="0,0,0,5"/>
-            <TextBox Name="TxtName" />
+            <TextBox Name="TxtName" ToolTip="Enter a unique name for the imported distribution."/>
         </StackPanel>
 
         <!-- Install Location -->
@@ -33,8 +33,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Name="TxtLocation" Grid.Column="0" Margin="0,0,5,0"/>
-                <Button Content="..." Grid.Column="1" Width="30" Click="BtnBrowseLocation_Click"/>
+                <TextBox Name="TxtLocation" Grid.Column="0" Margin="0,0,5,0" ToolTip="Select the folder where the distribution will be installed."/>
+                <Button Content="..." Grid.Column="1" Width="30" Click="BtnBrowseLocation_Click" ToolTip="Browse for folder."/>
             </Grid>
         </StackPanel>
 
@@ -46,8 +46,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Name="TxtTarFile" Grid.Column="0" Margin="0,0,5,0"/>
-                <Button Content="..." Grid.Column="1" Width="30" Click="BtnBrowseTar_Click"/>
+                <TextBox Name="TxtTarFile" Grid.Column="0" Margin="0,0,5,0" ToolTip="Select the .tar or .tar.gz file to import."/>
+                <Button Content="..." Grid.Column="1" Width="30" Click="BtnBrowseTar_Click" ToolTip="Browse for file."/>
             </Grid>
         </StackPanel>
 
@@ -60,7 +60,7 @@
         <!-- Buttons -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
             <Button Content="Cancel" Width="80" Margin="0,0,10,0" Click="BtnCancel_Click" Name="BtnCancel"/>
-            <Button Content="Import" Width="80" Click="BtnImport_Click" Name="BtnImport" IsDefault="True"/>
+            <Button Content="Import" Width="80" Click="BtnImport_Click" Name="BtnImport" IsDefault="True" ToolTip="Start the import process."/>
         </StackPanel>
     </Grid>
 </Window>
