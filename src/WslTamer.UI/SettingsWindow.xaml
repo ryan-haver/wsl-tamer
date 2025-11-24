@@ -40,7 +40,8 @@
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="Width" Value="Auto"/>
                     <Setter Property="MinWidth" Value="0"/>
-                    <Setter Property="Padding" Value="15,8"/>
+                    <Setter Property="Padding" Value="10,5"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
                 </Style>
             </TabControl.ItemContainerStyle>
             <TabItem Header="General">
@@ -53,13 +54,13 @@
                         
                         <GroupBox Header="Global Actions" Margin="0,10,0,0">
                             <WrapPanel Margin="5">
-                                <Button Content="Open Terminal" MinWidth="120" Margin="0,0,10,10" Click="BtnLaunchWsl_Click"
+                                <Button Content="Open Terminal" Margin="0,0,10,10" Click="BtnLaunchWsl_Click"
                                         ToolTip="Open the default WSL distribution."/>
-                                <Button Content="Start Background" MinWidth="120" Margin="0,0,10,10" Click="BtnStartBackground_Click"
+                                <Button Content="Start Background" Margin="0,0,10,10" Click="BtnStartBackground_Click"
                                         ToolTip="Start WSL without a window to keep background services running."/>
-                                <Button Content="Shutdown WSL" MinWidth="120" Margin="0,0,10,10" Click="BtnShutdownWsl_Click"
+                                <Button Content="Shutdown WSL" Margin="0,0,10,10" Click="BtnShutdownWsl_Click"
                                         ToolTip="Immediately stop all running WSL distributions."/>
-                                <Button Content="Reclaim Memory" MinWidth="120" Margin="0,0,10,10" Click="BtnReclaimMemory_Click"
+                                <Button Content="Reclaim Memory" Margin="0,0,10,10" Click="BtnReclaimMemory_Click"
                                         ToolTip="Force Linux to drop caches and return unused RAM to Windows."/>
                             </WrapPanel>
                         </GroupBox>
@@ -74,8 +75,8 @@
                     </Grid.RowDefinitions>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,10">
-                        <Button Content="Import Distro" MinWidth="100" Click="BtnImportDistro_Click" Margin="0,0,10,0" ToolTip="Import a distribution from a .tar file."/>
-                        <Button Content="Refresh" MinWidth="80" Click="BtnRefreshDistros_Click" ToolTip="Reload the list of distributions."/>
+                        <Button Content="Import Distro" Click="BtnImportDistro_Click" Margin="0,0,10,0" ToolTip="Import a distribution from a .tar file."/>
+                        <Button Content="Refresh" Click="BtnRefreshDistros_Click" ToolTip="Reload the list of distributions."/>
                     </StackPanel>
                     
                     <ScrollViewer Grid.Row="1">
@@ -126,8 +127,8 @@
                     <!-- Profile List -->
                     <DockPanel Grid.Column="0">
                         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,0">
-                            <Button Name="BtnAddProfile" Content="Add" MinWidth="80" Margin="0,0,10,0" Click="BtnAddProfile_Click"/>
-                            <Button Name="BtnRemoveProfile" Content="Remove" MinWidth="80" Click="BtnRemoveProfile_Click"/>
+                            <Button Name="BtnAddProfile" Content="Add" Margin="0,0,10,0" Click="BtnAddProfile_Click"/>
+                            <Button Name="BtnRemoveProfile" Content="Remove" Click="BtnRemoveProfile_Click"/>
                         </StackPanel>
                         <ListBox Name="LstProfiles" DisplayMemberPath="Name" SelectionChanged="LstProfiles_SelectionChanged"
                                  AllowDrop="True"
