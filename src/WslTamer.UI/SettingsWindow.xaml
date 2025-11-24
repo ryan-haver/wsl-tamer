@@ -8,6 +8,7 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="WSL Tamer Settings" Height="550" Width="700"
+        MinWidth="650" MinHeight="450"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
@@ -59,8 +60,8 @@
                     <Setter Property="Height" Value="Auto"/>
                     <Setter Property="MinWidth" Value="0"/>
                     <Setter Property="MinHeight" Value="0"/>
-                    <Setter Property="Padding" Value="12,8"/>
-                    <Setter Property="Margin" Value="0,0,8,0"/>
+                    <Setter Property="Padding" Value="8,4"/>
+                    <Setter Property="Margin" Value="0,0,4,0"/>
                     <Setter Property="HorizontalAlignment" Value="Left"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
                 </Style>
