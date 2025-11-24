@@ -21,7 +21,9 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+        App.Log("MainWindow constructor started.");
         InitializeComponent();
+        App.Log("InitializeComponent finished.");
 
         // Initialize Services
         _wslService = new WslService();
@@ -31,6 +33,7 @@ public partial class MainWindow : Window
         _startupService = new StartupService();
         _themeService = new ThemeService();
         _hardwareService = new HardwareService();
+        App.Log("Services initialized.");
 
         // Start Automation
         _automationService.Start();
@@ -48,6 +51,7 @@ public partial class MainWindow : Window
         
         TrayStartWithWindows.IsChecked = _startupService.IsStartupEnabled();
         TrayMenu.Opened += TrayMenu_Opened;
+        App.Log("Initial setup complete.");
 
         // Check for usbipd
         if (!_hardwareService.IsUsbIpdInstalled())
@@ -75,6 +79,7 @@ public partial class MainWindow : Window
                 }
             });
         }
+        App.Log("MainWindow constructor finished.");
     }
 
     private async void TrayMenu_Opened(object sender, RoutedEventArgs e)

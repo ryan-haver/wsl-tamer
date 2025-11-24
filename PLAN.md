@@ -2,6 +2,12 @@
 
 This plan outlines the step-by-step execution to complete the WSL Tamer roadmap.
 
+## 🐛 Phase 9: Stability & Bug Fixes
+- [ ] **Fix Startup Crash**:
+    - Diagnose v1.7.0 launch failure.
+    - Verify WPF-UI resource loading.
+    - Ensure dependencies are correct.
+
 ## 🎨 Phase 8: UI Beautification (Immediate Focus)
 - [x] **Modern Theme Implementation**:
     - Update `App.xaml` with modern resources (colors, brushes).

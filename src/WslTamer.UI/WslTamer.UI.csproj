@@ -10,7 +10,7 @@
     <Authors>WSL Tamer Team</Authors>
     <Company>WSL Tamer Team</Company>
     <Product>WSL Tamer</Product>
-    <Version>1.7.1</Version>
+    <Version>1.7.2</Version>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -22,6 +22,9 @@
 
   <ItemGroup>
     <Resource Include="Assets\app.ico" />
+    <Content Include="Assets\app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
