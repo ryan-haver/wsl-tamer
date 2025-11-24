@@ -16,12 +16,12 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
 
 *Goal: Full control over the lifecycle of individual Linux distributions.*
 
-- [ ] **Distro Dashboard**: A rich card-based view of all installed distributions with their state (Running/Stopped) and version (WSL1/WSL2).
-- [ ] **Default Distro**: One-click toggle to set the default distribution.
-- [ ] **Action Center**:
+- [x] **Distro Dashboard**: View installed distributions with their state (Running/Stopped) and version.
+- [x] **Default Distro**: One-click toggle to set the default distribution.
+- [x] **Action Center**:
   - **Run**: Launch distro in default terminal.
   - **Terminate**: Stop a specific distro without killing the entire WSL engine.
-  - **Unregister**: Delete a distro and its data.
+  - [ ] **Unregister**: Delete a distro and its data.
 - [ ] **Lifecycle Operations**:
   - **Import/Export**: Backup distros to `.tar` files and restore them.
   - **Clone**: Duplicate a distro (great for testing environments).
@@ -47,7 +47,8 @@ This document outlines the development plan for WSL Tamer. Our vision is to buil
 
 *Goal: Make the app "set and forget" - dynamic resource adaptation.*
 
-- [ ] **Game Mode**: Detect full-screen applications/games and automatically switch to a low-resource profile.
+- [x] **Process Triggers**: Automatically switch profiles when specific apps (e.g., Games, IDEs) start.
+- [x] **Power Triggers**: Switch profiles based on Battery/AC status.
 - [ ] **Idle Detection**: Switch to "Eco Mode" when the computer has been idle for X minutes.
 - [ ] **Smart Throttling**: Dynamically adjust memory limits based on total system memory pressure.
 - [ ] **Time-Based Triggers**: Schedule profiles (e.g., "Eco Mode" at 10 PM).
