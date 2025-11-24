@@ -10,9 +10,9 @@
     <Authors>WSL Tamer Team</Authors>
     <Company>WSL Tamer Team</Company>
     <Product>WSL Tamer</Product>
-        <AssemblyVersion>1.7.16.0</AssemblyVersion>
-    <FileVersion>1.7.16.0</FileVersion>
-    <Version>1.7.16</Version>
+        <AssemblyVersion>1.7.17.0</AssemblyVersion>
+    <FileVersion>1.7.17.0</FileVersion>
+    <Version>1.7.17</Version>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
