@@ -106,9 +106,6 @@ public partial class MainWindow : Window
             
             if (disks.Count > 0)
             {
-                MountedDevicesMenu.Visibility = Visibility.Visible;
-                MountedDevicesSeparator.Visibility = Visibility.Visible;
-                
                 // Re-find index as we might have removed items
                 int insertIndex = TrayMenu.Items.IndexOf(MountedDevicesMenu) + 1;
 
@@ -148,8 +145,15 @@ public partial class MainWindow : Window
             }
             else
             {
-                MountedDevicesMenu.Visibility = Visibility.Collapsed;
-                MountedDevicesSeparator.Visibility = Visibility.Collapsed;
+                int insertIndex = TrayMenu.Items.IndexOf(MountedDevicesMenu) + 1;
+                var item = new MenuItem
+                {
+                    Header = "No mounted devices",
+                    IsEnabled = false,
+                    Tag = "MountedDevice",
+                    Foreground = System.Windows.Media.Brushes.Gray
+                };
+                TrayMenu.Items.Insert(insertIndex, item);
             }
         }
         catch (Exception ex)

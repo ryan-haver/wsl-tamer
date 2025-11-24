@@ -54,7 +54,7 @@
                                     <ColumnDefinition Width="15"/>
                                 </Grid.ColumnDefinitions>
                                 <ContentPresenter Grid.Column="0" ContentSource="Icon" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Height="16" Margin="0,0,12,0"/>
-                                <ContentPresenter Grid.Column="1" ContentSource="Header" VerticalAlignment="Center"/>
+                                <ContentPresenter Grid.Column="1" ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                 <TextBlock Grid.Column="2" Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center" Foreground="#888888" Margin="10,0,0,0"/>
                                 <Path Grid.Column="3" x:Name="Arrow" Data="M0,0 L4,3.5 L0,7 Z" Fill="#E0E0E0" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
                                 
@@ -110,12 +110,11 @@
                         <MenuItem Header="Reclaim Memory" Click="ReclaimMemory_Click"/>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="Mounted Devices" x:Name="MountedDevicesMenu" Visibility="Collapsed"/>
-                    <Separator x:Name="MountedDevicesSeparator" Visibility="Collapsed"/>
+                    <MenuItem Header="Mounted Devices" x:Name="MountedDevicesMenu"/>
+                    <Separator x:Name="MountedDevicesSeparator"/>
                     <MenuItem Header="Settings" Click="Settings_Click"/>
                     <MenuItem Header="Start with Windows" x:Name="TrayStartWithWindows" IsCheckable="True" Click="TrayStartWithWindows_Click"/>
                     <Separator/>
-                    <MenuItem Header="Version 1.4.4" IsEnabled="False" Foreground="Gray" FontSize="10"/>
                     <MenuItem Header="Exit" Click="Exit_Click"/>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>

@@ -33,6 +33,10 @@ public partial class SettingsWindow : Window
         RefreshHardwareLists();
 
         Loaded += (s, e) => _themeService.ApplyThemeToWindow(this, _themeService.CurrentTheme);
+        
+        // Set Version
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        TxtVersion.Text = $"Version {version?.ToString(3) ?? "1.0.0"}";
     }
 
     private async void RefreshHardwareLists()
@@ -40,6 +44,15 @@ public partial class SettingsWindow : Window
         await RefreshUsbList();
         await RefreshDiskList();
         RefreshMountDistrosList();
+        
+        // Populate Disk Distro Combo
+        var distros = _wslService.GetDistributions();
+        CboDiskDistro.ItemsSource = distros;
+        if (CboDiskDistro.Items.Count > 0)
+        {
+            var defaultDistro = distros.FirstOrDefault(d => d.IsDefault);
+            CboDiskDistro.SelectedItem = defaultDistro ?? distros.First();
+        }
     }
 
     private async System.Threading.Tasks.Task RefreshUsbList()
@@ -47,13 +60,21 @@ public partial class SettingsWindow : Window
         if (!_hardwareService.IsUsbIpdInstalled())
         {
             TxtUsbStatus.Text = "usbipd-win not installed.";
+            TxtUsbInstallLink.Visibility = Visibility.Visible;
             return;
         }
 
         TxtUsbStatus.Text = "Refreshing...";
+        TxtUsbInstallLink.Visibility = Visibility.Collapsed;
         var devices = await _hardwareService.GetUsbDevicesAsync();
         DgUsbDevices.ItemsSource = devices;
         TxtUsbStatus.Text = $"{devices.Count} devices found.";
+    }
+
+    private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+    {
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        e.Handled = true;
     }
 
     private async System.Threading.Tasks.Task RefreshDiskList()
@@ -117,17 +138,17 @@ public partial class SettingsWindow : Window
         {
             try
             {
-                // Use default distro
-                var distros = _wslService.GetDistributions();
-                var defaultDistro = distros.FirstOrDefault(d => d.IsDefault)?.Name;
+                // Use selected distro
+                var selectedDistro = CboDiskDistro.SelectedItem as WslDistribution;
+                var distroName = selectedDistro?.Name;
                 
-                if (string.IsNullOrEmpty(defaultDistro))
+                if (string.IsNullOrEmpty(distroName))
                 {
-                    System.Windows.MessageBox.Show("No default distribution found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show("Please select a distribution.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                await _hardwareService.MountDiskAsync(deviceId, defaultDistro);
+                await _hardwareService.MountDiskAsync(deviceId, distroName);
                 System.Windows.MessageBox.Show("Disk mounted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 await RefreshDiskList();
             }

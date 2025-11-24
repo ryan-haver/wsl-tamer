@@ -169,10 +169,11 @@ public class HardwareService
         try
         {
             // Use PowerShell to get disks (more reliable than wmic)
+            // Filter out the system drive (C:) to prevent accidental mounting
             var startInfo = new ProcessStartInfo
             {
                 FileName = "powershell",
-                Arguments = "-NoProfile -Command \"Get-PhysicalDisk | Select-Object DeviceId, FriendlyName, Size, SerialNumber | ConvertTo-Json\"",
+                Arguments = "-NoProfile -Command \"$sysDisk = (Get-Partition -DriveLetter C | Get-Disk).Number; Get-PhysicalDisk | Where-Object { $_.DeviceId -ne $sysDisk } | Select-Object DeviceId, FriendlyName, Size, SerialNumber | ConvertTo-Json\"",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true
