@@ -1,7 +1,7 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="WSL Tamer" 
            Manufacturer="Ryan Haver" 
-           Version="1.2.1.0" 
+           Version="1.2.2.0" 
            UpgradeCode="0bd638ec-b54e-4c30-a6c8-d0dd2ee969a0"
            Scope="perUser"
            ProductCode="*">

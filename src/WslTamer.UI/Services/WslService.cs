@@ -241,12 +241,19 @@ public class WslService
     
     public bool IsWslRunning()
     {
+        // Check for WSL2 VM process first (fast and reliable for WSL2)
+        if (Process.GetProcessesByName("vmmem").Length > 0 || 
+            Process.GetProcessesByName("vmmemWSL").Length > 0)
+        {
+            return true;
+        }
+
         try
         {
             var startInfo = new ProcessStartInfo
             {
                 FileName = "wsl.exe",
-                Arguments = "--list --running --quiet", // --quiet is available in newer WSL versions
+                Arguments = "--list --running",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
@@ -257,14 +264,11 @@ public class WslService
             if (process == null) return false;
             
             var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit(2000); // Short timeout for status check
+            process.WaitForExit(2000); 
             
-            // If output is not empty, something is running.
-            // The --quiet flag suppresses output if nothing is running (returns exit code 1 usually),
-            // but standard --list --running returns text.
-            // Let's stick to standard parsing but be more robust.
+            if (string.IsNullOrWhiteSpace(output)) return false;
             
-            return !string.IsNullOrWhiteSpace(output) && !output.Contains("There are no running distributions");
+            return !output.Contains("There are no running distributions");
         }
         catch
         {
