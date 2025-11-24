@@ -14,13 +14,24 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:StateToColorConverter x:Key="StateToColorConverter"/>
         <converters:BooleanToAttachConverter x:Key="BooleanToAttachConverter"/>
+        
+        <Style x:Key="HelpIcon" TargetType="TextBlock">
+            <Setter Property="Text" Value="ⓘ"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Help"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        </Style>
     </Window.Resources>
     <Grid Margin="10">
         <TabControl>
             <TabItem Header="General">
                 <StackPanel Margin="10">
-                    <CheckBox Name="ChkStartOnLogin" Content="Start WSL Tamer when I log in" Margin="0,0,0,10" Click="ChkStartOnLogin_Click"
-                              ToolTip="Launch the application automatically on Windows startup."/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <CheckBox Name="ChkStartOnLogin" Content="Start WSL Tamer when I log in" Click="ChkStartOnLogin_Click"/>
+                        <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Launch the application automatically on Windows startup."/>
+                    </StackPanel>
                     
                     <GroupBox Header="Global Actions" Margin="0,10,0,0">
                         <StackPanel Orientation="Horizontal" Margin="5">
@@ -112,31 +123,56 @@
                             <Label Content="Profile Name"/>
                             <TextBox Name="TxtName" Margin="0,0,0,10"/>
                             
-                            <Label Content="Memory Limit (e.g. 4GB, 512MB)"/>
-                            <TextBox Name="TxtMemory" Margin="0,0,0,10" ToolTip="Maximum RAM allocated to WSL."/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Memory Limit"/>
+                                <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Maximum RAM allocated to the WSL 2 VM. Examples: 4GB, 512MB."/>
+                            </StackPanel>
+                            <TextBox Name="TxtMemory" Margin="0,0,0,10"/>
                             
-                            <Label Content="Processors (0 = Default)"/>
-                            <TextBox Name="TxtProcessors" Margin="0,0,0,10" ToolTip="Number of CPU cores assigned to WSL."/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Processors"/>
+                                <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Number of CPU cores assigned to WSL. Set to 0 for default (all cores)."/>
+                            </StackPanel>
+                            <TextBox Name="TxtProcessors" Margin="0,0,0,10"/>
                             
-                            <Label Content="Swap (e.g. 2GB, 0 to disable)"/>
-                            <TextBox Name="TxtSwap" Margin="0,0,0,10" ToolTip="Virtual memory size (e.g., 2GB). Set to 0 to disable."/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Swap"/>
+                                <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Virtual memory size (e.g., 2GB). Set to 0 to disable swap."/>
+                            </StackPanel>
+                            <TextBox Name="TxtSwap" Margin="0,0,0,10"/>
                             
-                            <CheckBox Name="ChkLocalhost" Content="Localhost Forwarding" Margin="0,0,0,10" ToolTip="Access WSL network services from Windows via localhost."/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <CheckBox Name="ChkLocalhost" Content="Localhost Forwarding"/>
+                                <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Access WSL network services from Windows via localhost."/>
+                            </StackPanel>
 
                             <GroupBox Header="Advanced Global Settings (.wslconfig)" Margin="0,0,0,10">
                                 <StackPanel Margin="5">
-                                    <Label Content="Kernel Path (Leave empty for default)"/>
-                                    <TextBox Name="TxtKernelPath" Margin="0,0,0,5" ToolTip="Path to a custom Linux kernel image."/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="Kernel Path"/>
+                                        <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Path to a custom Linux kernel image. Leave empty for default."/>
+                                    </StackPanel>
+                                    <TextBox Name="TxtKernelPath" Margin="0,0,0,5"/>
 
-                                    <Label Content="Networking Mode"/>
-                                    <ComboBox Name="CboNetworkingMode" Margin="0,0,0,5" ToolTip="NAT (Default), Mirrored (New in WSL2), or Bridged.">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="Networking Mode"/>
+                                        <TextBlock Style="{StaticResource HelpIcon}" ToolTip="NAT (Default), Mirrored (New in WSL2), or Bridged."/>
+                                    </StackPanel>
+                                    <ComboBox Name="CboNetworkingMode" Margin="0,0,0,5">
                                         <ComboBoxItem Content="NAT"/>
                                         <ComboBoxItem Content="Mirrored"/>
                                         <ComboBoxItem Content="Bridged"/>
                                     </ComboBox>
 
-                                    <CheckBox Name="ChkGuiApplications" Content="Enable GUI Applications (WSLg)" Margin="0,5,0,5" ToolTip="Enable support for Linux GUI apps (WSLg)."/>
-                                    <CheckBox Name="ChkDebugConsole" Content="Show Debug Console" Margin="0,0,0,5" ToolTip="Show the WSL2 kernel debug console on startup."/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                                        <CheckBox Name="ChkGuiApplications" Content="Enable GUI Applications (WSLg)"/>
+                                        <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Enable support for Linux GUI apps (WSLg)."/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <CheckBox Name="ChkDebugConsole" Content="Show Debug Console"/>
+                                        <TextBlock Style="{StaticResource HelpIcon}" ToolTip="Show the WSL2 kernel debug console on startup."/>
+                                    </StackPanel>
                                 </StackPanel>
                             </GroupBox>
 
@@ -291,8 +327,11 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="WSL Path:" VerticalAlignment="Center" Width="100"/>
-                                    <TextBox Name="TxtWslPath" Grid.Column="1" Margin="5,0" ToolTip="e.g. /mnt/myfolder" VerticalContentAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Width="100">
+                                        <Label Content="WSL Path:" Padding="0"/>
+                                        <TextBlock Style="{StaticResource HelpIcon}" ToolTip="The path inside Linux where the folder will appear (e.g. /mnt/myfolder)."/>
+                                    </StackPanel>
+                                    <TextBox Name="TxtWslPath" Grid.Column="1" Margin="5,0" VerticalContentAlignment="Center"/>
                                 </Grid>
 
                                 <Button Content="Mount Folder" HorizontalAlignment="Right" Click="BtnMountFolder_Click" Width="100"/>
