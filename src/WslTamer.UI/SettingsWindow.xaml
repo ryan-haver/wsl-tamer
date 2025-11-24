@@ -49,9 +49,9 @@
                 <ui:NavigationViewItem Content="About" Icon="Info24" Tag="About" />
             </ui:NavigationView.MenuItems>
             
-            <ui:NavigationView.Content>
+            <ui:NavigationView.ContentOverlay>
                 <ContentControl x:Name="ContentFrame" Margin="20"/>
-            </ui:NavigationView.Content>
+            </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>
     </Grid>
 </ui:FluentWindow>
