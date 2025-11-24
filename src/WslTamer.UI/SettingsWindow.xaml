@@ -8,7 +8,7 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="WSL Tamer Settings" Height="550" Width="700"
-        MinWidth="650" MinHeight="450"
+        MinWidth="700" MinHeight="450"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
@@ -55,15 +55,38 @@
                 </ItemsPanelTemplate>
             </TabControl.ItemsPanel>
             <TabControl.ItemContainerStyle>
-                <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-                    <Setter Property="Width" Value="Auto"/>
-                    <Setter Property="Height" Value="Auto"/>
-                    <Setter Property="MinWidth" Value="0"/>
-                    <Setter Property="MinHeight" Value="0"/>
-                    <Setter Property="Padding" Value="8,4"/>
-                    <Setter Property="Margin" Value="0,0,4,0"/>
-                    <Setter Property="HorizontalAlignment" Value="Left"/>
-                    <Setter Property="VerticalAlignment" Value="Center"/>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="Border" 
+                                        Background="Transparent" 
+                                        CornerRadius="4" 
+                                        Margin="0,0,4,0" 
+                                        Padding="10,6">
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center"
+                                                      ContentSource="Header"
+                                                      RecognizesAccessKey="True"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </TabControl.ItemContainerStyle>
             <TabItem Header="General">
