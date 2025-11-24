@@ -29,6 +29,37 @@ public partial class SettingsWindow : Window
         RefreshDistrosList();
     }
 
+    public event Action<bool>? OnStartupSettingChanged;
+
+    private void ChkStartOnLogin_Click(object sender, RoutedEventArgs e)
+    {
+        if (ChkStartOnLogin.IsChecked.HasValue)
+        {
+            _startupService.SetStartup(ChkStartOnLogin.IsChecked.Value);
+            OnStartupSettingChanged?.Invoke(ChkStartOnLogin.IsChecked.Value);
+        }
+    }
+
+    public void UpdateStartupCheck(bool isChecked)
+    {
+        ChkStartOnLogin.IsChecked = isChecked;
+    }
+
+    private void BtnShutdownWsl_Click(object sender, RoutedEventArgs e)
+    {
+        if (System.Windows.MessageBox.Show("Are you sure you want to shutdown all WSL distributions?", "Confirm Shutdown", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        {
+            _wslService.ShutdownWsl();
+            System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
+        }
+    }
+
+    private void BtnReclaimMemory_Click(object sender, RoutedEventArgs e)
+    {
+        _wslService.ReclaimMemory();
+        System.Windows.MessageBox.Show("Memory reclaim command sent.", "WSL Tamer", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
     private void RefreshDistrosList()
     {
         var distros = _wslService.GetDistributions();
@@ -249,11 +280,9 @@ public partial class SettingsWindow : Window
         TxtUpdateStatus.Text = "Check complete.";
     }
 
-    private void ChkStartOnLogin_Click(object sender, RoutedEventArgs e)
+    private void BtnLaunchWsl_Click(object sender, RoutedEventArgs e)
     {
-        if (ChkStartOnLogin.IsChecked.HasValue)
-        {
-            _startupService.SetStartup(ChkStartOnLogin.IsChecked.Value);
-        }
+        _wslService.LaunchDefaultDistro();
+        System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
     }
 }
