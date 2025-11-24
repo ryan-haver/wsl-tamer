@@ -44,7 +44,7 @@ Switch between profiles instantly without restarting Windows:
 ## Installation
 
 1. Go to the [Releases](https://github.com/wsl-tamer/wsl-tamer/releases) page.
-2. Download the latest installer: **[WslTamer-v1.2.8.msi](https://github.com/wsl-tamer/wsl-tamer/releases/download/v1.2.8/WslTamer.msi)**
+2. Download the latest installer: **[WslTamer-v1.3.0.msi](https://github.com/wsl-tamer/wsl-tamer/releases/download/v1.3.0/WslTamer.msi)**
 3. Run the installer.
 
 ## Roadmap
