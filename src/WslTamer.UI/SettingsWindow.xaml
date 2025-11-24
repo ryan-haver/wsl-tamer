@@ -35,7 +35,19 @@
 
         <ui:TitleBar Grid.Row="0" Title="WSL Tamer Settings" Icon="/Assets/app.ico" />
 
-        <TabControl Grid.Row="1" Margin="10">
+        <TabControl Grid.Row="1" Margin="10" Padding="0">
+            <TabControl.Template>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ItemsPresenter Grid.Row="0"/>
+                        <ContentPresenter Grid.Row="1" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}"/>
+                    </Grid>
+                </ControlTemplate>
+            </TabControl.Template>
             <TabControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
@@ -47,12 +59,10 @@
                     <Setter Property="Height" Value="Auto"/>
                     <Setter Property="MinWidth" Value="0"/>
                     <Setter Property="MinHeight" Value="0"/>
-                    <Setter Property="Padding" Value="10,5"/>
+                    <Setter Property="Padding" Value="12,8"/>
+                    <Setter Property="Margin" Value="0,0,8,0"/>
                     <Setter Property="HorizontalAlignment" Value="Left"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="Margin" Value="0,0,4,0"/>
                 </Style>
             </TabControl.ItemContainerStyle>
             <TabItem Header="General">
