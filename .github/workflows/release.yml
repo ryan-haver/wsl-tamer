@@ -37,6 +37,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
+        generate_release_notes: true
         files: |
           WslTamer-win-x64.zip
           src/WslTamer.Installer/bin/Release/WslTamer.msi

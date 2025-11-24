@@ -29,6 +29,7 @@ Switch between profiles instantly without restarting Windows:
 
 * **USB Devices:** Attach/Detach USB devices to WSL (requires `usbipd-win`).
 * **Physical Disks:** Mount/Unmount physical disks to WSL.
+* **PCIe Passthrough:** Information and requirements for Discrete Device Assignment (DDA) / GPU Passthrough.
 
 ### Quick Actions
 
@@ -39,7 +40,8 @@ Switch between profiles instantly without restarting Windows:
 ### System Tray Integration
 
 * **Dynamic Icon:** Visual indicator of WSL state (Green = Running, Gray = Stopped).
-* **Right-click context menu:** For all actions.
+* **Right-click context menu:** Modern dark-themed menu with quick actions.
+* **Mounted Devices:** Quickly view and unmount physical disks directly from the tray.
 * **Auto-start:** Option to start automatically with Windows.
 
 ### User Interface
