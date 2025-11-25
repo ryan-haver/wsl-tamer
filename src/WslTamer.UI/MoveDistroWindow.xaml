@@ -7,8 +7,9 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="Move Distribution" Height="200" Width="500"
+        MinHeight="200" MinWidth="450"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
         Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -32,7 +33,7 @@
                 <ui:Button Content="..." Grid.Column="1" Width="30" Click="BtnBrowseLocation_Click" ToolTip="Browse for folder."/>
             </Grid>
             <TextBlock Text="Warning: This process involves exporting, unregistering, and re-importing the distribution. Do not interrupt it." 
-                       Foreground="Orange" TextWrapping="Wrap" Margin="0,5,0,0" FontSize="11"/>
+                       Foreground="{DynamicResource SystemFillColorCautionBrush}" TextWrapping="Wrap" Margin="0,5,0,0" FontSize="11"/>
         </StackPanel>
 
         <!-- Progress -->

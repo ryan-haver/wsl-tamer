@@ -7,8 +7,9 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="Distro Settings" Height="450" Width="500"
+        MinHeight="400" MinWidth="450"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round">
@@ -73,8 +74,8 @@
 
         <!-- Buttons -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,10">
-            <Button Content="Cancel" Width="80" Margin="0,0,10,0" Click="BtnCancel_Click" Name="BtnCancel" ToolTip="Discard changes."/>
-            <Button Content="Save" Width="80" Click="BtnSave_Click" Name="BtnSave" IsDefault="True" ToolTip="Write changes to /etc/wsl.conf and close."/>
+            <ui:Button Content="Cancel" Width="80" Margin="0,0,10,0" Click="BtnCancel_Click" Name="BtnCancel" ToolTip="Discard changes."/>
+            <ui:Button Content="Save" Width="80" Click="BtnSave_Click" Name="BtnSave" IsDefault="True" ToolTip="Write changes to /etc/wsl.conf and close." Appearance="Primary"/>
         </StackPanel>
     </Grid>
 </ui:FluentWindow>
