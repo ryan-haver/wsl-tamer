@@ -43,11 +43,18 @@ public abstract class TestBase
         // Initialize automation
         Automation = new UIA3Automation();
         
-        // Start the application
-        App = Application.Launch(AppPath);
+        // Start the application with --test-mode argument
+        App = Application.Launch(AppPath, "--test-mode");
         
-        // Wait for application to be ready
-        Thread.Sleep(2000);
+        // Wait for application to be ready and settings window to appear
+        Thread.Sleep(3000);
+        
+        // Verify settings window appeared
+        var window = GetSettingsWindow();
+        if (window == null)
+        {
+            throw new Exception("Settings window did not appear after launching in test mode");
+        }
     }
 
     [TearDown]
@@ -79,11 +86,33 @@ public abstract class TestBase
     {
         if (Automation == null) return null;
         
-        // Settings window should be the main window when opened
-        var windows = Automation.GetDesktop().FindAllChildren(cf => 
-            cf.ByClassName("Window").And(cf.ByName("Settings")));
+        // Try to find the settings window with retry logic
+        Window? foundWindow = null;
         
-        return windows.FirstOrDefault()?.AsWindow();
+        for (int i = 0; i < 10; i++)
+        {
+            // First try: Find by exact window title
+            var windows = Automation.GetDesktop().FindAllChildren(cf => 
+                cf.ByClassName("Window").And(cf.ByName("WSL Tamer Settings")));
+            
+            foundWindow = windows.FirstOrDefault()?.AsWindow();
+            if (foundWindow != null) break;
+            
+            // Second try: Find any window containing "Settings" in the title
+            windows = Automation.GetDesktop().FindAllChildren(cf => cf.ByClassName("Window"));
+            foundWindow = windows.FirstOrDefault(w => 
+            {
+                var name = w.Name;
+                return !string.IsNullOrEmpty(name) && name.Contains("Settings", StringComparison.OrdinalIgnoreCase);
+            })?.AsWindow();
+            
+            if (foundWindow != null) break;
+            
+            // Wait before retrying
+            Thread.Sleep(500);
+        }
+        
+        return foundWindow;
     }
 
     protected void TakeScreenshot(string testName)

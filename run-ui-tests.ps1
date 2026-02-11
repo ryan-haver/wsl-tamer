@@ -1,4 +1,15 @@
 # Run UI Tests for WSL Tamer
+# This script must be run with administrator privileges
+
+# Check if running as administrator
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+$isAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if (-not $isAdmin) {
+    Write-Host "This script requires administrator privileges to run UI tests." -ForegroundColor Red
+    Write-Host "Please run PowerShell as Administrator and try again." -ForegroundColor Yellow
+    exit 1
+}
 
 Write-Host "WSL Tamer UI Test Runner" -ForegroundColor Cyan
 Write-Host "=========================" -ForegroundColor Cyan

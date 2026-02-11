@@ -1,0 +1,138 @@
+/* Automation Page */
+.automation-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rule-card {
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  transition: all var(--transition);
+}
+
+.rule-card.enabled {
+  border-color: var(--color-success);
+}
+
+.rule-card.disabled {
+  opacity: 0.6;
+}
+
+.rule-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.rule-trigger-icon {
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  border-radius: 12px;
+}
+
+.rule-info {
+  flex: 1;
+}
+
+.rule-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+
+.rule-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.trigger-type {
+  background: var(--color-primary);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.trigger-value {
+  font-family: "Consolas", monospace;
+}
+
+.rule-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.rule-target {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--color-bg);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+.target-label {
+  color: var(--color-text-secondary);
+}
+
+.target-profile {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.rule-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Rule Editor Modal */
+.rule-editor {
+  max-width: 500px;
+}
+
+.rule-editor .form-group {
+  margin-bottom: 20px;
+}
+
+.rule-editor .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.rule-editor .form-group input[type="text"],
+.rule-editor .form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.rule-editor .form-group input.error,
+.rule-editor .form-group select.error {
+  border-color: var(--color-danger);
+}

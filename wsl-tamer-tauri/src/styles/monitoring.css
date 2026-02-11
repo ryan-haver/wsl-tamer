@@ -1,0 +1,231 @@
+/* Monitoring Dashboard */
+.monitoring-dashboard {
+  padding: 0;
+}
+
+.monitoring-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.monitoring-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+.metric-icon {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-secondary);
+  border-radius: 12px;
+}
+
+.metric-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.metric-title {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.metric-percent {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.metric-details {
+  display: flex;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.metric-details .separator {
+  opacity: 0.5;
+}
+
+/* Distro Metrics */
+.distro-metrics {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.distro-metrics h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.distro-metric-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border-radius: var(--border-radius);
+}
+
+.distro-status {
+  font-size: 0.7rem;
+}
+
+.distro-size {
+  font-family: "Consolas", monospace;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+/* Compact Monitoring */
+.monitoring-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  min-width: 80px;
+}
+
+.progress-bar-mini {
+  flex: 1;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-mini .progress-fill {
+  height: 100%;
+}
+
+.metric-value {
+  font-size: 0.8rem;
+  font-family: "Consolas", monospace;
+  color: var(--color-text);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Memory Breakdown Visualization */
+.memory-breakdown {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--card-bg, rgba(255, 255, 255, 0.05));
+  border-radius: 8px;
+}
+
+.memory-breakdown h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #999);
+}
+
+.breakdown-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-tertiary, rgba(0, 0, 0, 0.2));
+}
+
+.breakdown-segment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.breakdown-segment.used {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.breakdown-segment.buffers {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.breakdown-segment.cached {
+  background: linear-gradient(135deg, #f39c12, #d68910);
+}
+
+.breakdown-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.legend-color.used {
+  background: #e74c3c;
+}
+
+.legend-color.buffers {
+  background: #3498db;
+}
+
+.legend-color.cached {
+  background: #f39c12;
+}
+
+.legend-color.free {
+  background: #2ecc71;
+}
+
+.swap-info {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  font-size: 0.85rem;
+  color: var(--text-secondary, #999);
+}

@@ -18,12 +18,16 @@ This test suite provides comprehensive coverage of the WSL Tamer user interface,
 - .NET 8.0 SDK
 - Windows 10/11
 - WSL Tamer built in Debug configuration
+- **Administrator privileges** (required - app uses UAC elevation for WSL operations)
 
 ## Running Tests
+
+**Important**: Tests must be run with administrator privileges because WSL Tamer requires elevation.
 
 ### Run All Tests
 
 ```powershell
+# Run PowerShell as Administrator, then:
 .\run-ui-tests.ps1
 ```
 
@@ -214,9 +218,9 @@ To run tests in CI/CD pipelines:
 
 ## Known Limitations
 
-1. **Tray Icon Interaction**: Some tests may not fully interact with the system tray icon due to Windows security restrictions.
+1. **Admin Rights Required**: Tests require administrator privileges because WSL Tamer uses UAC elevation for WSL operations.
 
-2. **Admin Rights**: Tests requiring admin privileges (like USB device attachment) may need elevation.
+2. **Test Mode**: Tests launch the application with `--test-mode` argument, which opens the Settings window directly instead of showing the tray icon.
 
 3. **WSL Dependency**: Tests that interact with actual WSL distributions require WSL to be installed and functional.
 

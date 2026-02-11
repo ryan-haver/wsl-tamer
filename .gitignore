@@ -482,3 +482,33 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# ======================
+# Tauri / Rust / Vite
+# ======================
+
+# Rust build artifacts
+**/target/
+
+# Vite build output
+**/dist/
+
+# Tauri signing keys (SECURITY: never commit)
+*.tauri-key
+*.tauri-key.pub
+
+# AI agent configuration (local workspace only)
+.agent/
+
+# Cargo lock for library crates (optional, uncomment if needed)
+# Cargo.lock
+
+# Tauri plugin stores (user-specific runtime data)
+*.dat
+
+# ======================
+# Legacy / Archived
+# ======================
+
+# Electron prototype (superseded by Tauri)
+wsl-tamer-electron/

@@ -1,0 +1,59 @@
+/* WSL Tamer - Design Tokens & Reset */
+
+/* CSS Variables */
+:root {
+  /* Light theme colors */
+  --color-bg: #f8fafc;
+  --color-bg-secondary: #ffffff;
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-info: #06b6d4;
+  --color-info-hover: #0891b2;
+  --color-purple: #8b5cf6;
+  --color-purple-hover: #7c3aed;
+
+  --sidebar-width: 260px;
+  --border-radius: 8px;
+  --transition: 150ms ease;
+}
+
+/* Dark theme */
+.dark {
+  --color-bg: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-border: #334155;
+}
+
+/* Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  font-family:
+    "Segoe UI",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}

@@ -1,0 +1,13 @@
+/* WSL Tamer - Main Stylesheet
+ * Modular CSS architecture — each file handles a logical domain.
+ * Edit individual files in styles/ rather than this hub.
+ */
+
+@import './styles/variables.css';
+@import './styles/layout.css';
+@import './styles/components.css';
+@import './styles/config.css';
+@import './styles/automation.css';
+@import './styles/monitoring.css';
+@import './styles/wizard.css';
+@import './styles/ui.css';

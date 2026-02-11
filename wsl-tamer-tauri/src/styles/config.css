@@ -1,0 +1,172 @@
+/* Configuration Page */
+.config-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.config-section {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 24px;
+}
+
+.config-section h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.config-field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.config-field input[type="text"],
+.config-field input[type="number"],
+.config-field select {
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.config-field input[type="text"]:focus,
+.config-field input[type="number"]:focus,
+.config-field select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.config-field.config-toggle {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.config-field.config-toggle input[type="checkbox"] {
+  width: 44px;
+  height: 24px;
+  appearance: none;
+  background: var(--color-border);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.config-field.config-toggle input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition);
+}
+
+.config-field.config-toggle input[type="checkbox"]:checked {
+  background: var(--color-primary);
+}
+
+.config-field.config-toggle input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+.config-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: var(--color-border);
+  border-radius: 50%;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  cursor: help;
+  transition: background var(--transition);
+}
+
+.tooltip:hover {
+  background: var(--color-info);
+  color: white;
+}
+
+.config-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.unsaved-changes-notice {
+  text-align: center;
+  color: var(--color-warning);
+  font-size: 0.875rem;
+  margin-top: 16px;
+}
+
+/* Distro Config Editor */
+.distro-config-editor {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.distro-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--color-card);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+.distro-selector label {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.distro-selector .form-select {
+  flex: 1;
+  max-width: 300px;
+}
+
+.distro-config-editor .config-section h3 {
+  font-size: 1rem;
+  margin: 0 0 16px 0;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+}

@@ -1,0 +1,280 @@
+/* Install Wizard */
+.install-wizard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.install-wizard {
+  background: var(--color-bg-secondary);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.wizard-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.wizard-icon {
+  font-size: 2rem;
+}
+
+.wizard-header h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+
+.wizard-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.wizard-close:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Wizard Steps */
+.wizard-steps {
+  display: flex;
+  padding: 16px 24px;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  opacity: 0.5;
+}
+
+.wizard-step.active,
+.wizard-step.done {
+  opacity: 1;
+}
+
+.wizard-step.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.wizard-step.done {
+  color: var(--color-success);
+}
+
+.step-number {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.wizard-step.done .step-number::after {
+  content: '✓';
+}
+
+.wizard-step.done .step-number {
+  background: var(--color-success);
+  color: white;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Wizard Content */
+.wizard-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.wizard-content h3 {
+  margin: 0 0 16px 0;
+  color: var(--color-text);
+}
+
+.wizard-content p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.info-box {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.info-box.warning {
+  border-color: var(--color-warning);
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.info-box h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.info-box ul {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.info-box li {
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.info-box code {
+  display: block;
+  background: var(--color-bg-secondary);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-family: "Consolas", monospace;
+  margin-top: 8px;
+  overflow-x: auto;
+}
+
+/* Distro Selection Grid */
+.distro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.distro-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.distro-option:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-secondary);
+}
+
+.distro-option.selected {
+  border-color: var(--color-primary);
+  background: rgba(138, 43, 226, 0.1);
+}
+
+.distro-icon {
+  font-size: 2rem;
+}
+
+.distro-label {
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.check-mark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* Installing State */
+.wizard-installing {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.install-animation {
+  margin-bottom: 24px;
+}
+
+.install-hint {
+  margin-top: 32px;
+  padding: 20px;
+  background: var(--color-bg);
+  border-radius: var(--border-radius);
+}
+
+.install-hint code {
+  display: block;
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--color-bg-secondary);
+  border-radius: 6px;
+  font-family: "Consolas", monospace;
+}
+
+/* Complete/Error States */
+.wizard-complete,
+.wizard-error {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.success-icon,
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+/* Wizard Footer */
+.wizard-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
