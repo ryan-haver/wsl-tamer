@@ -1,7 +1,7 @@
 # WSL Tamer - Product Roadmap
 
-**Last Updated:** November 26, 2025  
-**Version:** 2.0  
+**Last Updated:** February 10, 2026  
+**Version:** 2.1  
 **Status:** Active Development
 
 > Quick Navigation: See `INDEX.md` for the complete documentation index
@@ -25,7 +25,15 @@ WSL Tamer is positioned to become the premier WSL management solution by combini
 - [Phase 2: Snapshot & Backup System](docs/roadmap/phase-02-snapshots-backup.md) — VHDX + tar snapshots, timeline UI, policies, cloud backup pilot (Azure Blob).
 - [Phase 3: Essential Monitoring](docs/roadmap/phase-03-monitoring.md) — Resource dashboard, process explorer, ports viewer, packages inventory.
 
-### User Experience & Automation (2025)
+### Quality of Life & Diagnostics (2026) ✨ *NEW*
+
+- **QoL-A: .wslconfig Visual Editor** — Validated config editor with smart defaults, presets, and conflict warnings.
+- **QoL-B: WSL Health Check & Troubleshooter** — One-click diagnostics for DNS, networking, VPN, systemd, and guided fixes.
+- **QoL-C: VHDX Disk Manager** — Compact, resize, and relocate VHDX files with storage reclamation dashboard.
+- **QoL-D: Cross-Filesystem Performance Guard** — Detect slow `/mnt/` patterns and guide migration to native Linux filesystem.
+- **QoL-E: Distro Template Marketplace** — Save, clone, import/export fully configured distro templates.
+
+### User Experience & Automation (2026)
 
 - [Phase 4: UI/UX Enhancements](docs/roadmap/phase-04-ui-ux.md) — Tray quick launch, embedded terminal, Explorer context menus, hotkeys, jump list.
 - [Phase 5: System-Level Automation](docs/roadmap/phase-05-automation.md) — Event-driven automation, scheduling, workflow builder, script templates.
@@ -58,6 +66,11 @@ WSL Tamer is positioned to become the premier WSL management solution by combini
 | Snapshots (VHDX + tar) | 📋 Phase 2 | ❌ | ✅ |
 | Resource monitoring | 📋 Phase 3 | ❌ | ❌ |
 | USB/disk/folder mounting | ✅ v2.0 | ❌ | ❌ |
+| **Visual config editor** | 📋 QoL-A | ❌ | ❌ |
+| **Health check / troubleshooter** | 📋 QoL-B | ❌ | ❌ |
+| **VHDX disk manager** | 📋 QoL-C | ❌ | ❌ |
+| **Filesystem perf guard** | 📋 QoL-D | ❌ | ❌ |
+| **Distro templates** | 📋 QoL-E | ❌ | ❌ |
 | PCIe passthrough | 📋 Phase 9 | ❌ | ❌ |
 | IDE/Browser integrations | 🔮 Phases 10 | ❌ | ❌ |
 | Remote/LAN mgmt | 🔮 Phase 11 | ❌ | ❌ |
@@ -79,6 +92,8 @@ Legend: ✅ Available | 📋 Planned (2025-2026) | 🔮 Vision (2027-2028) | ❌
 - v2.5 (Q3 2025): Security & Auth — Windows Hello, user provisioning, SSH keys, credential vault
 - v2.6 (Q4 2025): Phase 4 — UI/UX polish
 - v2.7 (Q4 2025): Phase 5 — System-level automation
+- **v3.0 (Q1 2026): QoL-A/B/C — Config editor, health check, VHDX manager**
+- **v3.1 (Q2 2026): QoL-D/E — Performance guard, distro templates**
 - v3.x (2026): Phases 6-9 — Networking, packages, multimedia, hardware
 - v4.x-v6.x (2027-2028): Phases 10-14 — Ecosystem expansion
 
@@ -1961,6 +1976,268 @@ All share common REST API
 
 ---
 
+## Quality of Life & Diagnostics (NEW — February 2026)
+
+These features address the most common, well-documented WSL pain points. They are designed to provide **immediate, tangible value** and differentiate WSL Tamer from all competitors.
+
+---
+
+### QoL-A: .wslconfig / wsl.conf Visual Editor with Validation 🎯
+
+**Status:** Planned  
+**Complexity:** Medium  
+**Priority:** HIGH  
+**Estimated Effort:** 2-3 weeks
+
+The #1 WSL frustration is excessive memory consumption, swap behavior, and cross-filesystem performance — all rooted in misconfigured `.wslconfig` and per-distro `wsl.conf` files. A visual editor with real-time validation and recommendations.
+
+- [ ] **Visual form for all .wslconfig options**
+  - Memory limits, processors, swap size/location
+  - Networking mode (NAT, mirrored, bridged)
+  - GPU/CUDA settings, nested virtualization
+  - Firewall, DNS tunneling, autoProxy
+  - Real-time syntax validation
+
+- [ ] **Smart defaults generator**
+  - Detect host machine specs (RAM, cores, disk)
+  - Suggest optimal values based on hardware
+  - Account for other running VMs/services
+
+- [ ] **Preset profiles**
+  - "Battery Saver" — minimal memory, fewer cores
+  - "Max Performance" — higher limits, swap to SSD
+  - "Docker Optimized" — tuned for container workloads
+  - "AI/ML Workload" — GPU passthrough, large memory
+  - Custom profiles (save/load)
+
+- [ ] **Conflict detection & warnings**
+  - `mirroredNetworking` + VPN = ⚠️ known issues
+  - Memory limit exceeds host RAM = ⚠️
+  - Missing prerequisites for specific options
+  - Live diff preview before saving
+
+- [ ] **Per-distro wsl.conf editor**
+  - Boot command, systemd toggle
+  - Automount options, default user
+  - Interop settings (appendWindowsPath, etc.)
+  - Network options (generateHosts, generateResolvConf)
+
+**User Stories:**
+- As a developer, I want to limit WSL to 8GB RAM without searching for .wslconfig docs
+- As a data scientist, I want a GPU-optimized preset for my ML workloads
+- As a VPN user, I want warnings before enabling mirrored networking
+
+---
+
+### QoL-B: WSL Health Check & Troubleshooter 🩺
+
+**Status:** Planned  
+**Complexity:** Medium  
+**Priority:** HIGH  
+**Estimated Effort:** 2-3 weeks
+
+A one-click diagnostic that scans for every known WSL issue and provides guided fixes. Solves the opaque debugging experience that frustrates WSL users.
+
+- [ ] **Pre-flight system checks**
+  - Hyper-V / Virtual Machine Platform enabled
+  - WSL kernel version (up-to-date?)
+  - Windows version compatibility
+  - BIOS virtualization (VT-x / AMD-V) status
+  - Conflicting software detection (VirtualBox, VMware)
+
+- [ ] **Runtime diagnostics**
+  - DNS resolution test (internal + external)
+  - Internet connectivity from within WSL
+  - 9P filesystem server health
+  - systemd status per distro
+  - GPU driver version and CUDA availability
+  - WSLg / GUI app readiness
+
+- [ ] **Performance audit**
+  - Detect projects on `/mnt/` paths (slow cross-FS access)
+  - Unnecessary swap usage analysis
+  - Oversized VHDX files (see QoL-C)
+  - Stale stopped distros consuming resources
+  - Memory pressure assessment
+
+- [ ] **VPN compatibility check**
+  - Detect active VPN client
+  - Test connectivity in mirrored vs NAT mode
+  - Suggest networking mode based on VPN vendor
+  - Known-issue database for common VPN + WSL conflicts
+
+- [ ] **Fix-it actions**
+  - One-click: restart WSL (`wsl --shutdown` + restart)
+  - One-click: reset networking stack
+  - One-click: compact VHDX (links to QoL-C)
+  - One-click: update WSL kernel
+  - Guided: enable missing Windows features
+
+- [ ] **Diagnostic report export**
+  - Export full diagnostic as Markdown/JSON
+  - Shareable for support/GitHub Issues
+  - Anonymize sensitive paths/usernames
+
+**User Stories:**
+- As a developer whose WSL suddenly stopped connecting to the internet, I want a one-click diagnosis
+- As a user on corporate VPN, I want to know why my WSL networking broke after a Windows update
+- As a new WSL user, I want a health check to confirm everything is set up correctly
+
+---
+
+### QoL-C: VHDX Disk Manager 💾
+
+**Status:** Planned  
+**Complexity:** Low-Medium  
+**Priority:** HIGH  
+**Estimated Effort:** 1-2 weeks
+
+WSL VHDX files grow but never shrink automatically. A distro cleaned to 8GB can still occupy 200GB on the host. The manual fix (`Optimize-VHD` or `diskpart`) is arcane.
+
+- [ ] **Storage dashboard**
+  - Per-distro VHDX actual size vs used space (visual bar)
+  - Total WSL disk footprint across all distros
+  - Color-coded waste indicator (green/yellow/red)
+  - Historical size tracking (growth over time)
+
+- [ ] **One-click compact**
+  - Safely shut down distro
+  - Compact VHDX (via `Optimize-VHD` or `diskpart`)
+  - Restart distro
+  - Show before/after size with space reclaimed
+
+- [ ] **Scheduled compaction**
+  - Weekly auto-compact during idle hours
+  - Configurable schedule (daily, weekly, monthly)
+  - Skip if distro is in use
+  - Notification of space reclaimed
+
+- [ ] **Move VHDX to different drive**
+  - Relocate distro to D:, external SSD, NAS
+  - Progress bar with validation
+  - Verify integrity after move
+  - Update WSL registry automatically
+
+- [ ] **Resize VHDX**
+  - Grow or shrink VHDX max size
+  - Warn before shrinking below used space
+  - Recommend optimal size based on usage patterns
+
+- [ ] **Storage reclamation suggestions**
+  - "Ubuntu is using 8GB of 45GB allocated — compact to save 37GB"
+  - Identify distros that haven't been used in 30+ days
+  - Suggest archiving rarely-used distros
+
+**Technical Notes:**
+```powershell
+# Compact via Optimize-VHD (requires Hyper-V module)
+Optimize-VHD -Path $vhdxPath -Mode Full
+
+# Fallback via diskpart (no Hyper-V required)
+select vdisk file="path.vhdx"
+compact vdisk
+
+# Move distro
+wsl --export <distro> backup.tar
+wsl --unregister <distro>
+wsl --import <distro> <new-path> backup.tar
+```
+
+**User Stories:**
+- As a developer with a 256GB laptop SSD, I want to reclaim wasted space from my WSL distros
+- As a power user with 5 distros, I want to move rarely-used ones to my external drive
+- As a tidy user, I want automatic weekly compaction so disk waste never builds up
+
+---
+
+### QoL-D: Cross-Filesystem Performance Guard 🚦
+
+**Status:** Planned  
+**Complexity:** Medium  
+**Priority:** MEDIUM  
+**Estimated Effort:** 2 weeks
+
+The #1 WSL performance killer is developers working in `/mnt/c/Users/` instead of `/home/`. This feature detects the pattern and guides users to proper file placement.
+
+- [ ] **Filesystem usage analysis**
+  - Scan for projects with heavy I/O on `/mnt/` paths
+  - Identify common project indicators (`.git`, `package.json`, `Cargo.toml`, `go.mod`)
+  - Calculate estimated performance penalty
+
+- [ ] **Proactive notification**
+  - Non-intrusive toast: "Your project at `/mnt/c/code/myapp` would be ~5x faster in `~/code/myapp`"
+  - Show before/after performance estimate
+  - "Don't remind me for this project" option
+  - Configurable sensitivity (aggressive, moderate, quiet)
+
+- [ ] **One-click migration wizard**
+  - Copy project to Linux filesystem
+  - Preserve `.git` history and remotes
+  - Create symlink from old location (optional)
+  - Update VS Code workspace files
+  - Update JetBrains project paths
+
+- [ ] **Best practices dashboard**
+  - Visual breakdown: files on Linux FS vs Windows FS
+  - Performance tips and recommendations
+  - Link to Microsoft's official guidance
+
+**User Stories:**
+- As a developer who didn't know about the performance difference, I want the app to tell me
+- As a team lead, I want to ensure all my team members have their projects on the Linux filesystem
+- As a Node.js developer, I want `npm install` to not take 10x longer than it should
+
+---
+
+### QoL-E: Distro Template Marketplace & Cloning 📋
+
+**Status:** Planned  
+**Complexity:** Medium-High  
+**Priority:** MEDIUM  
+**Estimated Effort:** 3-4 weeks
+
+Let users save a fully configured distro as a reusable template and share/clone it. Eliminates the "I spent 3 hours setting up my environment" problem.
+
+- [ ] **Save as Template**
+  - Capture full distro state (packages, configs, env vars, dotfiles)
+  - Add metadata: name, description, tags, version
+  - Compress and store locally
+  - Template size estimation before save
+
+- [ ] **Built-in template library**
+  - "Python ML Environment" — Python 3.12, CUDA, PyTorch, JupyterLab
+  - "Node.js Full Stack" — Node LTS, pnpm, PostgreSQL, Redis
+  - "Rust Development" — rustup, cargo, clippy, miri
+  - "Kali Pentest" — Full Kali toolset, VPN, Tor
+  - "DevOps Toolkit" — Docker, kubectl, Terraform, Ansible
+  - "Go Microservices" — Go latest, protobuf, gRPC, golangci-lint
+
+- [ ] **Clone to new distro**
+  - Create new distro instance from template
+  - Customize name and location
+  - Apply resource profile during creation
+  - Seconds to deploy a pre-configured environment
+
+- [ ] **Import / Export**
+  - Export templates as `.tar.gz` for team sharing
+  - Import templates from file or URL
+  - Checksum verification on import
+  - Version pinning for reproducibility
+
+- [ ] **Template freshness management**
+  - Track when template was last updated
+  - Suggest rebuilding stale templates
+  - Diff between template and running distro
+  - Layered updates (apply changes on top of base template)
+
+**User Stories:**
+- As a team lead, I want all new hires to start with an identical dev environment in 30 seconds
+- As a freelancer, I want separate client-specific environments that I can spin up and tear down
+- As an educator, I want to distribute a pre-configured distro to my class
+- As a developer, I want to quickly spin up a fresh environment to test a new framework
+
+---
+
 ## Contributing
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
@@ -1993,6 +2270,6 @@ WSL Tamer is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-**Last Updated:** January 2025  
-**Roadmap Version:** 2.0  
-**Next Review:** March 2025
+**Last Updated:** February 2026  
+**Roadmap Version:** 2.1  
+**Next Review:** April 2026
