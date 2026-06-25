@@ -25,4 +25,14 @@ public partial class AboutPage : System.Windows.Controls.UserControl
         await _updateService.CheckForUpdatesAsync();
         TxtUpdateStatus.Text = "Check complete.";
     }
+
+    private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        }
+        catch { }
+        e.Handled = true;
+    }
 }

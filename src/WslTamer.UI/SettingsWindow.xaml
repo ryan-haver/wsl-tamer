@@ -8,8 +8,8 @@
         xmlns:converters="clr-namespace:WslTamer.UI.Converters"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="WSL Tamer Settings" Height="550" Width="700"
-        MinWidth="700" MinHeight="450"
+        Title="WSL Tamer Settings" Height="600" Width="950"
+        MinWidth="950" MinHeight="550"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
@@ -70,9 +70,6 @@
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             
-            <ui:NavigationView.ContentOverlay>
-                <ContentControl x:Name="ContentFrame" Margin="20"/>
-            </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>
     </Grid>
 </ui:FluentWindow>

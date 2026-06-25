@@ -47,7 +47,7 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
 
     private void BtnRunDistro_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             _wslService.RunDistro(name);
             System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
@@ -56,7 +56,7 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
 
     private void BtnStopDistro_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             _wslService.TerminateDistro(name);
             System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(RefreshDistrosList));
@@ -65,7 +65,7 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
 
     private void BtnDistroSettings_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             var settingsWindow = new DistroSettingsWindow(_wslService, name);
             settingsWindow.Owner = Window.GetWindow(this);
@@ -75,7 +75,7 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
 
     private void BtnSetDefaultDistro_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             _wslService.SetDefaultDistro(name);
             RefreshDistrosList();
@@ -84,7 +84,7 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
 
     private void BtnCloneDistro_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             var cloneWindow = new CloneDistroWindow(_wslService, name);
             cloneWindow.Owner = Window.GetWindow(this);
@@ -97,7 +97,7 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
 
     private void BtnMoveDistro_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             var moveWindow = new MoveDistroWindow(_wslService, name);
             moveWindow.Owner = Window.GetWindow(this);
@@ -110,7 +110,7 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
 
     private async void BtnExportDistro_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
@@ -135,9 +135,31 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
         }
     }
 
+    private async void BtnCompactDistro_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement btn && btn.Tag is string name)
+        {
+            try
+            {
+                btn.IsEnabled = false;
+                await System.Threading.Tasks.Task.Run(() => _wslService.CompactDistro(name));
+                System.Windows.MessageBox.Show($"Distribution '{name}' compacted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Compaction failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                btn.IsEnabled = true;
+                RefreshDistrosList();
+            }
+        }
+    }
+
     private async void BtnUnregisterDistro_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string name)
+        if (sender is FrameworkElement btn && btn.Tag is string name)
         {
             if (System.Windows.MessageBox.Show(
                 $"Are you sure you want to UNREGISTER '{name}'?\n\nThis will permanently delete the distribution and all its files.\nThis action cannot be undone.", 
@@ -157,6 +179,15 @@ public partial class DistributionsPage : System.Windows.Controls.UserControl
                     System.Windows.MessageBox.Show($"Failed to unregister distro: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+    }
+
+    private void BtnMoreActions_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement element && element.ContextMenu != null)
+        {
+            element.ContextMenu.PlacementTarget = element;
+            element.ContextMenu.IsOpen = true;
         }
     }
 }

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="850">
     <UserControl.Resources>
         <Style x:Key="HelpIcon" TargetType="ui:SymbolIcon">
             <Setter Property="Symbol" Value="Info24"/>
@@ -16,134 +16,257 @@
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
         </Style>
     </UserControl.Resources>
-    <Grid Margin="0,10,0,0">
+    
+    <Grid Margin="16">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="240"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <!-- Profile List -->
-        <GroupBox Header="Profiles" Grid.Column="0" Margin="0,0,5,0">
-            <DockPanel>
-                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,0">
-                    <Button Name="BtnAddProfile" Content="Add" Margin="0,0,10,0" Click="BtnAddProfile_Click"/>
-                    <Button Name="BtnRemoveProfile" Content="Remove" Click="BtnRemoveProfile_Click"/>
+        <!-- Profiles List (Left Panel) -->
+        <Grid Grid.Column="0" Margin="0,0,16,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Grid Grid.Row="0" Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Profiles" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <ui:Button Name="BtnAddProfile" ToolTip="Add a new profile" Margin="0,0,4,0" Click="BtnAddProfile_Click" Appearance="Transparent" Padding="6">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Add24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+                    <ui:Button Name="BtnRemoveProfile" ToolTip="Remove selected profile" Click="BtnRemoveProfile_Click" Appearance="Transparent" Padding="6" Foreground="Red">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Delete24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
                 </StackPanel>
-                <ListBox Name="LstProfiles" DisplayMemberPath="Name" SelectionChanged="LstProfiles_SelectionChanged"
-                         AllowDrop="True"
-                         PreviewMouseLeftButtonDown="LstProfiles_PreviewMouseLeftButtonDown"
-                         Drop="LstProfiles_Drop"
-                         MouseMove="LstProfiles_MouseMove"/>
-            </DockPanel>
-        </GroupBox>
+            </Grid>
+            
+            <ListBox Name="LstProfiles" Grid.Row="1" SelectionChanged="LstProfiles_SelectionChanged"
+                     AllowDrop="True"
+                     PreviewMouseLeftButtonDown="LstProfiles_PreviewMouseLeftButtonDown"
+                     Drop="LstProfiles_Drop"
+                     MouseMove="LstProfiles_MouseMove"
+                     Background="{DynamicResource ControlFillColorDefaultBrush}"
+                     BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                     BorderThickness="1" Padding="4">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="Margin" Value="0,2"/>
+                        <Setter Property="Padding" Value="8"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Symbol="Person24" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Medium" FontSize="14"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
         
-        <!-- Profile Editor -->
-        <Grid Grid.Column="1" Margin="10,0,0,0">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Name="PnlEditor" IsEnabled="False">
-                    <GroupBox Header="Settings" Margin="0,0,0,10">
-                        <StackPanel Margin="5">
-                            <Label Content="Profile Name"/>
-                            <TextBox Name="TxtName" Margin="0,0,0,10"/>
-                            
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="Memory Limit"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Maximum RAM allocated to the WSL 2 VM. Examples: 4GB, 512MB."/>
+        <!-- Profile Editor (Right Panel) -->
+        <Grid Grid.Column="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Name="PnlEditor" IsEnabled="False" Margin="0,0,10,0">
+                    <TextBlock Text="Profile Settings" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                    
+                    <!-- Core Resource Allocation Group -->
+                    <TextBlock Text="Resource Allocation" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,8"/>
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Profile Name" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="The name of this WSL configuration profile" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
-                            <TextBox Name="TxtMemory" Margin="0,0,0,10"/>
-                            
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="Processors"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Number of CPU cores assigned to WSL. Set to 0 for default (all cores)."/>
-                            </StackPanel>
-                            <TextBox Name="TxtProcessors" Margin="0,0,0,10"/>
-                            
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="Swap"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Virtual memory size (e.g., 2GB). Set to 0 to disable swap."/>
-                            </StackPanel>
-                            <TextBox Name="TxtSwap" Margin="0,0,0,10"/>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                <CheckBox Name="ChkLocalhost" Content="Localhost Forwarding"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Access WSL network services from Windows via localhost."/>
-                            </StackPanel>
+                            <ui:TextBox Name="TxtName" Width="180" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
 
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                <CheckBox Name="ChkDefaultProfile" Content="Set as Default Automation Profile"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="This profile will be applied when no automation rules are active."/>
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Memory Limit" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Maximum RAM allocated to the WSL 2 VM (e.g., 4GB, 512MB)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
+                            <ui:TextBox Name="TxtMemory" Width="180" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
 
-                    <GroupBox Header="Advanced Global Settings (.wslconfig)" Margin="0,0,0,10">
-                        <StackPanel Margin="5">
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="Kernel Path"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Path to a custom Linux kernel image. Leave empty for default."/>
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Processors" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Number of CPU cores assigned to WSL (0 for all cores)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
-                            <TextBox Name="TxtKernelPath" Margin="0,0,0,5"/>
+                            <ui:TextBox Name="TxtProcessors" Width="180" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
 
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="Networking Mode"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="NAT (Default), Mirrored (New in WSL2), or Bridged."/>
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Swap Size" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Virtual memory size (e.g., 2GB, 0 to disable)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
-                            <ComboBox Name="CboNetworkingMode" Margin="0,0,0,5">
+                            <ui:TextBox Name="TxtSwap" Width="180" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
+
+                    <ui:Card Margin="0,0,0,16" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Localhost Forwarding" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Allow accessing WSL network services from Windows via localhost" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ui:ToggleSwitch Name="ChkLocalhost" Margin="0" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
+
+                    <!-- Advanced Settings Group -->
+                    <TextBlock Text="Advanced Settings (.wslconfig)" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,8,0,8"/>
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Custom Linux Kernel" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Path to a custom Linux kernel image file (leave empty for default)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ui:TextBox Name="TxtKernelPath" Width="180" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
+
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Networking Mode" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Configure network architecture (NAT or Mirrored)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ComboBox Name="CboNetworkingMode" Width="180" VerticalAlignment="Center">
                                 <ComboBoxItem Content="NAT"/>
                                 <ComboBoxItem Content="Mirrored"/>
                                 <ComboBoxItem Content="Bridged"/>
                             </ComboBox>
+                        </WrapPanel>
+                    </ui:Card>
 
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                                <CheckBox Name="ChkGuiApplications" Content="Enable GUI Applications (WSLg)"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Enable support for Linux GUI apps (WSLg)."/>
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="GUI Applications (WSLg)" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Enable support for graphical Linux apps inside Windows" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
+                            <ui:ToggleSwitch Name="ChkGuiApplications" Margin="0" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
+
+                    <ui:Card Margin="0,0,0,16" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Debug Console" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Show the WSL2 kernel debug console on startup" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ui:ToggleSwitch Name="ChkDebugConsole" Margin="0" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
+
+                    <!-- Automation & Auto-Switch Settings -->
+                    <TextBlock Text="Automation &amp; Triggers" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,8,0,8"/>
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Default Automation Profile" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Automatically apply this profile when no other rules match" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ui:ToggleSwitch Name="ChkDefaultProfile" Margin="0" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </ui:Card>
+                    
+                    <ui:Card Margin="0,0,0,16" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Auto-Switch Triggers" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <TextBlock Text="Apply this profile automatically based on active processes or network connection." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,12"/>
                             
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <CheckBox Name="ChkDebugConsole" Content="Show Debug Console"/>
-                                <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="Show the WSL2 kernel debug console on startup."/>
-                            </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
-
-                    <GroupBox Header="Auto-Switch Triggers" Margin="0,10,0,10">
-                        <StackPanel Margin="5">
-                            <TextBlock Text="Automatically apply this profile when:" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,5" FontStyle="Italic"/>
-                            <ListBox Name="LstTriggers" Height="80" Margin="0,0,0,5">
+                            <ListBox Name="LstTriggers" Height="100" Margin="0,0,0,12" 
+                                     Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                     BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                                     BorderThickness="1" Padding="4">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                        <Setter Property="Margin" Value="0,1"/>
+                                        <Setter Property="Padding" Value="6,4"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                        </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <ComboBox Name="CboTriggerType" Width="140" Margin="0,0,5,0" SelectedIndex="0">
+                            
+                            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <ComboBox Name="CboTriggerType" SelectedIndex="0" VerticalAlignment="Center" Width="150" Margin="0,0,8,8">
                                     <ComboBoxItem Content="Process Start" ToolTip="Trigger when a specific process starts (e.g. code.exe)"/>
                                     <ComboBoxItem Content="Connected to Network" ToolTip="Trigger when connected to a specific Wi-Fi SSID"/>
                                 </ComboBox>
-                                <TextBox Name="TxtTriggerValue" Width="120" Margin="0,0,5,0" ToolTip="Value (e.g. 'code.exe' or 'MyHomeWiFi')"/>
-                                <Button Content="Add" Width="50" Click="BtnAddTrigger_Click"/>
-                                <Button Content="Del" Width="50" Margin="5,0,0,0" Click="BtnDeleteTrigger_Click"/>
-                            </StackPanel>
+                                <ui:TextBox Name="TxtTriggerValue" VerticalAlignment="Center" Width="200" PlaceholderText="Value (e.g., code.exe or WiFi-SSID)" Margin="0,0,8,8"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
+                                    <ui:Button Content="Add Trigger" Click="BtnAddTrigger_Click" Appearance="Primary" Margin="0,0,6,0">
+                                        <ui:Button.Icon>
+                                            <ui:SymbolIcon Symbol="Add24"/>
+                                        </ui:Button.Icon>
+                                    </ui:Button>
+                                    <ui:Button Content="Remove" Click="BtnDeleteTrigger_Click" Foreground="Red">
+                                        <ui:Button.Icon>
+                                            <ui:SymbolIcon Symbol="Delete24"/>
+                                        </ui:Button.Icon>
+                                    </ui:Button>
+                                </StackPanel>
+                            </WrapPanel>
                         </StackPanel>
-                    </GroupBox>
+                    </ui:Card>
                     
-                    <Button Content="Save Changes" HorizontalAlignment="Right" MinWidth="120" Click="BtnSaveProfile_Click"/>
+                    <ui:Button Name="BtnSaveProfile" Content="Save Profile Settings" Appearance="Primary" HorizontalAlignment="Right" MinWidth="155" Padding="12,8" Click="BtnSaveProfile_Click" Margin="0,8,0,16">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Save24"/>
+                        </ui:Button.Icon>
+                    </ui:Button>
                 </StackPanel>
             </ScrollViewer>
             
             <!-- Empty State Overlay -->
-            <Border Name="PnlNoProfile" Background="{DynamicResource ApplicationBackgroundBrush}" Visibility="Visible">
+            <Border Name="PnlNoProfile" Background="{DynamicResource ApplicationBackgroundBrush}" Visibility="Visible" CornerRadius="8">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="Select a profile to configure" 
-                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" 
-                               FontSize="16" 
+                    <ui:SymbolIcon Symbol="ContactCard24" FontSize="48" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,16" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Select a Profile to Configure" 
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                               FontSize="18" FontWeight="SemiBold"
                                HorizontalAlignment="Center"/>
-                    <TextBlock Text="or create a new one" 
+                    <TextBlock Text="Choose an existing profile from the list or click the Add button to create a new configuration." 
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" 
-                               FontSize="12" 
+                               FontSize="13" 
                                HorizontalAlignment="Center"
-                               Margin="0,5,0,0"/>
+                               TextAlignment="Center"
+                               Width="300"
+                               Margin="0,8,0,0"/>
                 </StackPanel>
             </Border>
         </Grid>

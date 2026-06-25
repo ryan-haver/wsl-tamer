@@ -11,50 +11,149 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:StateToColorConverter x:Key="StateToColorConverter"/>
     </UserControl.Resources>
-    <Grid Margin="10">
+    <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,10">
-            <Button Content="Install New" Click="BtnInstallDistro_Click" Margin="0,0,10,0" ToolTip="Install a new distribution from the online registry."/>
-            <Button Content="Import Distro" Click="BtnImportDistro_Click" Margin="0,0,10,0" ToolTip="Import a distribution from a .tar file."/>
-            <Button Content="Refresh" Click="BtnRefreshDistros_Click" ToolTip="Reload the list of distributions."/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,16">
+            <ui:Button Content="Install New" Click="BtnInstallDistro_Click" Margin="0,0,10,0" ToolTip="Install a new distribution from the online registry." Appearance="Primary">
+                <ui:Button.Icon>
+                    <ui:SymbolIcon Symbol="Add24"/>
+                </ui:Button.Icon>
+            </ui:Button>
+            <ui:Button Content="Import Distro" Click="BtnImportDistro_Click" Margin="0,0,10,0" ToolTip="Import a distribution from a .tar file.">
+                <ui:Button.Icon>
+                    <ui:SymbolIcon Symbol="ArrowDown24"/>
+                </ui:Button.Icon>
+            </ui:Button>
+            <ui:Button Click="BtnRefreshDistros_Click" ToolTip="Reload the list of distributions.">
+                <ui:Button.Icon>
+                    <ui:SymbolIcon Symbol="ArrowSync24"/>
+                </ui:Button.Icon>
+            </ui:Button>
         </StackPanel>
         
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl Name="IcDistros">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel />
+                        <StackPanel Margin="0,0,10,0"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ui:Card Margin="5" Width="320" Padding="10">
-                            <StackPanel>
-                                <DockPanel LastChildFill="False">
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16"/>
-                                    <TextBlock Text="★" Visibility="{Binding IsDefault, Converter={StaticResource BooleanToVisibilityConverter}}" DockPanel.Dock="Right" Foreground="Gold" ToolTip="Default Distribution"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding State}" Margin="0,5,0,0" Foreground="{Binding IsRunning, Converter={StaticResource StateToColorConverter}}"/>
-                                <TextBlock Text="{Binding Version, StringFormat='WSL {0}'}" Margin="0,0,0,10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,5">
-                                    <Button Content="Run" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnRunDistro_Click" ToolTip="Start this distribution in a new terminal window."/>
-                                    <Button Content="Stop" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnStopDistro_Click" ToolTip="Terminate this distribution."/>
-                                    <Button Content="Settings" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnDistroSettings_Click" ToolTip="Configure wsl.conf for this distribution."/>
-                                    <Button Content="Set Default" Tag="{Binding Name}" Click="BtnSetDefaultDistro_Click" ToolTip="Make this the default WSL distribution."/>
+                        <ui:Card Margin="0,0,0,10" Padding="16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Column 0: Icon Badge -->
+                                <Border Grid.Column="0" Width="40" Height="40" CornerRadius="8" 
+                                        Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                                        BorderThickness="1" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Prompt24" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- Column 1: Info -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
+                                    <DockPanel HorizontalAlignment="Left">
+                                        <Border x:Name="DefaultBadge" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="6,2" CornerRadius="4" Background="Gold" VerticalAlignment="Center" Visibility="Collapsed">
+                                            <TextBlock Text="Default" FontSize="10" FontWeight="Bold" Foreground="Black" TextWrapping="NoWrap"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="16" TextTrimming="CharacterEllipsis"/>
+                                    </DockPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <!-- Status Dot -->
+                                        <Ellipse x:Name="StatusDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="Gray"/>
+                                        <TextBlock Text="{Binding State}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text=" • " Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="{Binding Version, StringFormat='WSL {0}'}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Content="Clone" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnCloneDistro_Click" ToolTip="Create a copy of this distribution."/>
-                                    <Button Content="Move" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnMoveDistro_Click" ToolTip="Move this distribution to another drive or folder."/>
-                                    <Button Content="Export" Margin="0,0,5,0" Tag="{Binding Name}" Click="BtnExportDistro_Click" ToolTip="Backup this distribution to a .tar file."/>
-                                    <Button Content="Unregister" Tag="{Binding Name}" Click="BtnUnregisterDistro_Click" Background="#33FF0000" BorderBrush="Red" ToolTip="Permanently delete this distribution."/>
+
+                                <!-- Column 2: Primary Run/Stop Action Button -->
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
+                                    <ui:Button x:Name="BtnRun" Content="Run" Click="BtnRunDistro_Click" Tag="{Binding Name}" Appearance="Primary" Visibility="Collapsed">
+                                        <ui:Button.Icon>
+                                            <ui:SymbolIcon Symbol="Play24"/>
+                                        </ui:Button.Icon>
+                                    </ui:Button>
+                                    <ui:Button x:Name="BtnStop" Content="Stop" Click="BtnStopDistro_Click" Tag="{Binding Name}" Appearance="Secondary" Visibility="Collapsed">
+                                        <ui:Button.Icon>
+                                            <ui:SymbolIcon Symbol="Stop24"/>
+                                        </ui:Button.Icon>
+                                    </ui:Button>
                                 </StackPanel>
-                            </StackPanel>
+
+                                <!-- Column 3: Options Button -->
+                                <ui:Button Grid.Column="3" Click="BtnMoreActions_Click" ToolTip="More actions" Appearance="Transparent" VerticalAlignment="Center">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="MoreHorizontal24"/>
+                                    </ui:Button.Icon>
+                                    <ui:Button.ContextMenu>
+                                        <ContextMenu x:Name="DistroContextMenu">
+                                            <MenuItem Header="Set As Default" Click="BtnSetDefaultDistro_Click" Tag="{Binding Name}">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="Star24" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Configure Settings (wsl.conf)" Click="BtnDistroSettings_Click" Tag="{Binding Name}">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="Settings24" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Header="Clone Distribution" Click="BtnCloneDistro_Click" Tag="{Binding Name}">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="Copy24" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Move Distribution" Click="BtnMoveDistro_Click" Tag="{Binding Name}">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="FolderArrowRight24" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Export Backup (.tar)" Click="BtnExportDistro_Click" Tag="{Binding Name}">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="ArrowExport24" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Compact VHDX" Click="BtnCompactDistro_Click" Tag="{Binding Name}">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="ArrowMinimize24" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Header="Unregister (Delete)" Click="BtnUnregisterDistro_Click" Tag="{Binding Name}" Foreground="Red">
+                                                <MenuItem.Icon>
+                                                    <ui:SymbolIcon Symbol="Delete24" Foreground="Red" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </ui:Button.ContextMenu>
+                                </ui:Button>
+                            </Grid>
                         </ui:Card>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                <Setter TargetName="BtnStop" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="StatusDot" Property="Fill" Value="#107C41"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                <Setter TargetName="BtnRun" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="StatusDot" Property="Fill" Value="#D83B01"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsDefault}" Value="True">
+                                <Setter TargetName="DefaultBadge" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

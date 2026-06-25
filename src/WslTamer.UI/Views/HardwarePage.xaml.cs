@@ -83,7 +83,7 @@ public partial class HardwarePage : System.Windows.Controls.UserControl
 
     private async void BtnToggleUsb_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string busId)
+        if (sender is FrameworkElement btn && btn.Tag is string busId)
         {
             var device = (DgUsbDevices.ItemsSource as System.Collections.Generic.List<UsbDevice>)?.FirstOrDefault(d => d.BusId == busId);
             if (device == null) return;
@@ -127,7 +127,7 @@ public partial class HardwarePage : System.Windows.Controls.UserControl
 
     private async void BtnMountDisk_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string deviceId)
+        if (sender is FrameworkElement btn && btn.Tag is string deviceId)
         {
             try
             {
@@ -154,7 +154,7 @@ public partial class HardwarePage : System.Windows.Controls.UserControl
 
     private async void BtnUnmountDisk_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string deviceId)
+        if (sender is FrameworkElement btn && btn.Tag is string deviceId)
         {
             try
             {
@@ -204,7 +204,7 @@ public partial class HardwarePage : System.Windows.Controls.UserControl
 
     private async void BtnMountFolder_Click(object sender, RoutedEventArgs e)
     {
-        var distro = CboMountDistro.SelectedItem as string;
+        var distro = (CboMountDistro.SelectedItem as WslDistribution)?.Name;
         var winPath = TxtWindowsPath.Text;
         var linuxPath = TxtWslPath.Text;
 

@@ -6,7 +6,7 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:converters="clr-namespace:WslTamer.UI.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="850">
     <UserControl.Resources>
         <converters:BooleanToAttachConverter x:Key="BooleanToAttachConverter"/>
         <Style x:Key="HelpIcon" TargetType="ui:SymbolIcon">
@@ -19,141 +19,237 @@
         </Style>
     </UserControl.Resources>
     
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="10">
-            <!-- USB Devices -->
-            <GroupBox Header="USB Devices (Requires usbipd-win)" Margin="0,0,0,10">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="16">
+            <TextBlock Text="Hardware Integration" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+            <!-- USB Devices Section -->
+            <ui:Card Margin="0,0,0,16" Padding="16">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="200"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <Button Content="Refresh USB" Click="BtnRefreshUsb_Click" Margin="0,0,10,0" ToolTip="Scan for connected USB devices."/>
-                        <TextBlock Name="TxtUsbStatus" VerticalAlignment="Center" Foreground="Gray"/>
-                        <TextBlock Name="TxtUsbInstallLink" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"
-                                   ToolTip="After installing usbipd-win, you must restart WSL Tamer for changes to take effect.">
-                            <Hyperlink NavigateUri="https://github.com/dorssel/usbipd-win/releases" RequestNavigate="Hyperlink_RequestNavigate">
-                                Install usbipd-win
-                            </Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
-                    <DataGrid Name="DgUsbDevices" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Bus ID" Binding="{Binding BusId}" Width="60"/>
-                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
-                            <DataGridTextColumn Header="State" Binding="{Binding State}" Width="100"/>
-                            <DataGridTemplateColumn Header="Action" Width="100">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="{Binding IsAttached, Converter={StaticResource BooleanToAttachConverter}}" 
-                                                Click="BtnToggleUsb_Click" 
-                                                Tag="{Binding BusId}"
-                                                ToolTip="Attach/Detach this USB device to/from WSL."/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </GroupBox>
-
-            <!-- Physical Disks -->
-            <GroupBox Header="Physical Disks" Margin="0,0,0,10">
-                <Grid>
-                    <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="150"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="220"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <Button Content="Refresh Disks" Click="BtnRefreshDisks_Click" Margin="0,0,10,0" ToolTip="Scan for physical disks."/>
-                        <Label Content="Distro:" VerticalAlignment="Center"/>
-                        <ComboBox Name="CboDiskDistro" Width="120" Margin="5,0,10,0" DisplayMemberPath="Name" SelectedValuePath="Name"/>
-                        <TextBlock Text="Warning: Mounting disks requires Admin privileges." VerticalAlignment="Center" Foreground="Orange"/>
-                    </StackPanel>
-                    <DataGrid Name="DgDisks" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Device ID" Binding="{Binding DeviceId}" Width="150"/>
-                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
-                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="80"/>
-                            <DataGridTemplateColumn Header="Action" Width="100">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="Mount" Click="BtnMountDisk_Click" Tag="{Binding DeviceId}" ToolTip="Mount this physical disk into WSL."/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Action" Width="100">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="Unmount" Click="BtnUnmountDisk_Click" Tag="{Binding DeviceId}" ToolTip="Unmount this disk from WSL."/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </GroupBox>
-
-            <!-- Folder Mounts -->
-            <GroupBox Header="Folder Mounts (drvfs)" Margin="0,0,0,10">
-                <StackPanel Margin="5">
-                    <TextBlock Text="Mount a Windows folder into a specific WSL distribution." Margin="0,0,0,5"/>
-                    <Grid Margin="0,0,0,5">
+                    
+                    <TextBlock Grid.Row="0" Text="USB Devices" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Grid.Row="1" Text="Attach and detach Windows USB devices directly into WSL distributions using usbipd-win." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,12"/>
+                    
+                    <Grid Grid.Row="2" Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Label Content="Distro:" VerticalAlignment="Center" Width="100"/>
-                        <ComboBox Name="CboMountDistro" Grid.Column="1" Margin="5,0" DisplayMemberPath="Name" SelectedValuePath="Name"/>
-                        <Button Content="Refresh" Grid.Column="2" Click="BtnRefreshMountDistros_Click" Padding="5,2"/>
+                        <ui:Button Click="BtnRefreshUsb_Click" ToolTip="Scan for connected USB devices." Appearance="Secondary" Margin="0,0,12,0">
+                            <ui:Button.Icon>
+                                <ui:SymbolIcon Symbol="ArrowSync24"/>
+                            </ui:Button.Icon>
+                        </ui:Button>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Name="TxtUsbStatus" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Name="TxtUsbInstallLink" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed">
+                                <Hyperlink NavigateUri="https://github.com/dorssel/usbipd-win/releases" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Install usbipd-win
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
                     </Grid>
                     
-                    <Grid Margin="0,0,0,5">
+                    <DataGrid Name="DgUsbDevices" Grid.Row="3" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
+                              Background="{DynamicResource ControlFillColorDefaultBrush}"
+                              BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                              BorderThickness="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Bus ID" Binding="{Binding BusId}" Width="80"/>
+                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" MinWidth="150"/>
+                            <DataGridTextColumn Header="State" Binding="{Binding State}" Width="120"/>
+                            <DataGridTemplateColumn Header="Action" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ui:Button Content="{Binding IsAttached, Converter={StaticResource BooleanToAttachConverter}}" 
+                                                 Click="BtnToggleUsb_Click" 
+                                                 Tag="{Binding BusId}"
+                                                 ToolTip="Attach/Detach this USB device to/from WSL."
+                                                 Appearance="Primary"
+                                                 Padding="8,4"
+                                                 HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </ui:Card>
+
+            <!-- Physical Disks Section -->
+            <ui:Card Margin="0,0,0,16" Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="180"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Text="Physical Disks" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Grid.Row="1" Text="Mount raw partition or entire physical drive directly to your WSL distribution." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,12"/>
+                    
+                    <Grid Grid.Row="2" Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Windows Path:" VerticalAlignment="Center" Width="100"/>
-                        <TextBox Name="TxtWindowsPath" Grid.Column="1" Margin="5,0" VerticalContentAlignment="Center"/>
-                        <Button Content="Browse..." Grid.Column="2" Click="BtnBrowseFolder_Click" Padding="5,2"/>
-                    </Grid>
-
-                    <Grid Margin="0,0,0,5">
-                        <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Width="100">
-                            <Label Content="WSL Path:" Padding="0"/>
-                            <ui:SymbolIcon Style="{StaticResource HelpIcon}" ToolTip="The path inside Linux where the folder will appear (e.g. /mnt/myfolder)."/>
-                        </StackPanel>
-                        <TextBox Name="TxtWslPath" Grid.Column="1" Margin="5,0" VerticalContentAlignment="Center"/>
+                        <ui:Button Click="BtnRefreshDisks_Click" ToolTip="Scan for physical disks." Appearance="Secondary" Margin="0,0,12,0" VerticalAlignment="Center">
+                            <ui:Button.Icon>
+                                <ui:SymbolIcon Symbol="ArrowSync24"/>
+                            </ui:Button.Icon>
+                        </ui:Button>
+                        <TextBlock Grid.Column="1" Text="Target Distro:" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0"/>
+                        <ComboBox Name="CboDiskDistro" Grid.Column="2" Width="160" VerticalAlignment="Center" DisplayMemberPath="Name" SelectedValuePath="Name" Margin="0,0,16,0"/>
+                        <TextBlock Grid.Column="3" Text="Warning: Mounting physical disks requires Administrator privileges." VerticalAlignment="Center" Foreground="Orange" FontWeight="Medium" FontSize="12"/>
                     </Grid>
+                    
+                    <DataGrid Name="DgDisks" Grid.Row="3" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
+                              Background="{DynamicResource ControlFillColorDefaultBrush}"
+                              BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                              BorderThickness="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Device ID" Binding="{Binding DeviceId}" Width="160"/>
+                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*" MinWidth="150"/>
+                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="100"/>
+                            <DataGridTemplateColumn Header="Mount" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ui:Button Click="BtnMountDisk_Click" Tag="{Binding DeviceId}" ToolTip="Mount this physical disk into WSL." Appearance="Primary" Padding="6" HorizontalAlignment="Center">
+                                            <ui:Button.Icon>
+                                                <ui:SymbolIcon Symbol="Play24"/>
+                                            </ui:Button.Icon>
+                                        </ui:Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Unmount" Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ui:Button Click="BtnUnmountDisk_Click" Tag="{Binding DeviceId}" ToolTip="Unmount this disk from WSL." Padding="6" HorizontalAlignment="Center">
+                                            <ui:Button.Icon>
+                                                <ui:SymbolIcon Symbol="Stop24"/>
+                                            </ui:Button.Icon>
+                                        </ui:Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </ui:Card>
 
-                    <Button Content="Mount Folder" HorizontalAlignment="Right" Click="BtnMountFolder_Click" MinWidth="120"/>
+            <!-- Folder Mounts (drvfs) Section -->
+            <ui:Card Margin="0,0,0,16" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Folder Mounts (drvfs)" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Text="Mount standard Windows directories/folders into target directories within Linux." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,16"/>
+                    
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="WSL Distribution" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Select the target Linux distribution for the mount" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <ComboBox Name="CboMountDistro" Width="200" DisplayMemberPath="Name" SelectedValuePath="Name" Margin="0,0,8,0"/>
+                                <ui:Button Click="BtnRefreshMountDistros_Click" ToolTip="Refresh distributions list." Appearance="Secondary" Padding="8">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="ArrowSync24"/>
+                                    </ui:Button.Icon>
+                                </ui:Button>
+                            </StackPanel>
+                        </WrapPanel>
+                    </ui:Card>
+                    
+                    <ui:Card Margin="0,0,0,8" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Windows Folder Path" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="Specify the source Windows folder path" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <Grid Width="300" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:TextBox Name="TxtWindowsPath" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,8,0" PlaceholderText="C:\path\to\folder"/>
+                                <ui:Button Grid.Column="1" Click="BtnBrowseFolder_Click" ToolTip="Browse for Windows folder" Padding="8" VerticalAlignment="Center">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="Folder24"/>
+                                    </ui:Button.Icon>
+                                </ui:Button>
+                            </Grid>
+                        </WrapPanel>
+                    </ui:Card>
+
+                    <ui:Card Margin="0,0,0,16" Padding="16,12">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Width="220" Margin="0,0,16,4" VerticalAlignment="Center">
+                                <TextBlock Text="Linux Mount Path" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="The Linux location where folder will be mounted" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <Grid Width="300" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:TextBox Name="TxtWslPath" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,8,0" PlaceholderText="/mnt/wsl/folder"/>
+                                <ui:SymbolIcon Grid.Column="1" Style="{StaticResource HelpIcon}" ToolTip="Example: /mnt/wsl/myfolder or /mnt/myfolder." VerticalAlignment="Center"/>
+                            </Grid>
+                        </WrapPanel>
+                    </ui:Card>
+
+                    <ui:Button Content="Mount Folder" Appearance="Primary" HorizontalAlignment="Right" Click="BtnMountFolder_Click" MinWidth="150" Padding="12,8">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Play24"/>
+                        </ui:Button.Icon>
+                    </ui:Button>
                 </StackPanel>
-            </GroupBox>
+            </ui:Card>
 
-            <!-- PCIe Passthrough -->
-            <GroupBox Header="PCIe Passthrough (Advanced - DDA)">
-                <StackPanel Margin="5">
-                    <TextBlock Text="Discrete Device Assignment (DDA) allows passing PCIe devices to WSL." TextWrapping="Wrap" Margin="0,0,0,5"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Text="Requirements:" FontWeight="Bold" Margin="0,0,5,0"/>
-                        <TextBlock Text="SR-IOV" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,10,0" Cursor="Help"
-                                   ToolTip="Single Root I/O Virtualization (SR-IOV) must be enabled in your BIOS/UEFI settings."/>
-                        <TextBlock Text="IOMMU" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,10,0" Cursor="Help"
-                                   ToolTip="IOMMU (Intel VT-d or AMD-Vi) must be enabled in your BIOS/UEFI settings."/>
-                        <TextBlock Text="Admin" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Cursor="Help"
-                                   ToolTip="Requires Administrator privileges to detach devices from Windows."/>
+            <!-- PCIe Passthrough Section -->
+            <ui:Card Margin="0,0,0,16" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="PCIe Passthrough (Advanced DDA)" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Text="Discrete Device Assignment (DDA) enables direct pass-through of PCIe hardware (e.g., discrete GPUs) to WSL." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,12"/>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="Hardware Requirements:" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0"/>
+                        <TextBlock Text="SR-IOV" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" Cursor="Help"
+                                   ToolTip="Single Root I/O Virtualization must be active in BIOS/UEFI."/>
+                        <TextBlock Text="IOMMU" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" Cursor="Help"
+                                   ToolTip="IOMMU (Intel VT-d or AMD-Vi) must be active in BIOS/UEFI."/>
+                        <TextBlock Text="Admin Rights" TextDecorations="Underline" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Cursor="Help"
+                                   ToolTip="Requires Administrator rights to detach PCIe devices from the host Windows OS."/>
                     </StackPanel>
-                    <TextBlock Text="Warning: Detaching a device (e.g. GPU) from Windows may cause instability." Foreground="Orange" TextWrapping="Wrap" Margin="0,0,0,5"/>
-                    <Button Content="Manage PCIe Devices (Coming Soon)" IsEnabled="False" HorizontalAlignment="Left" ToolTip="Future feature: Manage DDA devices."/>
+                    
+                    <Border Background="#1AFFFF00" BorderBrush="Orange" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Symbol="Warning24" Foreground="Orange" FontSize="20" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                            <TextBlock Grid.Column="1" Text="Warning: Detaching host PCIe devices (especially primary GPUs) from Windows can cause system instability or display output failure." Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="12" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    
+                    <ui:Button Content="Manage PCIe Devices" IsEnabled="False" HorizontalAlignment="Left" Appearance="Secondary">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="DeveloperBoard24"/>
+                        </ui:Button.Icon>
+                    </ui:Button>
                 </StackPanel>
-            </GroupBox>
+            </ui:Card>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

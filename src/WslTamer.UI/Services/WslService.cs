@@ -714,6 +714,35 @@ public class WslService
         RunWslCommand($"-d {distroName} -u root umount \"{linuxPath}\"");
     }
 
+    public void CompactDistro(string distroName)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "wsl.exe",
+            Arguments = $"--manage {distroName} --compact",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+
+        using var process = Process.Start(startInfo);
+        if (process == null) return;
+
+        // Disk compaction might take longer, allow up to 2 minutes
+        if (!process.WaitForExit(120000))
+        {
+            process.Kill();
+            throw new TimeoutException("WSL disk compaction timed out.");
+        }
+        
+        if (process.ExitCode != 0)
+        {
+            string error = process.StandardError.ReadToEnd();
+            throw new Exception($"WSL compaction failed with exit code {process.ExitCode}: {error}");
+        }
+    }
+
     public WslProfile GetCurrentConfig()
     {
         var profile = new WslProfile { Name = "Current Configuration" };
