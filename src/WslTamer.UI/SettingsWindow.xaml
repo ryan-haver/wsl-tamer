@@ -39,34 +39,51 @@
 
         <ui:NavigationView x:Name="RootNavigation"
                            Grid.Row="1"
-                           PaneDisplayMode="Auto"
+                           PaneDisplayMode="Left"
+                           CompactPaneLength="48"
+                           OpenPaneLength="180"
                            IsPaneOpen="True"
                            SelectionChanged="RootNavigation_SelectionChanged">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="General" Tag="General" TargetPageType="{x:Type views:GeneralPage}">
+                <ui:NavigationViewItem Tag="General" TargetPageType="{x:Type views:GeneralPage}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Settings24" />
+                        <ui:SymbolIcon Symbol="Settings24" Margin="12,0,4,0" />
                     </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock Text="General" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap"/>
+                    </ui:NavigationViewItem.Content>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Distributions" Tag="Distributions" TargetPageType="{x:Type views:DistributionsPage}">
+                <ui:NavigationViewItem Tag="Distributions" TargetPageType="{x:Type views:DistributionsPage}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="AppGeneric24" />
+                        <ui:SymbolIcon Symbol="AppGeneric24" Margin="12,0,4,0" />
                     </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock Text="Distributions" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap"/>
+                    </ui:NavigationViewItem.Content>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Profiles" Tag="Profiles" TargetPageType="{x:Type views:ProfilesPage}">
+                <ui:NavigationViewItem Tag="Profiles" TargetPageType="{x:Type views:ProfilesPage}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Person24" />
+                        <ui:SymbolIcon Symbol="Person24" Margin="12,0,4,0" />
                     </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock Text="Profiles" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap"/>
+                    </ui:NavigationViewItem.Content>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Hardware" Tag="Hardware" TargetPageType="{x:Type views:HardwarePage}">
+                <ui:NavigationViewItem Tag="Hardware" TargetPageType="{x:Type views:HardwarePage}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="UsbStick24" />
+                        <ui:SymbolIcon Symbol="UsbStick24" Margin="12,0,4,0" />
                     </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock Text="Hardware" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap"/>
+                    </ui:NavigationViewItem.Content>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="About" Tag="About" TargetPageType="{x:Type views:AboutPage}">
+                <ui:NavigationViewItem Tag="About" TargetPageType="{x:Type views:AboutPage}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Info24" />
+                        <ui:SymbolIcon Symbol="Info24" Margin="12,0,4,0" />
                     </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock Text="About" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap"/>
+                    </ui:NavigationViewItem.Content>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             
