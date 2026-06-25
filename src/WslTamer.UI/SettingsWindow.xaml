@@ -39,7 +39,7 @@
 
         <ui:NavigationView x:Name="RootNavigation"
                            Grid.Row="1"
-                           PaneDisplayMode="Left"
+                           PaneDisplayMode="Auto"
                            IsPaneOpen="True"
                            SelectionChanged="RootNavigation_SelectionChanged">
             <ui:NavigationView.MenuItems>
