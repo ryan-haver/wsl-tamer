@@ -8,9 +8,10 @@ passthrough and troubleshooting.
 
 Last updated: September 2026.
 
-## 2.0: Rebuild (built; testing before publishing)
+## 2.0: Rebuild (published as a pre-release)
 
-`v2.0.0` is tagged and its release is a draft on GitHub. See
+`v2.0.0` is published as a pre-release; 1.8.4 stays the latest release until 2.0 is
+signed and fully tested. See
 [docs/TESTING.md](docs/TESTING.md) for what is verified.
 
 - [x] New `WslTamer.Core` library with unit tests; UI rebuilt on .NET 10 with MVVM.
@@ -33,7 +34,8 @@ Last updated: September 2026.
 - [ ] Hands-on tests: distribution menu actions, tray menu, disk compaction, USB and disk
       passthrough.
 - [ ] Code-signed releases (SignPath Foundation or Azure Trusted Signing).
-- [ ] Publish the 2.0.0 release.
+- [x] Publish 2.0.0 as a pre-release.
+- [ ] Mark 2.0 as the latest release (1.8.4 users are then offered the upgrade).
 - [ ] Publish to winget.
 
 ## 2.1: Diagnose and reclaim

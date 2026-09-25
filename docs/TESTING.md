@@ -90,9 +90,10 @@ been exercised end to end on real hardware.
 - **Install from the online catalog:** opens a console for account setup.
 - **Open terminal:** Windows Terminal and console fallback.
 - **Restart WSL automatically when idle** (the non-default apply behaviour).
-- **Updating from the GitHub feed:** the feed is built and uploaded, but installed copies
-  can't see it until the release is published. So far only a local feed has been used for
-  update testing.
+- **Updating from the GitHub feed:** 2.0.0 is a pre-release, and installed copies only look
+  for full releases, so this can't be tested until a release is marked as latest. So far
+  only a local feed has been used for update testing. The published installer's download
+  and checksum are verified.
 - **The CI-built installer:** the locally built one was tested. The CI build uses the same
   commands but hasn't been installed yet.
 - **Non-English Windows:** parsers avoid localized text, but this is untested.

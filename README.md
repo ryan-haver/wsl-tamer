@@ -10,8 +10,8 @@ Linux, without hand-editing `.wslconfig` or remembering `wsl.exe` flags.
 
 | Version | Status |
 | --- | --- |
-| **2.0.0** | A ground-up rebuild. It's built and packaged, and most features are verified on real WSL, but it isn't published yet. Remaining before release: a few hardware and menu tests (see [docs/TESTING.md](docs/TESTING.md)) and code signing. |
-| 1.8.4 | Still shown as "Latest" on the Releases page until 2.0 is published. No longer maintained: it runs as administrator and can overwrite your `.wslconfig`. |
+| **[2.0.0](https://github.com/ryan-haver/wsl-tamer/releases/tag/v2.0.0)** | **Pre-release.** A ground-up rebuild; most features are verified on real WSL. Before it becomes the latest release: a few hardware and menu tests (see [docs/TESTING.md](docs/TESTING.md)) and code signing. |
+| 1.8.4 | Still marked "Latest" on the Releases page until 2.0 is. No longer maintained: it runs as administrator and can overwrite your `.wslconfig`. |
 
 Work happens on the `dev` branch; `main` holds released code.
 
@@ -50,10 +50,8 @@ Settings the editor doesn't know about are preserved, and the previous file is k
 
 ## Install
 
-Once 2.0 is published:
-
 1. Download **WslTamer-win-Setup.exe** from the
-   [Releases page](https://github.com/ryan-haver/wsl-tamer/releases).
+   [2.0.0 pre-release](https://github.com/ryan-haver/wsl-tamer/releases/tag/v2.0.0).
 2. Run it. It installs for your user account only (no administrator rights needed) and
    installs the .NET 10 Desktop Runtime if it's missing.
 
