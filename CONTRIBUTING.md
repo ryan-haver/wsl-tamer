@@ -5,7 +5,7 @@ Thanks for helping. Bug reports, fixes and small focused features are all welcom
 ## Getting started
 
 1. Install the [.NET 10 SDK](https://dotnet.microsoft.com/download) and make sure WSL 2 works on your machine.
-2. Fork and clone the repository, then create a branch.
+2. Fork and clone the repository, then create a branch from `dev`.
 3. Build and test:
 
    ```powershell
@@ -14,6 +14,12 @@ Thanks for helping. Bug reports, fixes and small focused features are all welcom
    ```
 
 CI runs the same two commands on every pull request. The build treats warnings as errors.
+
+## Branches
+
+- **`main`**: released code. Releases are cut from here by pushing a `v*` tag.
+- **`dev`**: where work happens. Open pull requests against `dev`; it's merged into
+  `main` when a release is ready.
 
 ## Where code goes
 
