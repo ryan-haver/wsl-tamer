@@ -37,6 +37,8 @@ public sealed partial class SettingRowViewModel : ObservableObject
 
     public string Label => Definition.Label;
 
+    public override string ToString() => Label;
+
     public string Description => Definition.Description;
 
     public string Group => Definition.Group;

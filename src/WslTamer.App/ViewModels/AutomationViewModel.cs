@@ -7,15 +7,23 @@ using WslTamer.Core.Storage;
 
 namespace WslTamer.App.ViewModels;
 
-public sealed record ProfileOption(Guid? Id, string Name);
+public sealed record ProfileOption(Guid? Id, string Name)
+{
+    public override string ToString() => Name;
+}
 
-public sealed record TriggerOption(TriggerType Type, string Label, string Hint);
+public sealed record TriggerOption(TriggerType Type, string Label, string Hint)
+{
+    public override string ToString() => Label;
+}
 
 public sealed partial class RuleItemViewModel(AutomationRule rule, string description) : ObservableObject
 {
     public AutomationRule Rule { get; } = rule;
 
     public string Description { get; } = description;
+
+    public override string ToString() => Description;
 
     public bool IsEnabled
     {

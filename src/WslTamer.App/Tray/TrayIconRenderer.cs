@@ -16,15 +16,25 @@ public enum TrayState
 public static class TrayIconRenderer
 {
     private const int Size = 32;
-    private static readonly Dictionary<TrayState, DrawingIcon> Cache = [];
+    private static readonly Dictionary<TrayState, byte[]> Cache = [];
 
+    /// <summary>
+    /// Returns a new icon each call: the tray library disposes the previous icon when
+    /// it is replaced, so icon objects must not be shared.
+    /// </summary>
     public static DrawingIcon Render(TrayState state)
     {
-        if (Cache.TryGetValue(state, out var cached))
+        if (!Cache.TryGetValue(state, out var ico))
         {
-            return cached;
+            ico = Draw(state);
+            Cache[state] = ico;
         }
 
+        return new DrawingIcon(new MemoryStream(ico));
+    }
+
+    private static byte[] Draw(TrayState state)
+    {
         var baseIcon = BitmapFrame.Create(new Uri("pack://application:,,,/Assets/app.ico", UriKind.Absolute));
         var dot = state switch
         {
@@ -45,9 +55,7 @@ public static class TrayIconRenderer
         var bitmap = new RenderTargetBitmap(Size, Size, 96, 96, PixelFormats.Pbgra32);
         bitmap.Render(visual);
 
-        var icon = new DrawingIcon(ToIco(bitmap));
-        Cache[state] = icon;
-        return icon;
+        return ToIco(bitmap).ToArray();
     }
 
     /// <summary>Wraps a PNG in a single-image .ico container (supported since Windows Vista).</summary>

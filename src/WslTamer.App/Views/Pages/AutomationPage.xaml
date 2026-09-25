@@ -22,7 +22,10 @@
                         <TextBlock Style="{StaticResource CardTitle}" Text="Automatic profile switching" />
                         <TextBlock Style="{StaticResource Caption}" Text="Profile changes take effect when WSL restarts (see Settings → When a profile changes)." />
                     </StackPanel>
-                    <ui:ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding AutomationEnabled}" />
+                    <ui:ToggleSwitch
+                        HorizontalAlignment="Right"
+                        AutomationProperties.Name="Automatic profile switching"
+                        IsChecked="{Binding AutomationEnabled}" />
                 </Grid>
             </ui:Card>
 
@@ -51,18 +54,21 @@
                                     TextWrapping="Wrap" />
                                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                                     <ui:Button
+                        AutomationProperties.Name="{Binding Description, StringFormat='Move up: {0}'}"
                                         Appearance="Transparent"
                                         Command="{Binding DataContext.MoveRuleUpCommand, ElementName=Root}"
                                         CommandParameter="{Binding}"
                                         Icon="{ui:SymbolIcon ArrowUp24}"
                                         ToolTip="Higher priority" />
                                     <ui:Button
+                        AutomationProperties.Name="{Binding Description, StringFormat='Move down: {0}'}"
                                         Appearance="Transparent"
                                         Command="{Binding DataContext.MoveRuleDownCommand, ElementName=Root}"
                                         CommandParameter="{Binding}"
                                         Icon="{ui:SymbolIcon ArrowDown24}"
                                         ToolTip="Lower priority" />
                                     <ui:Button
+                        AutomationProperties.Name="{Binding Description, StringFormat='Delete rule: {0}'}"
                                         Appearance="Transparent"
                                         Command="{Binding DataContext.DeleteRuleCommand, ElementName=Root}"
                                         CommandParameter="{Binding}"
@@ -91,6 +97,7 @@
                             <TextBlock Margin="0,0,0,4" Text="Value" />
                             <ui:TextBox
                                 Width="240"
+                                AutomationProperties.Name="Rule value"
                                 PlaceholderText="{Binding Hint}"
                                 Text="{Binding NewValue, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
@@ -142,6 +149,7 @@
                         Text="{Binding CurrentConditions}"
                         TextWrapping="Wrap" />
                     <ui:Button
+                        AutomationProperties.Name="Refresh"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
                         Command="{Binding RefreshConditionsCommand}"

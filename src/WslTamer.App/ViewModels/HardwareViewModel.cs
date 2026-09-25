@@ -13,6 +13,8 @@ public sealed record DiskItem(PhysicalDisk Disk)
 {
     public string Title => $"Disk {Disk.Number} · {Disk.FriendlyName}";
 
+    public override string ToString() => Title;
+
     public string Details => $"{WslValues.FormatBytes(Disk.SizeBytes)} · {Disk.BusType}" +
         (Disk.CanMount ? (Disk.IsOffline ? " · offline (may be attached to WSL)" : string.Empty) : " · Windows system disk");
 }

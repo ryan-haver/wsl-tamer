@@ -20,7 +20,7 @@
                         <TextBlock Style="{StaticResource CardTitle}" Text="Start with Windows" />
                         <TextBlock Style="{StaticResource Caption}" Text="Start in the notification area when you sign in." />
                     </StackPanel>
-                    <ui:ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding StartWithWindows}" />
+                    <ui:ToggleSwitch HorizontalAlignment="Right" AutomationProperties.Name="Start with Windows" IsChecked="{Binding StartWithWindows}" />
                 </Grid>
             </ui:Card>
 
@@ -46,7 +46,7 @@
                         <TextBlock Style="{StaticResource CardTitle}" Text="Notifications" />
                         <TextBlock Style="{StaticResource Caption}" Text="Show notifications from the tray when the window is closed. Errors are always shown." />
                     </StackPanel>
-                    <ui:ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding ShowNotifications}" />
+                    <ui:ToggleSwitch HorizontalAlignment="Right" AutomationProperties.Name="Notifications" IsChecked="{Binding ShowNotifications}" />
                 </Grid>
             </ui:Card>
 
@@ -58,7 +58,7 @@
                             <TextBlock Style="{StaticResource CardTitle}" Text="Check for updates at startup" />
                             <TextBlock Style="{StaticResource Caption}" Text="Updates come from GitHub Releases and are checksum-verified before installing." />
                         </StackPanel>
-                        <ui:ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding CheckForUpdates}" />
+                        <ui:ToggleSwitch HorizontalAlignment="Right" AutomationProperties.Name="Check for updates at startup" IsChecked="{Binding CheckForUpdates}" />
                     </Grid>
                     <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
                         <ui:Button

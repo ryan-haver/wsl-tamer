@@ -18,6 +18,8 @@ public sealed partial class DistroItemViewModel(WslDistribution distribution, Vh
 
     public string Name => Distribution.Name;
 
+    public override string ToString() => Name;
+
     public bool IsDefault => Distribution.IsDefault;
 
     public bool IsRunning => Distribution.IsRunning;

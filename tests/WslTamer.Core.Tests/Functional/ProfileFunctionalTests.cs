@@ -57,7 +57,7 @@ public sealed class ProfileFunctionalTests : IAsyncLifetime
         FunctionalSettings.RequireDisruptive();
         var ct = TestContext.Current.CancellationToken;
         await using var d = await TestDistro.CreateAsync(ct);
-        using var monitor = new WslStatusMonitor(d.Client);
+        using var monitor = new WslStatusMonitor(d.Client, _configFile.FilePath);
         var service = new ProfileService(_configFile, monitor);
 
         // Someone else's settings and comments must survive.
@@ -94,7 +94,7 @@ public sealed class ProfileFunctionalTests : IAsyncLifetime
         FunctionalSettings.RequireDisruptive();
         using var temp = new TempDirectory();
         var client = FunctionalSettings.CreateClient();
-        using var monitor = new WslStatusMonitor(client);
+        using var monitor = new WslStatusMonitor(client, _configFile.FilePath);
         var service = new ProfileService(_configFile, monitor);
         var state = new AppState(new ConfigStore(temp.File("config.json")));
         var probe = new SystemProbe();

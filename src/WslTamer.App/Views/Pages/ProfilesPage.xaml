@@ -30,26 +30,31 @@
         <DockPanel Grid.Row="1" Margin="0,0,16,0">
             <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
                 <ui:Button
+                        AutomationProperties.Name="New profile"
                     Margin="0,0,4,4"
                     Command="{Binding AddCommand}"
                     Icon="{ui:SymbolIcon Add24}"
                     ToolTip="New profile" />
                 <ui:Button
+                        AutomationProperties.Name="Duplicate"
                     Margin="0,0,4,4"
                     Command="{Binding DuplicateCommand}"
                     Icon="{ui:SymbolIcon Copy24}"
                     ToolTip="Duplicate" />
                 <ui:Button
+                        AutomationProperties.Name="Move up"
                     Margin="0,0,4,4"
                     Command="{Binding MoveUpCommand}"
                     Icon="{ui:SymbolIcon ArrowUp24}"
                     ToolTip="Move up" />
                 <ui:Button
+                        AutomationProperties.Name="Move down"
                     Margin="0,0,4,4"
                     Command="{Binding MoveDownCommand}"
                     Icon="{ui:SymbolIcon ArrowDown24}"
                     ToolTip="Move down" />
                 <ui:Button
+                        AutomationProperties.Name="Delete"
                     Margin="0,0,4,4"
                     Command="{Binding DeleteCommand}"
                     Icon="{ui:SymbolIcon Delete24}"
@@ -100,7 +105,7 @@
             Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisibility}}">
             <StackPanel Margin="0,0,8,0">
                 <TextBlock Margin="0,0,0,4" Text="Name" />
-                <ui:TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                <ui:TextBox AutomationProperties.Name="Profile name" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
 
                 <ui:InfoBar
                     Title="Heads up"

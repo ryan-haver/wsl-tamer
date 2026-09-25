@@ -26,7 +26,19 @@ public partial class MainWindow
         dialogs.SetDialogHost(DialogHost);
     }
 
-    public void ShowAndActivate()
+    /// <summary>Page names accepted by <c>--page</c>.</summary>
+    public static readonly IReadOnlyDictionary<string, Type> Pages = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["home"] = typeof(DashboardPage),
+        ["distributions"] = typeof(DistributionsPage),
+        ["profiles"] = typeof(ProfilesPage),
+        ["automation"] = typeof(AutomationPage),
+        ["wslconfig"] = typeof(WslConfigPage),
+        ["hardware"] = typeof(HardwarePage),
+        ["settings"] = typeof(SettingsPage),
+    };
+
+    public void ShowAndActivate(Type? page = null)
     {
         if (!IsVisible)
         {
@@ -38,7 +50,11 @@ public partial class MainWindow
             WindowState = WindowState.Normal;
         }
 
-        if (!_navigated)
+        if (page is not null)
+        {
+            _navigated = Navigation.Navigate(page);
+        }
+        else if (!_navigated)
         {
             _navigated = Navigation.Navigate(typeof(DashboardPage));
         }

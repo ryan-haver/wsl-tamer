@@ -19,6 +19,7 @@
                     <TextBlock Style="{StaticResource PageSubtitle}" Text="Pass USB devices and physical disks through to WSL 2." />
                 </StackPanel>
                 <ui:Button
+                        AutomationProperties.Name="Refresh"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Command="{Binding RefreshCommand}"
@@ -103,6 +104,7 @@
                                 <ui:Button
                                     x:Name="Action"
                                     Grid.Column="2"
+                                    AutomationProperties.Name="{Binding Description, StringFormat='Attach or detach {0}'}"
                                     Command="{Binding DataContext.ToggleUsbCommand, ElementName=Root}"
                                     CommandParameter="{Binding}"
                                     Content="Attach"
@@ -158,10 +160,12 @@
                                     Orientation="Horizontal">
                                     <ui:Button
                                         Margin="0,0,8,0"
+                                        AutomationProperties.Name="{Binding Title, StringFormat='Attach {0}'}"
                                         Command="{Binding DataContext.MountDiskCommand, ElementName=Root}"
                                         CommandParameter="{Binding}"
                                         Content="Attach" />
                                     <ui:Button
+                                        AutomationProperties.Name="{Binding Title, StringFormat='Detach {0}'}"
                                         Command="{Binding DataContext.UnmountDiskCommand, ElementName=Root}"
                                         CommandParameter="{Binding}"
                                         Content="Detach" />

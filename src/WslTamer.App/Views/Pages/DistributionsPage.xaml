@@ -33,6 +33,7 @@
                         Content="Import"
                         Icon="{ui:SymbolIcon ArrowDownload24}" />
                     <ui:Button
+                        AutomationProperties.Name="Refresh"
                         Margin="4,0,0,0"
                         Command="{Binding RefreshCommand}"
                         Icon="{ui:SymbolIcon ArrowSync24}"
@@ -146,6 +147,7 @@
                                     Orientation="Horizontal">
                                     <ui:Button
                                         Margin="4,0"
+                                        AutomationProperties.Name="{Binding Name, StringFormat='Open {0}'}"
                                         Command="{Binding DataContext.OpenTerminalCommand, ElementName=Root}"
                                         CommandParameter="{Binding}"
                                         Content="Open"
@@ -153,6 +155,7 @@
                                     <ui:Button
                                         x:Name="StopButton"
                                         Margin="4,0"
+                                        AutomationProperties.Name="{Binding Name, StringFormat='Stop {0}'}"
                                         Command="{Binding DataContext.StopCommand, ElementName=Root}"
                                         CommandParameter="{Binding}"
                                         Content="Stop"
@@ -161,6 +164,7 @@
                                     <ui:Button
                                         x:Name="More"
                                         Margin="4,0,0,0"
+                                        AutomationProperties.Name="{Binding Name, StringFormat='More actions for {0}'}"
                                         Appearance="Transparent"
                                         Click="More_Click"
                                         Icon="{ui:SymbolIcon MoreHorizontal24}"

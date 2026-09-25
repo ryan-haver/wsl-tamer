@@ -23,7 +23,7 @@ public static class Program
 
         var app = new App(args);
         app.InitializeComponent();
-        instance.Activated += (_, _) => app.Dispatcher.BeginInvoke(app.ShowMainWindow);
+        instance.Activated += (_, _) => app.Dispatcher.BeginInvoke(() => app.ShowMainWindow());
         return app.Run();
     }
 }

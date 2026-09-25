@@ -16,6 +16,9 @@ public sealed class WslProfile
     /// </summary>
     public Dictionary<string, string?> Settings { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Lists and screen readers show a profile by its name.</summary>
+    public override string ToString() => Name;
+
     public WslProfile Clone() => new()
     {
         Id = Id,

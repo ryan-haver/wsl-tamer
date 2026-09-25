@@ -30,10 +30,19 @@ public partial class App : Application
 
     public IServiceProvider Services => _services ?? throw new InvalidOperationException("The app has not started.");
 
-    public void ShowMainWindow()
+    public void ShowMainWindow() => ShowMainWindow(null);
+
+    public void ShowMainWindow(Type? page)
     {
         var window = Services.GetRequiredService<MainWindow>();
-        window.ShowAndActivate();
+        window.ShowAndActivate(page);
+    }
+
+    /// <summary>The page named by <c>--page &lt;name&gt;</c>, e.g. <c>--page distributions</c>.</summary>
+    private Type? RequestedPage()
+    {
+        int index = Array.FindIndex(_args, a => a.Equals("--page", StringComparison.OrdinalIgnoreCase));
+        return index >= 0 && index + 1 < _args.Length && Views.MainWindow.Pages.TryGetValue(_args[index + 1], out var page) ? page : null;
     }
 
     public void ExitApp()
@@ -77,7 +86,7 @@ public partial class App : Application
 
         if (!_args.Contains(StartupRegistration.BackgroundArgument, StringComparer.OrdinalIgnoreCase))
         {
-            ShowMainWindow();
+            ShowMainWindow(RequestedPage());
         }
 
         _ = Services.GetRequiredService<StartupChecks>().RunAsync();
@@ -92,7 +101,10 @@ public partial class App : Application
         services.AddSingleton<IWslConfigFile, WslConfigFile>();
         services.AddSingleton<IConfigStore, ConfigStore>(_ => new ConfigStore());
         services.AddSingleton<AppState>();
-        services.AddSingleton<WslStatusMonitor>();
+        services.AddSingleton(sp => new WslStatusMonitor(
+            sp.GetRequiredService<IWslClient>(),
+            sp.GetRequiredService<IWslConfigFile>().FilePath,
+            sp.GetRequiredService<ILogger<WslStatusMonitor>>()));
         services.AddSingleton<IWslStatusSource>(sp => sp.GetRequiredService<WslStatusMonitor>());
         services.AddSingleton<ProfileService>();
         services.AddSingleton<ISystemProbe, SystemProbe>();

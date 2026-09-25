@@ -5,7 +5,10 @@ using WslTamer.Core.Storage;
 
 namespace WslTamer.App.ViewModels;
 
-public sealed record ApplyBehaviorOption(ApplyBehavior Value, string Label);
+public sealed record ApplyBehaviorOption(ApplyBehavior Value, string Label)
+{
+    public override string ToString() => Label;
+}
 
 public sealed partial class SettingsViewModel(
     AppState state,

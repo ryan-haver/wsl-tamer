@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Management;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using WslTamer.Core.Profiles;
@@ -15,16 +16,22 @@ public sealed record WslStatus(bool VmRunning, IReadOnlyList<string> RunningDist
 /// <summary>Polls WSL state cheaply and raises <see cref="Changed"/> when it changes.</summary>
 public sealed class WslStatusMonitor : IWslStatusSource, IDisposable
 {
+    /// <summary>File times and process start times come from different clocks; allow some slack.</summary>
+    private static readonly TimeSpan ClockSlack = TimeSpan.FromSeconds(2);
+
     private readonly IWslClient _wsl;
+    private readonly string? _configPath;
     private readonly ILogger _logger;
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
     private PeriodicTimer? _timer;
     private CancellationTokenSource? _cts;
-    private bool _restartPending;
+    private (int Pid, DateTime StartUtc)? _vmStart;
 
-    public WslStatusMonitor(IWslClient wsl, ILogger<WslStatusMonitor>? logger = null)
+    /// <param name="configPath">The .wslconfig to watch; "restart pending" means it changed after the VM started.</param>
+    public WslStatusMonitor(IWslClient wsl, string? configPath = null, ILogger<WslStatusMonitor>? logger = null)
     {
         _wsl = wsl;
+        _configPath = configPath;
         _logger = logger ?? NullLogger<WslStatusMonitor>.Instance;
     }
 
@@ -51,10 +58,11 @@ public sealed class WslStatusMonitor : IWslStatusSource, IDisposable
         _timer = null;
     }
 
+    /// <summary>Re-evaluates the restart state right away (after .wslconfig was written).</summary>
     public void MarkRestartPending(bool pending)
     {
-        _restartPending = pending;
-        Publish(Current with { RestartPending = pending });
+        bool vm = IsVmProcessRunning();
+        Publish(Current with { VmRunning = vm, RestartPending = pending || IsRestartPending(vm) });
     }
 
     public async Task<WslStatus> RefreshAsync(CancellationToken cancellationToken = default)
@@ -73,13 +81,7 @@ public sealed class WslStatusMonitor : IWslStatusSource, IDisposable
                 _logger.LogWarning(ex, "Could not read running distributions");
             }
 
-            // Once the VM has stopped, the next start reads the new .wslconfig.
-            if (!vm && running.Count == 0)
-            {
-                _restartPending = false;
-            }
-
-            var status = new WslStatus(vm, running, _restartPending);
+            var status = new WslStatus(vm, running, IsRestartPending(vm));
             Publish(status);
             return status;
         }
@@ -94,6 +96,14 @@ public sealed class WslStatusMonitor : IWslStatusSource, IDisposable
         Stop();
         _refreshGate.Dispose();
     }
+
+    /// <summary>
+    /// WSL reads .wslconfig when its VM starts, so a restart is needed exactly when the
+    /// file was modified after the running VM started. This also catches edits made
+    /// outside WSL Tamer and survives restarts of the app.
+    /// </summary>
+    public static bool IsRestartPending(DateTime? vmStartUtc, DateTime? configWriteUtc) =>
+        vmStartUtc is { } started && configWriteUtc is { } written && written > started + ClockSlack;
 
     /// <summary>The WSL 2 VM shows up as a vmmemWSL (or, on older builds, vmmem) process.</summary>
     public static bool IsVmProcessRunning()
@@ -114,6 +124,53 @@ public sealed class WslStatusMonitor : IWslStatusSource, IDisposable
         }
 
         return false;
+    }
+
+    private bool IsRestartPending(bool vmRunning)
+    {
+        if (!vmRunning || _configPath is null || !File.Exists(_configPath))
+        {
+            return false;
+        }
+
+        return IsRestartPending(GetVmStartUtc(), File.GetLastWriteTimeUtc(_configPath));
+    }
+
+    /// <summary>
+    /// The VM process's start time. Process.StartTime is denied for this system process,
+    /// but WMI reports it to normal users. Cached per process id.
+    /// </summary>
+    private DateTime? GetVmStartUtc()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher("SELECT ProcessId, CreationDate FROM Win32_Process WHERE Name = 'vmmemWSL' OR Name = 'vmmem'");
+            using var results = searcher.Get();
+            foreach (var item in results.OfType<ManagementObject>())
+            {
+                using (item)
+                {
+                    int pid = Convert.ToInt32(item["ProcessId"], System.Globalization.CultureInfo.InvariantCulture);
+                    if (_vmStart is { } cached && cached.Pid == pid)
+                    {
+                        return cached.StartUtc;
+                    }
+
+                    if (item["CreationDate"] is string created)
+                    {
+                        var start = ManagementDateTimeConverter.ToDateTime(created).ToUniversalTime();
+                        _vmStart = (pid, start);
+                        return start;
+                    }
+                }
+            }
+        }
+        catch (ManagementException ex)
+        {
+            _logger.LogWarning(ex, "Could not read the WSL VM start time");
+        }
+
+        return null;
     }
 
     private async Task RunAsync(PeriodicTimer timer, CancellationToken cancellationToken)

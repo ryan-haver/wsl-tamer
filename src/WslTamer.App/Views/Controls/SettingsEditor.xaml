@@ -48,11 +48,13 @@
 
                         <Grid Grid.Column="1" Width="240" VerticalAlignment="Center">
                             <ui:TextBox
+                                AutomationProperties.Name="{Binding Label}"
                                 PlaceholderText="{Binding Placeholder}"
                                 Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
                                 Visibility="{Binding UsesOptions, Converter={StaticResource InverseBoolToVisibility}}" />
                             <ComboBox
                                 HorizontalAlignment="Stretch"
+                                AutomationProperties.Name="{Binding Label}"
                                 ItemsSource="{Binding Options}"
                                 SelectedItem="{Binding SelectedOption}"
                                 Visibility="{Binding UsesOptions, Converter={StaticResource BoolToVisibility}}" />
@@ -63,6 +65,7 @@
                             Margin="8,0,0,0"
                             VerticalAlignment="Center"
                             Appearance="Transparent"
+                            AutomationProperties.Name="{Binding Label, StringFormat='Remove {0}'}"
                             Command="{Binding RemoveCommand}"
                             Icon="{ui:SymbolIcon Dismiss24}"
                             ToolTip="Stop managing this setting in the profile"

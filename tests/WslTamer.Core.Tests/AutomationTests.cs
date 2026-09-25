@@ -104,6 +104,17 @@ public class AutomationTests
         Assert.True(ProfileApplier.Matches(configFile.Load(), balanced));
     }
 
+    [Theory]
+    [InlineData(null, "2026-01-01T10:00:00", false)]            // VM not running
+    [InlineData("2026-01-01T10:00:00", null, false)]            // no .wslconfig
+    [InlineData("2026-01-01T10:00:00", "2026-01-01T09:00:00", false)] // edited before VM start
+    [InlineData("2026-01-01T10:00:00", "2026-01-01T10:00:01", false)] // within clock slack
+    [InlineData("2026-01-01T10:00:00", "2026-01-01T10:05:00", true)]  // edited while running
+    public void Restart_is_pending_when_config_changed_after_vm_start(string? vmStart, string? written, bool expected) =>
+        Assert.Equal(expected, WslTamer.Core.Wsl.WslStatusMonitor.IsRestartPending(
+            vmStart is null ? null : DateTime.Parse(vmStart, System.Globalization.CultureInfo.InvariantCulture),
+            written is null ? null : DateTime.Parse(written, System.Globalization.CultureInfo.InvariantCulture)));
+
     [Fact]
     public void Profile_service_flags_restart_only_when_vm_running()
     {

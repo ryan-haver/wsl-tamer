@@ -13,6 +13,7 @@ namespace WslTamer.App.Tray;
 public sealed class TrayController(AppController controller, IWslClient wsl, UserInteraction ui) : ITrayNotifier, IDisposable
 {
     private TaskbarIcon? _icon;
+    private TrayState? _shownState;
 
     public event EventHandler? OpenRequested;
 
@@ -28,6 +29,7 @@ public sealed class TrayController(AppController controller, IWslClient wsl, Use
             NoLeftClickDelay = true,
             ContextMenu = new ContextMenu(),
         };
+        _shownState = TrayState.Stopped;
         _icon.TrayLeftMouseUp += (_, _) => OpenRequested?.Invoke(this, EventArgs.Empty);
         _icon.PreviewTrayContextMenuOpen += (_, _) => BuildMenu(_icon.ContextMenu);
         _icon.ForceCreate(enablesEfficiencyMode: false);
@@ -58,7 +60,12 @@ public sealed class TrayController(AppController controller, IWslClient wsl, Use
             : status.AnyRunning ? TrayState.Running
             : TrayState.Stopped;
 
-        _icon.Icon = TrayIconRenderer.Render(state);
+        if (state != _shownState)
+        {
+            _shownState = state;
+            _icon.Icon = TrayIconRenderer.Render(state);
+        }
+
         _icon.ToolTipText = state switch
         {
             TrayState.RestartPending => "WSL Tamer — restart WSL to apply changes",
