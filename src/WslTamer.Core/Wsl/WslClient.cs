@@ -91,6 +91,12 @@ public sealed class WslClient(
 
     public async Task ExportAsync(string distro, string file, ExportFormat format, CancellationToken cancellationToken = default)
     {
+        if (format == ExportFormat.Vhd)
+        {
+            // WSL can only copy the disk of a stopped distribution.
+            await StopForDiskOperationAsync(distro, cancellationToken).ConfigureAwait(false);
+        }
+
         var args = new List<string> { "--export", distro, file };
         if (format != ExportFormat.Tar)
         {
@@ -121,19 +127,42 @@ public sealed class WslClient(
         DistroNames.EnsureValid(newName);
         Directory.CreateDirectory(installLocation);
 
+        bool wasRunning = (await GetRunningDistributionNamesAsync(cancellationToken).ConfigureAwait(false))
+            .Contains(source, StringComparer.OrdinalIgnoreCase);
+
         // Importing resets the default user to root, so remember it first.
         string? defaultUser = await GetDefaultUserAsync(source, cancellationToken).ConfigureAwait(false);
 
-        // A VHD export copies the disk directly: faster than tar and keeps everything.
-        var tempVhd = Path.Combine(installLocation, $"{newName}.clone-{Guid.NewGuid():N}.vhdx");
+        // A stopped distribution is copied as a disk image (fast, exact). A running one is
+        // copied as a tar archive so the user's session isn't interrupted.
+        bool asVhd = !wasRunning;
+        var temp = Path.Combine(installLocation, $"{newName}.clone-{Guid.NewGuid():N}");
         try
         {
-            await ExportAsync(source, tempVhd, ExportFormat.Vhd, cancellationToken).ConfigureAwait(false);
-            await ImportAsync(newName, installLocation, tempVhd, isVhd: true, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                if (asVhd)
+                {
+                    await ExportAsync(source, temp + ".vhdx", ExportFormat.Vhd, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            catch (DiskInUseException)
+            {
+                // WSL still holds the disk from an earlier session; a tar copy works regardless.
+                asVhd = false;
+            }
+
+            if (!asVhd)
+            {
+                await ExportAsync(source, temp + ".tar", ExportFormat.Tar, cancellationToken).ConfigureAwait(false);
+            }
+
+            await ImportAsync(newName, installLocation, temp + (asVhd ? ".vhdx" : ".tar"), isVhd: asVhd, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
-            TryDelete(tempVhd);
+            TryDelete(temp + ".vhdx");
+            TryDelete(temp + ".tar");
         }
 
         if (defaultUser is not null && defaultUser != "root")
@@ -145,7 +174,7 @@ public sealed class WslClient(
     public async Task MoveAsync(string distro, string newLocation)
     {
         Directory.CreateDirectory(newLocation);
-        await TerminateIfRunningAsync(distro).ConfigureAwait(false);
+        await StopForDiskOperationAsync(distro).ConfigureAwait(false);
 
         // Moving is one operation inside the WSL service; don't abandon it part-way.
         var result = await RunAsync(["--manage", distro, "--move", newLocation], Timeout.InfiniteTimeSpan, CancellationToken.None).ConfigureAwait(false);
@@ -154,7 +183,7 @@ public sealed class WslClient(
 
     public async Task SetSparseAsync(string distro, bool sparse, bool allowUnsafe = false, CancellationToken cancellationToken = default)
     {
-        await TerminateIfRunningAsync(distro, cancellationToken).ConfigureAwait(false);
+        await StopForDiskOperationAsync(distro, cancellationToken).ConfigureAwait(false);
 
         var args = new List<string> { "--manage", distro, "--set-sparse", sparse ? "true" : "false" };
         if (allowUnsafe)
@@ -309,6 +338,14 @@ public sealed class WslClient(
         }
     }
 
+    /// <summary>
+    /// Stops the distribution before a disk operation. WSL may still keep the disk attached
+    /// to the VM afterwards (until the whole VM stops); the operation then fails with
+    /// <see cref="DiskInUseException"/> and the caller can offer to shut WSL down.
+    /// </summary>
+    private Task StopForDiskOperationAsync(string distro, CancellationToken cancellationToken = default) =>
+        TerminateIfRunningAsync(distro, cancellationToken);
+
     private async Task TerminateIfRunningAsync(string distro, CancellationToken cancellationToken = default)
     {
         var running = await GetRunningDistributionNamesAsync(cancellationToken).ConfigureAwait(false);
@@ -323,6 +360,11 @@ public sealed class WslClient(
 
     private static void EnsureSuccess(ProcessResult result, string operation)
     {
+        if (!result.Succeeded && DiskInUseException.Matches(result.CombinedOutput))
+        {
+            throw new DiskInUseException(operation, result.CombinedOutput);
+        }
+
         if (!result.Succeeded)
         {
             throw new WslCommandException(operation, result.ExitCode, result.CombinedOutput);
@@ -353,6 +395,20 @@ public sealed class WslClient(
             _logger.LogWarning(ex, "Could not delete temporary file {Path}", path);
         }
     }
+}
+
+/// <summary>
+/// WSL still has the distribution's disk attached to its VM. That lasts until the whole
+/// VM stops, so the fix is <c>wsl --shutdown</c> followed by a retry.
+/// </summary>
+public sealed class DiskInUseException(string operation, string output)
+    : WslException($"{operation} failed because WSL is still using the distribution's disk. Shut down WSL (this stops all distributions) and try again.")
+{
+    public string Output { get; } = output;
+
+    internal static bool Matches(string output) =>
+        output.Contains("ERROR_SHARING_VIOLATION", StringComparison.OrdinalIgnoreCase)
+        || output.Contains("VHD is currently in use", StringComparison.OrdinalIgnoreCase);
 }
 
 /// <summary>WSL refused to make a disk sparse without an explicit "unsafe" acknowledgement.</summary>

@@ -117,14 +117,14 @@ public class WslClientTests
     }
 
     [Fact]
-    public async Task Clone_exports_vhd_imports_and_restores_default_user()
+    public async Task Clone_of_stopped_distro_copies_the_disk_and_restores_default_user()
     {
         using var temp = new TempDirectory();
         var (client, runner) = Create(spec => spec.Arguments.Contains("id") ? FakeProcessRunner.Ok("alice\n") : FakeProcessRunner.Ok());
 
         await client.CloneAsync("Ubuntu", "Ubuntu-copy", temp.Path, TestContext.Current.CancellationToken);
 
-        var calls = runner.Runs.Select(r => r.Arguments).ToList();
+        var calls = runner.Runs.Select(r => r.Arguments).Where(a => a[0] != "--list").ToList();
         Assert.Equal(["--distribution", "Ubuntu", "--exec", "id", "-un"], calls[0]);
         Assert.Equal("--export", calls[1][0]);
         Assert.Equal(["--format", "vhd"], calls[1].Skip(3));
@@ -132,6 +132,26 @@ public class WslClientTests
         Assert.Equal("--vhd", calls[2][^1]);
         Assert.Equal(calls[1][2], calls[2][3]); // same temp file
         Assert.Equal(["--manage", "Ubuntu-copy", "--set-default-user", "alice"], calls[3]);
+    }
+
+    [Fact]
+    public async Task Clone_of_running_distro_uses_tar_so_it_keeps_running()
+    {
+        using var temp = new TempDirectory();
+        var (client, runner) = Create(spec =>
+            spec.Arguments[0] == "--list" ? FakeProcessRunner.Ok("Ubuntu\n")
+            : spec.Arguments.Contains("id") ? FakeProcessRunner.Ok("root\n")
+            : FakeProcessRunner.Ok());
+
+        await client.CloneAsync("Ubuntu", "Ubuntu-copy", temp.Path, TestContext.Current.CancellationToken);
+
+        var calls = runner.Runs.Select(r => r.Arguments).ToList();
+        Assert.DoesNotContain(calls, a => a[0] == "--terminate");
+        var export = calls.Single(a => a[0] == "--export");
+        Assert.EndsWith(".tar", export[2], StringComparison.Ordinal);
+        Assert.Equal(3, export.Count);
+        Assert.NotEqual("--vhd", calls.Single(a => a[0] == "--import")[^1]);
+        Assert.DoesNotContain(calls, a => a.Contains("--set-default-user"));
     }
 
     [Fact]
@@ -151,6 +171,34 @@ public class WslClientTests
             : FakeProcessRunner.Ok());
 
         await Assert.ThrowsAsync<SparseRequiresConsentException>(() => client.SetSparseAsync("Ubuntu", true, cancellationToken: TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Disk_in_use_errors_are_reported_distinctly()
+    {
+        var (client, _) = Create(spec => spec.Arguments.Contains("--move")
+            ? FakeProcessRunner.Fail(-1, "The process cannot access the file because it is being used by another process.\r\nError code: Wsl/Service/MoveDistro/ERROR_SHARING_VIOLATION")
+            : FakeProcessRunner.Ok());
+        using var temp = new TempDirectory();
+
+        await Assert.ThrowsAsync<DiskInUseException>(() => client.MoveAsync("Ubuntu", temp.Path));
+    }
+
+    [Fact]
+    public async Task Clone_falls_back_to_tar_when_the_disk_is_held()
+    {
+        using var temp = new TempDirectory();
+        var (client, runner) = Create(spec =>
+            spec.Arguments.Contains("vhd") && spec.Arguments[0] == "--export"
+                ? FakeProcessRunner.Fail(-1, "Error code: Wsl/Service/ExportDistro/ERROR_SHARING_VIOLATION")
+                : FakeProcessRunner.Ok());
+
+        await client.CloneAsync("Ubuntu", "Ubuntu-copy", temp.Path, TestContext.Current.CancellationToken);
+
+        var exports = runner.Runs.Where(r => r.Arguments[0] == "--export").ToList();
+        Assert.Equal(2, exports.Count);
+        Assert.EndsWith(".tar", exports[1].Arguments[2], StringComparison.Ordinal);
+        Assert.NotEqual("--vhd", runner.Runs.Single(r => r.Arguments[0] == "--import").Arguments[^1]);
     }
 
     [Fact]

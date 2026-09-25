@@ -129,6 +129,49 @@ public sealed class AppController(
         RaiseStateChanged();
     }
 
+    /// <summary>
+    /// Runs a disk operation. If WSL is still holding the distribution's disk, asks to shut
+    /// WSL down, then retries with keep-alive sessions paused. Returns false if the user declined.
+    /// </summary>
+    public async Task<bool> RunWithDiskReleasedAsync(string distro, Func<Task> operation)
+    {
+        try
+        {
+            await operation();
+            return true;
+        }
+        catch (DiskInUseException)
+        {
+            bool shutdown = await ui.ConfirmAsync(
+                "Shut down WSL to continue?",
+                $"WSL is still using {distro}'s disk, which it releases only when WSL shuts down. Shut down WSL now? All running distributions (including Docker Desktop's) will stop.",
+                "Shut down and continue");
+            if (!shutdown)
+            {
+                return false;
+            }
+        }
+
+        bool resume = !KeepAlivePaused;
+        keepAlive.Pause();
+        try
+        {
+            await wsl.ShutdownAsync();
+            monitor.MarkRestartPending(false);
+            await operation();
+            return true;
+        }
+        finally
+        {
+            if (resume)
+            {
+                keepAlive.Resume();
+            }
+
+            await monitor.RefreshAsync();
+        }
+    }
+
     public void ResumeKeepAlive()
     {
         KeepAlivePaused = false;

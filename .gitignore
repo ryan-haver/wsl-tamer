@@ -29,8 +29,5 @@ coverage*/
 
 # Local-only workspace folders
 .agent/
-wsl-tamer-electron/
 node_modules/
 
-# Leftovers from removed prototypes (safe to delete locally)
-wsl-tamer-tauri/

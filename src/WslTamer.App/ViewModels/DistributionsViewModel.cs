@@ -153,7 +153,9 @@ public sealed partial class DistributionsViewModel(
 
         if (await ui.ConfirmAsync($"Move {item.Name}?", $"{item.Name} will stop and its disk will be moved to:\n{dialog.FolderName}", "Move"))
         {
-            await Work(item, "Moving…", $"Could not move {item.Name}", () => wsl.MoveAsync(item.Name, dialog.FolderName), success: $"{item.Name} moved.");
+            await Work(item, "Moving…", $"Could not move {item.Name}",
+                () => controller.RunWithDiskReleasedAsync(item.Name, () => wsl.MoveAsync(item.Name, dialog.FolderName)),
+                success: $"{item.Name} moved.");
         }
     }
 
@@ -179,7 +181,16 @@ public sealed partial class DistributionsViewModel(
             _ => ExportFormat.TarGz,
         };
 
-        await Work(item, "Exporting…", $"Could not export {item.Name}", () => wsl.ExportAsync(item.Name, dialog.FileName, format),
+        if (format == ExportFormat.Vhd && !await ui.ConfirmAsync(
+                $"Export {item.Name} as a virtual disk?",
+                $"{item.Name} has to stop while its disk is copied. If WSL is still holding the disk, you'll be asked to shut WSL down.",
+                "Export"))
+        {
+            return;
+        }
+
+        await Work(item, "Exporting…", $"Could not export {item.Name}",
+            () => controller.RunWithDiskReleasedAsync(item.Name, () => wsl.ExportAsync(item.Name, dialog.FileName, format)),
             success: $"Saved to {dialog.FileName}");
     }
 
@@ -224,21 +235,24 @@ public sealed partial class DistributionsViewModel(
 
         await Work(item, "Updating disk…", $"Could not change {item.Name}'s disk", async () =>
         {
+            bool allowUnsafe = false;
             try
             {
-                await wsl.SetSparseAsync(item.Name, true);
+                await controller.RunWithDiskReleasedAsync(item.Name, () => wsl.SetSparseAsync(item.Name, true));
+                return;
             }
             catch (SparseRequiresConsentException)
             {
-                bool force = await ui.ConfirmAsync(
+                allowUnsafe = await ui.ConfirmAsync(
                     "WSL advises caution",
-                    "This WSL version has sparse disks turned off by default because of a reported risk of data corruption. Only continue if you have a backup (use Export first).",
+                    "This version of WSL turns sparse disks off by default because Microsoft reported a risk of data corruption. Only continue if you have a backup (use Export first).",
                     "Continue anyway",
                     destructive: true);
-                if (force)
-                {
-                    await wsl.SetSparseAsync(item.Name, true, allowUnsafe: true);
-                }
+            }
+
+            if (allowUnsafe)
+            {
+                await controller.RunWithDiskReleasedAsync(item.Name, () => wsl.SetSparseAsync(item.Name, true, allowUnsafe: true));
             }
         });
     }

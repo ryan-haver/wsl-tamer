@@ -7,6 +7,7 @@ namespace WslTamer.Core.Tests;
 /// Runs against the real wsl.exe. Opt in with WSLTAMER_INTEGRATION=1 (and optionally
 /// WSLTAMER_TEST_DISTRO). Only harmless operations: reading files and writing under /tmp.
 /// </summary>
+[Collection(Functional.WslCollection.Name)]
 public class WslIntegrationTests
 {
     private static readonly bool Enabled = Environment.GetEnvironmentVariable("WSLTAMER_INTEGRATION") == "1";
