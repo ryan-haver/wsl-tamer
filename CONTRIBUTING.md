@@ -14,6 +14,8 @@ Thanks for helping. Bug reports, fixes and small focused features are all welcom
    ```
 
 CI runs the same two commands on every pull request. The build treats warnings as errors.
+Tests against real WSL are opt-in; [docs/TESTING.md](docs/TESTING.md) explains how to run
+them and tracks what has been verified by hand.
 
 ## Branches
 
@@ -46,6 +48,7 @@ CI runs the same two commands on every pull request. The build treats warnings a
 
 ## Pull requests
 
+- Open pull requests against `dev`.
 - Keep each PR focused on one change, and describe what changed and how you tested it.
 - Add or update tests for behaviour changes in Core.
 - Include a screenshot for UI changes.

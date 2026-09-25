@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Testing status
+    url: https://github.com/ryan-haver/wsl-tamer/blob/main/docs/TESTING.md
+    about: What has and hasn't been verified on real hardware yet.

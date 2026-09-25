@@ -3,7 +3,7 @@
 This page records what has been verified on real hardware for 2.0, and what hasn't yet.
 Update it whenever something moves from one list to the other.
 
-Last updated: 2026-09-24. Test machine: Windows 11 (10.0.26200), WSL 2.7.13, kernel
+Last updated: 2026-09-25. Test machine: Windows 11 (10.0.26200), WSL 2.7.13, kernel
 6.18.33, Docker Desktop and Podman distributions present.
 
 ## How to run the tests
@@ -56,6 +56,14 @@ Tests against real WSL are opt-in:
 - Distributions: Import dialog imports and lists the new distribution.
 - Tray icon changes state without errors (running, restart pending, stopped).
 
+**Build and release pipeline (GitHub Actions):**
+
+- CI builds with warnings as errors and runs the unit tests on `windows-latest` for every
+  push to `main` and `dev`.
+- Tagging `v2.0.0` built, tested, packaged and uploaded a draft release with the
+  installer, portable zip, update feed and `SHA256SUMS.txt`. The checksums match the
+  update feed.
+
 **Installer and updates (Velopack, built locally):**
 
 - Per-user install from `Setup.exe`, with no administrator rights.
@@ -82,7 +90,10 @@ been exercised end to end on real hardware.
 - **Install from the online catalog:** opens a console for account setup.
 - **Open terminal:** Windows Terminal and console fallback.
 - **Restart WSL automatically when idle** (the non-default apply behaviour).
-- **GitHub update feed:** only a local feed has been tested. The first real release will
-  confirm it.
+- **Updating from the GitHub feed:** the feed is built and uploaded, but installed copies
+  can't see it until the release is published. So far only a local feed has been used for
+  update testing.
+- **The CI-built installer:** the locally built one was tested. The CI build uses the same
+  commands but hasn't been installed yet.
 - **Non-English Windows:** parsers avoid localized text, but this is untested.
 - **Windows 10:** only tested on Windows 11.

@@ -8,7 +8,10 @@ passthrough and troubleshooting.
 
 Last updated: September 2026.
 
-## 2.0: Rebuild (in progress)
+## 2.0: Rebuild (built; testing before publishing)
+
+`v2.0.0` is tagged and its release is a draft on GitHub. See
+[docs/TESTING.md](docs/TESTING.md) for what is verified.
 
 - [x] New `WslTamer.Core` library with unit tests; UI rebuilt on .NET 10 with MVVM.
 - [x] Runs without administrator rights; elevates only for USB sharing, disk mounts and
@@ -23,8 +26,14 @@ Last updated: September 2026.
       `wsl --manage --move`, VHD export and import.
 - [x] VHDX size display, compaction and sparse disks.
 - [x] Keep distributions running in the background.
-- [x] Velopack installer and checksum-verified updates; CI on every push.
+- [x] Velopack installer and checksum-verified updates; tested upgrade from 1.8.4,
+      self-update and uninstall.
+- [x] CI on every push to `main` and `dev`; tag-driven release pipeline producing a draft.
+- [x] Functional tests against real WSL (throwaway distributions, profile restarts).
+- [ ] Hands-on tests: distribution menu actions, tray menu, disk compaction, USB and disk
+      passthrough.
 - [ ] Code-signed releases (SignPath Foundation or Azure Trusted Signing).
+- [ ] Publish the 2.0.0 release.
 - [ ] Publish to winget.
 
 ## 2.1: Diagnose and reclaim

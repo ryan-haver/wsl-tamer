@@ -1,0 +1,39 @@
+name: Bug report
+description: Something in WSL Tamer doesn't work as expected.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: WSL Tamer version
+      description: Shown under Settings → About.
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: textarea
+    id: wsl-version
+    attributes:
+      label: Output of `wsl --version`
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2"
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: From Settings → Open log folder (wsltamer.log). Paste the relevant lines, or drag the file here.
+      render: text
