@@ -56,22 +56,18 @@ public sealed partial class KeepAliveManager : IDisposable
 
     public void SetWanted(IEnumerable<string> distros)
     {
+        List<Process> toStop;
         lock (_gate)
         {
-            foreach (var name in _sessions.Keys.Except(distros, StringComparer.OrdinalIgnoreCase).ToList())
-            {
-                StopSession(name);
-            }
-
             _wanted.Clear();
             _wanted.UnionWith(distros);
-            if (!_paused)
-            {
-                foreach (var name in _wanted)
-                {
-                    StartSession(name);
-                }
-            }
+            toStop = TakeSessions(name => !_wanted.Contains(name));
+        }
+
+        StopProcesses(toStop);
+        if (!IsPaused)
+        {
+            StartMissing();
         }
 
         Changed?.Invoke(this, EventArgs.Empty);
@@ -95,14 +91,14 @@ public sealed partial class KeepAliveManager : IDisposable
     /// <summary>Stops all sessions (e.g. before shutting WSL down) until <see cref="Resume"/>.</summary>
     public void Pause()
     {
+        List<Process> toStop;
         lock (_gate)
         {
             _paused = true;
-            foreach (var name in _sessions.Keys.ToList())
-            {
-                StopSession(name);
-            }
+            toStop = TakeSessions(_ => true);
         }
+
+        StopProcesses(toStop);
     }
 
     public void Resume()
@@ -110,15 +106,14 @@ public sealed partial class KeepAliveManager : IDisposable
         lock (_gate)
         {
             _paused = false;
-            foreach (var name in _wanted)
-            {
-                StartSession(name);
-            }
         }
+
+        StartMissing();
     }
 
     public void Dispose()
     {
+        List<Process> toStop;
         lock (_gate)
         {
             if (_disposed)
@@ -127,51 +122,48 @@ public sealed partial class KeepAliveManager : IDisposable
             }
 
             _disposed = true;
-            foreach (var name in _sessions.Keys.ToList())
-            {
-                StopSession(name);
-            }
+            toStop = TakeSessions(_ => true);
         }
 
+        StopProcesses(toStop);
         if (_job != 0)
         {
             CloseHandle(_job);
         }
     }
 
-    private void StartSession(string distro)
+    private bool IsPaused
     {
-        if (_disposed || (_sessions.TryGetValue(distro, out var existing) && !existing.HasExited))
+        get
         {
-            return;
-        }
-
-        try
-        {
-            var process = _runner.StartBackground(
-                _wsl.WslExePath,
-                ["--distribution", distro, "--exec", "sleep", "infinity"],
-                WslClient.WslEnvironment);
-
-            if (_job != 0)
+            lock (_gate)
             {
-                AssignProcessToJobObject(_job, process.Handle);
+                return _paused;
             }
-
-            process.EnableRaisingEvents = true;
-            process.Exited += (_, _) => OnSessionExited(distro, process);
-            _sessions[distro] = process;
-            _logger.LogInformation("Keeping {Distro} running", distro);
-        }
-        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception)
-        {
-            _logger.LogError(ex, "Could not keep {Distro} running", distro);
         }
     }
 
-    private void StopSession(string distro)
+    /// <summary>Removes matching sessions from the table. Call with the lock held.</summary>
+    private List<Process> TakeSessions(Func<string, bool> predicate)
     {
-        if (_sessions.Remove(distro, out var process))
+        var taken = new List<Process>();
+        foreach (var name in _sessions.Keys.Where(predicate).ToList())
+        {
+            _sessions.Remove(name, out var process);
+            taken.Add(process!);
+        }
+
+        return taken;
+    }
+
+    /// <summary>
+    /// Kills and disposes processes. Must be called WITHOUT the lock: Process raises
+    /// Exited while holding its own lock, and our handler takes ours, so disposing a
+    /// process while holding our lock can deadlock.
+    /// </summary>
+    private static void StopProcesses(List<Process> processes)
+    {
+        foreach (var process in processes)
         {
             try
             {
@@ -180,12 +172,69 @@ public sealed partial class KeepAliveManager : IDisposable
                     process.Kill(entireProcessTree: true);
                 }
             }
-            catch (InvalidOperationException)
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception)
             {
                 // Already gone.
             }
 
             process.Dispose();
+        }
+    }
+
+    /// <summary>Starts a session for every wanted distribution that doesn't have one.</summary>
+    private void StartMissing()
+    {
+        List<string> missing;
+        lock (_gate)
+        {
+            if (_disposed || _paused)
+            {
+                return;
+            }
+
+            missing = _wanted.Where(name => !_sessions.ContainsKey(name)).ToList();
+        }
+
+        foreach (var distro in missing)
+        {
+            Process process;
+            try
+            {
+                process = _runner.StartBackground(
+                    _wsl.WslExePath,
+                    ["--distribution", distro, "--exec", "sleep", "infinity"],
+                    WslClient.WslEnvironment);
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception)
+            {
+                _logger.LogError(ex, "Could not keep {Distro} running", distro);
+                continue;
+            }
+
+            if (_job != 0)
+            {
+                AssignProcessToJobObject(_job, process.Handle);
+            }
+
+            bool keep;
+            lock (_gate)
+            {
+                keep = !_disposed && !_paused && _wanted.Contains(distro) && !_sessions.ContainsKey(distro);
+                if (keep)
+                {
+                    _sessions[distro] = process;
+                }
+            }
+
+            if (!keep)
+            {
+                StopProcesses([process]);
+                continue;
+            }
+
+            process.EnableRaisingEvents = true;
+            process.Exited += (_, _) => OnSessionExited(distro, process);
+            _logger.LogInformation("Keeping {Distro} running", distro);
         }
     }
 
@@ -196,30 +245,21 @@ public sealed partial class KeepAliveManager : IDisposable
         {
             if (!_sessions.TryGetValue(distro, out var current) || current != process)
             {
-                return; // stopped on purpose
+                return; // stopped on purpose; whoever removed it disposes it
             }
 
             _sessions.Remove(distro);
-            process.Dispose();
             restart = !_paused && !_disposed && _wanted.Contains(distro);
         }
 
+        // Dispose on another thread: this handler runs inside the Process's own lock.
+        _ = Task.Run(process.Dispose);
         Changed?.Invoke(this, EventArgs.Empty);
+
         if (restart)
         {
             _logger.LogInformation("{Distro} stopped; restarting keep-alive in {Delay}", distro, RestartDelay);
-            _ = Task.Delay(RestartDelay).ContinueWith(
-                _ =>
-                {
-                    lock (_gate)
-                    {
-                        if (!_paused && _wanted.Contains(distro))
-                        {
-                            StartSession(distro);
-                        }
-                    }
-                },
-                TaskScheduler.Default);
+            _ = Task.Delay(RestartDelay).ContinueWith(_ => StartMissing(), TaskScheduler.Default);
         }
     }
 

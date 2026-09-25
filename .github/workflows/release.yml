@@ -1,50 +1,75 @@
 name: Release
 
+# Push a tag such as v2.0.0 to build, test, package and upload a DRAFT release.
+# Review the draft on GitHub and publish it; installed copies then update themselves.
 on:
   push:
-    tags:
-      - 'v*'
+    tags: ['v*']
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  release:
     runs-on: windows-latest
-
+    env:
+      REPO_URL: https://github.com/${{ github.repository }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
 
-    - name: Restore dependencies
-      run: dotnet restore src/WslTamer.UI/WslTamer.UI.csproj
+      - name: Read version from tag
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$') { throw "Tag '${{ github.ref_name }}' is not a version like v2.0.0" }
+          "VERSION=$version" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
-    - name: Build
-      run: dotnet build src/WslTamer.UI/WslTamer.UI.csproj --configuration Release --no-restore
+      - name: Build and test
+        run: |
+          dotnet build WslTamer.slnx -c Release -p:Version=${{ env.VERSION }}
+          dotnet test --solution WslTamer.slnx -c Release --no-build
 
-    - name: Publish
-      run: dotnet publish src/WslTamer.UI/WslTamer.UI.csproj --configuration Release --runtime win-x64 --self-contained false --output ./publish
+      - name: Publish
+        run: dotnet publish src/WslTamer.App -c Release -r win-x64 --self-contained false -o publish -p:Version=${{ env.VERSION }}
 
-    - name: Extract Version
-      run: |
-        $version = "${{ github.ref_name }}".TrimStart('v')
-        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
+      - name: Restore tools
+        run: dotnet tool restore
 
-    - name: Build Installer
-      run: dotnet build src/WslTamer.Installer/WslTamer.Installer.wixproj -c Release /p:DefineConstants="Version=$env:VERSION;PublishDir=..\..\publish"
+      # Previous release packages let Velopack build small delta updates.
+      - name: Download previous release
+        run: dotnet vpk download github --repoUrl ${{ env.REPO_URL }} --token ${{ secrets.GITHUB_TOKEN }} -o Releases
+        continue-on-error: true
 
-    - name: Zip Release
-      run: Compress-Archive -Path ./publish/* -DestinationPath WslTamer-win-x64.zip
+      # To sign releases, add signing secrets and pass --signParams or
+      # --azureTrustedSignFile to this command.
+      - name: Package
+        shell: pwsh
+        run: |
+          $notes = "docs/release-notes/$env:VERSION.md"
+          $extra = @()
+          if (Test-Path $notes) { $extra = @('--releaseNotes', $notes) }
+          dotnet vpk pack -u WslTamer -v $env:VERSION -p publish -e WslTamer.exe `
+            --packTitle "WSL Tamer" --packAuthors "Ryan Haver" `
+            -i src/WslTamer.App/Assets/app.ico --framework net10.0-x64-desktop `
+            -o Releases @extra
 
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        generate_release_notes: true
-        files: |
-          WslTamer-win-x64.zip
-          src/WslTamer.Installer/bin/Release/WslTamer.msi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload draft release
+        run: >
+          dotnet vpk upload github --repoUrl ${{ env.REPO_URL }} --token ${{ secrets.GITHUB_TOKEN }}
+          -o Releases --tag ${{ github.ref_name }} --releaseName "WSL Tamer ${{ env.VERSION }}"
+
+      - name: Upload checksums
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          Get-ChildItem Releases -File -Include *.exe, *.zip, *.nupkg -Recurse |
+            Where-Object { $_.Name -like "*$env:VERSION*" -or $_.Name -like 'WslTamer-win-*' } |
+            ForEach-Object { "{0}  {1}" -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.Name } |
+            Set-Content SHA256SUMS.txt -Encoding ascii
+          Get-Content SHA256SUMS.txt
+          gh release upload '${{ github.ref_name }}' SHA256SUMS.txt --clobber

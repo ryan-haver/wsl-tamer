@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WslTamer.App/WslTamer.App.csproj" />
+    <Project Path="src/WslTamer.Core/WslTamer.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WslTamer.Core.Tests/WslTamer.Core.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,7 +1,6 @@
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
@@ -24,12 +23,12 @@ namespace WslTamer.App;
 public partial class App : Application
 {
     private readonly string[] _args;
-    private IHost? _host;
+    private ServiceProvider? _services;
     private ILogger<App>? _logger;
 
     public App(string[] args) => _args = args;
 
-    public IServiceProvider Services => _host?.Services ?? throw new InvalidOperationException("The app has not started.");
+    public IServiceProvider Services => _services ?? throw new InvalidOperationException("The app has not started.");
 
     public void ShowMainWindow()
     {
@@ -43,7 +42,7 @@ public partial class App : Application
         Services.GetRequiredService<MainWindow>().AllowClose = true;
         Services.GetRequiredService<TrayController>().Dispose();
         Services.GetRequiredService<AppController>().Dispose();
-        _host?.Dispose();
+        _services?.Dispose();
         Shutdown();
     }
 
@@ -51,10 +50,10 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings { DisableDefaults = true });
-        builder.Logging.AddProvider(new FileLoggerProvider(AppPaths.LogDirectory));
-        ConfigureServices(builder.Services);
-        _host = builder.Build();
+        var services = new ServiceCollection();
+        services.AddLogging(logging => logging.AddProvider(new FileLoggerProvider(AppPaths.LogDirectory)));
+        ConfigureServices(services);
+        _services = services.BuildServiceProvider();
         _logger = Services.GetRequiredService<ILogger<App>>();
         _logger.LogInformation("WSL Tamer {Version} starting", AppPaths.Version);
 

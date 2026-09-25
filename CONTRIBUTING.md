@@ -1,41 +1,50 @@
 # Contributing to WSL Tamer
 
-Thanks for your interest in contributing! This guide helps you get started quickly and keeps contributions consistent.
+Thanks for helping. Bug reports, fixes and small focused features are all welcome.
 
-## Ways to Contribute
+## Getting started
 
-- File issues for bugs and feature requests
-- Improve documentation (README, roadmap phases)
-- Tackle good-first-issues and small fixes
-- Propose UX improvements with screenshots or mockups
+1. Install the [.NET 10 SDK](https://dotnet.microsoft.com/download) and make sure WSL 2 works on your machine.
+2. Fork and clone the repository, then create a branch.
+3. Build and test:
 
-## Development Workflow
+   ```powershell
+   dotnet build WslTamer.slnx
+   dotnet test --solution WslTamer.slnx
+   ```
 
-1. Fork the repo and create a feature branch
-2. Keep changes focused and small; add/adjust docs as needed
-3. Run tests locally if applicable; ensure builds succeed
-4. Open a Pull Request with a clear description and screenshots if UI changes
+CI runs the same two commands on every pull request. The build treats warnings as errors.
 
-## Code Style
+## Where code goes
 
-- Follow existing patterns and naming in the codebase
-- Keep changes minimal and scoped to the task
-- Avoid unrelated refactors in the same PR
+- **`src/WslTamer.Core`**: anything that talks to `wsl.exe`, the registry, files or
+  hardware, plus parsing and rules. It has no UI dependencies, so it can be unit tested.
+- **`src/WslTamer.App`**: views, view models and the tray. Keep logic out of code-behind.
+- **`tests/WslTamer.Core.Tests`**: tests for Core. When you parse new `wsl.exe` or
+  `usbipd` output, capture the real output into `Fixtures/` and test against it.
 
-## Documentation
+## Rules that keep users safe
 
-- Update relevant phase docs under `docs/roadmap/`
-- Keep `ROADMAP.md` summaries concise; move details into phase docs
-- Add or update links in `INDEX.md` when adding docs
+- **Never build command strings.** Pass arguments through `ProcessSpec`/`IProcessRunner`
+  as a list. For commands inside a distribution use `IWslClient.ExecAsync` (`wsl --exec`).
+  If a shell is unavoidable, the script must be a constant and user values must be passed
+  as positional arguments (`"$1"`).
+- **Never rewrite a whole config file.** Edit `.wslconfig` and `wsl.conf` through
+  `IniDocument`, change only what the user changed, and save atomically with a backup.
+- **Never save after a failed read.** If a file couldn't be read, show the error; don't
+  offer to save defaults over it.
+- **Don't parse localized text.** `wsl.exe` output is translated on non-English Windows.
+  Prefer the registry, exit codes, `--quiet` output, or column positions.
+- **Elevate per operation.** The app runs as the user. Use `IProcessRunner.RunElevatedAsync`
+  only for the specific command that needs administrator rights.
 
-## Reporting Issues
+## Pull requests
 
-- Include repro steps, logs, and environment details (Windows version, WSL version)
-- Attach screenshots or screen recordings when helpful
+- Keep each PR focused on one change, and describe what changed and how you tested it.
+- Add or update tests for behaviour changes in Core.
+- Include a screenshot for UI changes.
 
-## Questions & Support
+## Reporting bugs
 
-- GitHub Discussions for questions and ideas
-- GitHub Issues for bugs and feature requests
-
-We appreciate your time and help making WSL Tamer better!
+Please include your Windows version, the output of `wsl --version`, and the log file from
+**Settings → Open log folder** (`%LocalAppData%\WslTamer\logs`).

@@ -1,69 +1,101 @@
 # WSL Tamer
 
-**Tame the beast that is Windows Subsystem for Linux.**
+**A free, open-source tray app that keeps WSL 2 under control.**
 
-WSL Tamer is a lightweight system tray application designed to give you full control over WSL2's resource usage. No more manually editing .wslconfig files or running PowerShell commands to shut down runaway instances.
+WSL Tamer lives in the Windows notification area. It lets you switch WSL's memory and
+CPU limits with one click, manage your distributions, and hand USB devices and disks to
+Linux, without hand-editing `.wslconfig` or remembering `wsl.exe` flags.
 
 ## Features
 
-### Smart Resource Profiles
+**Resource profiles.** Save sets of `.wslconfig` values (memory, processors, swap,
+memory reclaim, networking mode and more) and switch between them from the tray. A
+profile changes only the settings it lists; everything else in your `.wslconfig`,
+including comments, is kept exactly as it was.
 
-Switch between profiles instantly without restarting Windows:
+**Automation.** Switch profiles automatically while a program is running, on a given
+network, on battery or AC power, or during a time window.
 
-* **Eco Mode:** Caps RAM at 4GB, limits CPU. Great for background tasks or battery life.
-* **Balanced:** The sweet spot (e.g., 8GB - 12GB). Perfect for daily development.
-* **Unleashed:** Unlocks full system resources for heavy compilation or ML tasks.
+**Restart when it suits you.** WSL reads its settings only when it starts. WSL Tamer tells
+you when a restart is needed and can restart for you, either immediately or as soon as no
+distribution is in use.
 
-### Distro Management
+**Distributions.** Start, stop, open in a terminal, set the default, install from the
+online catalog, import, export (`.tar`, `.tar.gz`, `.tar.xz` or `.vhdx`), clone (keeping
+your default user), move to another drive, and delete with a typed confirmation.
 
-* **Dashboard:** View all installed distributions and their running state.
-* **Control:** Launch, Stop, or Set Default distributions directly from the UI.
-* **Manage:** Clone, Move, Export, Import, and Unregister distributions.
+**Keep distributions running.** Keep chosen distributions running in the background, for
+services such as Docker or systemd units, for as long as WSL Tamer is open.
 
-### Deep Configuration
+**Disk space.** See how much space each distribution's virtual disk takes, compact it, or
+switch it to a sparse disk that shrinks automatically.
 
-* **Per-Distro Settings:** Configure `wsl.conf` (Boot, Network, Automount, Interop, User) via a GUI.
-* **Global Settings:** Configure `.wslconfig` (Kernel, Networking Mode, WSLg, Debug Console).
+**Settings editors.** Edit the global `.wslconfig` and each distribution's
+`/etc/wsl.conf` through forms built from Microsoft's documentation, with validation.
+Settings the editor doesn't know about are preserved, and the previous file is kept as a
+`.wsltamer.bak` backup.
 
-### Hardware Passthrough
+**Hardware passthrough.** Attach USB devices to WSL through
+[usbipd-win](https://github.com/dorssel/usbipd-win), and attach whole physical disks with
+`wsl --mount`. Windows boot and system disks are never offered.
 
-* **USB Devices:** Attach/Detach USB devices to WSL (requires `usbipd-win`).
-* **Physical Disks:** Mount/Unmount physical disks to WSL.
-* **PCIe Passthrough:** Information and requirements for Discrete Device Assignment (DDA) / GPU Passthrough.
+## Install
 
-### Quick Actions
+1. Download **WslTamer-win-Setup.exe** from the
+   [latest release](https://github.com/ryan-haver/wsl-tamer/releases/latest).
+2. Run it. It installs for your user account only (no administrator rights needed) and
+   installs the .NET 10 Desktop Runtime if it's missing.
 
-* **Start Background:** Start WSL in headless mode (no terminal window) to keep background services running.
-* **Start/Stop WSL:** One-click shutdown to free up resources immediately.
-* **Reclaim Memory:** Force Linux to drop caches and return RAM to Windows.
+WSL Tamer updates itself from GitHub Releases. Each update's checksum is verified before
+it is installed. A portable `.zip` and `SHA256SUMS.txt` are attached to every release.
 
-### System Tray Integration
+**Requirements:** Windows 10 version 2004 or later, or Windows 11, with WSL 2. Some
+settings (mirrored networking, DNS tunneling and others) need Windows 11; the editors mark
+them.
 
-* **Dynamic Icon:** Visual indicator of WSL state (Green = Running, Gray = Stopped).
-* **Right-click context menu:** Modern dark-themed menu with quick actions.
-* **Mounted Devices:** Quickly view and unmount physical disks directly from the tray.
-* **Auto-start:** Option to start automatically with Windows.
+### Upgrading from 1.x
 
-### User Interface
+Install 2.0 as above. Your profiles and rules are carried over automatically, and on
+first launch WSL Tamer offers to uninstall the old 1.x version.
 
-* **Dark Mode:** Automatically respects your Windows system theme settings.
-* **Modern UI:** Clean, WPF-based interface.
+## Security
 
-## Tech Stack
+WSL Tamer runs as your normal user. It asks for administrator permission (a UAC prompt)
+only for the three operations Windows requires it for:
 
-* **Language:** C# / .NET 8 (WPF)
-* **Integration:** Interacts directly with wsl.exe and ~/.wslconfig.
+- sharing a USB device the first time;
+- attaching or detaching a physical disk;
+- compacting a virtual disk.
 
-## Installation
+Commands are always run with separate arguments, never assembled into shell strings.
+Commands inside a distribution use `wsl --exec`, so paths and names you type are never
+interpreted by a shell.
 
-1. Go to the [Releases](https://github.com/ryan-haver/wsl-tamer/releases) page.
-2. Download the latest installer: **[WslTamer-v1.4.0.msi](https://github.com/ryan-haver/wsl-tamer/releases/download/v1.4.0/WslTamer.msi)**
-3. Run the installer.
+## Build from source
+
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+
+```powershell
+dotnet build WslTamer.slnx
+dotnet test --solution WslTamer.slnx
+dotnet run --project src/WslTamer.App
+```
+
+To try it with a throwaway settings file, set `WSLTAMER_CONFIG` to a path first. Note that
+applying a profile still writes your real `%UserProfile%\.wslconfig`.
+
+| Folder | Contents |
+| --- | --- |
+| `src/WslTamer.Core` | All WSL, config, hardware and automation logic. No UI. |
+| `src/WslTamer.App` | The WPF app (WPF-UI, MVVM) and tray icon. |
+| `tests/WslTamer.Core.Tests` | Unit tests, including fixtures captured from real `wsl.exe` output. |
+
+Releases are built by `.github/workflows/release.yml` when a `v*` tag is pushed.
 
 ## Roadmap
 
-Check out our [ROADMAP.md](ROADMAP.md) to see what's planned for future releases.
+See [ROADMAP.md](ROADMAP.md).
 
-## Contributing
+## License
 
-Contributions are welcome!
+GNU General Public License v3.0. See [LICENSE](LICENSE).
