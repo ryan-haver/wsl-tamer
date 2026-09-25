@@ -11,7 +11,7 @@ namespace WslTamer.App.Services;
 /// </summary>
 public sealed class UpdateService(ILogger<UpdateService> logger)
 {
-    private readonly UpdateManager _manager = new(new GithubSource(AppPaths.RepositoryUrl, accessToken: null, prerelease: false));
+    private readonly UpdateManager _manager = new(CreateSource());
     private UpdateInfo? _available;
 
     /// <summary>False when running from a build folder rather than an installed copy.</summary>
@@ -37,6 +37,12 @@ public sealed class UpdateService(ILogger<UpdateService> logger)
             return null;
         }
     }
+
+    /// <summary>GitHub Releases, or a local folder of Velopack packages if WSLTAMER_UPDATE_SOURCE is set (testing, offline mirrors).</summary>
+    private static IUpdateSource CreateSource() =>
+        Environment.GetEnvironmentVariable("WSLTAMER_UPDATE_SOURCE") is { Length: > 0 } folder && Directory.Exists(folder)
+            ? new SimpleFileSource(new DirectoryInfo(folder))
+            : new GithubSource(AppPaths.RepositoryUrl, accessToken: null, prerelease: false);
 
     public async Task DownloadAndRestartAsync(Action<int>? progress = null)
     {
