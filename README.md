@@ -10,8 +10,11 @@ Linux, without hand-editing `.wslconfig` or remembering `wsl.exe` flags.
 
 | Version | Status |
 | --- | --- |
-| **[2.0.0](https://github.com/ryan-haver/wsl-tamer/releases/tag/v2.0.0)** | **Pre-release.** A ground-up rebuild; most features are verified on real WSL. Before it becomes the latest release: a few hardware and menu tests (see [docs/TESTING.md](docs/TESTING.md)) and code signing. |
-| 1.8.4 | Still marked "Latest" on the Releases page until 2.0 is. No longer maintained: it runs as administrator and can overwrite your `.wslconfig`. |
+| **[2.0.0](https://github.com/ryan-haver/wsl-tamer/releases/tag/v2.0.0)** | **Latest release.** A ground-up rebuild. Most features are verified on real WSL; the rest are being verified for 2.0.1 (see [docs/TESTING.md](docs/TESTING.md)). The installer isn't code-signed yet; signing is planned for 2.1. |
+| 1.8.4 | Superseded and no longer maintained. It runs as administrator and can overwrite your `.wslconfig`; please upgrade. |
+
+What's next is in [ROADMAP.md](ROADMAP.md) and the
+[milestones](https://github.com/ryan-haver/wsl-tamer/milestones).
 
 Work happens on the `dev` branch; `main` holds released code.
 
@@ -51,12 +54,13 @@ Settings the editor doesn't know about are preserved, and the previous file is k
 ## Install
 
 1. Download **WslTamer-win-Setup.exe** from the
-   [2.0.0 pre-release](https://github.com/ryan-haver/wsl-tamer/releases/tag/v2.0.0).
+   [latest release](https://github.com/ryan-haver/wsl-tamer/releases/latest).
 2. Run it. It installs for your user account only (no administrator rights needed) and
    installs the .NET 10 Desktop Runtime if it's missing.
 
 The installer isn't code-signed yet, so Windows SmartScreen may warn you; choose
-**More info → Run anyway**. Signing is planned before 2.0 is marked as the latest release.
+**More info → Run anyway**. Code signing is planned for 2.1
+([#12](https://github.com/ryan-haver/wsl-tamer/issues/12)).
 
 WSL Tamer updates itself from GitHub Releases. Each update's checksum is verified before
 it is installed. A portable `.zip` and `SHA256SUMS.txt` are attached to every 2.x release.

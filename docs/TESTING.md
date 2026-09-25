@@ -76,7 +76,8 @@ Tests against real WSL are opt-in:
 ## Not yet verified
 
 These are implemented and covered by unit tests of the exact commands they run, but have not
-been exercised end to end on real hardware.
+been exercised end to end on real hardware. Each is tracked in the
+[2.0.1 milestone](https://github.com/ryan-haver/wsl-tamer/milestone/1).
 
 - **Distribution "…" menu actions in the UI:** clone, move, export, delete (typed
   confirmation), keep running, set default, sparse disk, show disk in Explorer, and the
@@ -90,10 +91,9 @@ been exercised end to end on real hardware.
 - **Install from the online catalog:** opens a console for account setup.
 - **Open terminal:** Windows Terminal and console fallback.
 - **Restart WSL automatically when idle** (the non-default apply behaviour).
-- **Updating from the GitHub feed:** 2.0.0 is a pre-release, and installed copies only look
-  for full releases, so this can't be tested until a release is marked as latest. So far
-  only a local feed has been used for update testing. The published installer's download
-  and checksum are verified.
+- **Updating from the GitHub feed:** 2.0.0 is the first release on the feed, so the first
+  real update will be 2.0.1. So far only a local feed has been used for update testing.
+  The published installer's download and checksum are verified.
 - **The CI-built installer:** the locally built one was tested. The CI build uses the same
   commands but hasn't been installed yet.
 - **Non-English Windows:** parsers avoid localized text, but this is untested.
