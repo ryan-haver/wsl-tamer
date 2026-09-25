@@ -1,0 +1,43 @@
+{
+  "Profiles": [
+    {
+      "Id": "97685339-20a3-4f44-8a43-94a9e5a620c9",
+      "Name": "Balanced",
+      "Memory": "8GB",
+      "Processors": 4,
+      "Swap": "2GB",
+      "LocalhostForwarding": true,
+      "KernelPath": "",
+      "NetworkingMode": "NAT",
+      "GuiApplications": true,
+      "DebugConsole": false
+    },
+    {
+      "Id": "3af6a247-b33d-4fb5-9211-8c90b72d1144",
+      "Name": "Eco Mode",
+      "Memory": "4GB",
+      "Processors": 2,
+      "Swap": "0",
+      "LocalhostForwarding": true,
+      "KernelPath": "",
+      "NetworkingMode": "NAT",
+      "GuiApplications": true,
+      "DebugConsole": false
+    },
+    {
+      "Id": "388409b3-f757-4238-8319-bbd67085ddbc",
+      "Name": "Unleashed",
+      "Memory": "32GB",
+      "Processors": 16,
+      "Swap": "8GB",
+      "LocalhostForwarding": true,
+      "KernelPath": "",
+      "NetworkingMode": "NAT",
+      "GuiApplications": true,
+      "DebugConsole": false
+    }
+  ],
+  "Rules": [],
+  "CurrentProfileId": null,
+  "DefaultProfileId": null
+}

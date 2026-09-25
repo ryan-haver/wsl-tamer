@@ -1,0 +1,31 @@
+{
+  "Devices": [
+    {
+      "BusId": "1-4",
+      "ClientIPAddress": null,
+      "Description": "USB Input Device, Keyboard",
+      "InstanceId": "USB\\VID_046D&PID_C52B\\5&2B5E0E1C&0&4",
+      "IsForced": false,
+      "PersistedGuid": null,
+      "StubInstanceId": null
+    },
+    {
+      "BusId": "2-1",
+      "ClientIPAddress": "172.28.64.1",
+      "Description": "USB Serial Device (COM3)",
+      "InstanceId": "USB\\VID_10C4&PID_EA60\\0001",
+      "IsForced": false,
+      "PersistedGuid": "0e2e4c6c-6a3b-4d6f-9c1a-3b1f6f7ad1e2",
+      "StubInstanceId": "USB\\Vid_80EE&Pid_CAFE\\0001"
+    },
+    {
+      "BusId": null,
+      "ClientIPAddress": null,
+      "Description": "JLink",
+      "InstanceId": "USB\\VID_1366&PID_0105\\000260000001",
+      "IsForced": true,
+      "PersistedGuid": "9d3d1b0e-1111-4c7a-8f6e-222233334444",
+      "StubInstanceId": null
+    }
+  ]
+}
