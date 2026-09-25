@@ -34,8 +34,11 @@ public sealed class ConfigStore(string filePath, ILogger<ConfigStore>? logger = 
 
     private readonly ILogger _logger = logger ?? NullLogger<ConfigStore>.Instance;
 
+    /// <summary>Uses %AppData%\WslTamer\config.json, or the path in WSLTAMER_CONFIG if set (for testing and portable use).</summary>
     public ConfigStore()
-        : this(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WslTamer", "config.json"))
+        : this(Environment.GetEnvironmentVariable("WSLTAMER_CONFIG") is { Length: > 0 } overridePath
+            ? overridePath
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WslTamer", "config.json"))
     {
     }
 

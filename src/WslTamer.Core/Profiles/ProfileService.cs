@@ -1,5 +1,6 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using WslTamer.Core.Config;
-using WslTamer.Core.Wsl;
 
 namespace WslTamer.Core.Profiles;
 
@@ -12,9 +13,10 @@ public enum ChangeSource
 public sealed record ApplyResult(WslProfile Profile, bool Changed, bool RestartNeeded, ChangeSource Source);
 
 /// <summary>Applies profiles to .wslconfig and reports whether WSL must restart for them to take effect.</summary>
-public sealed class ProfileService(IWslConfigFile configFile, IWslStatusSource status)
+public sealed class ProfileService(IWslConfigFile configFile, IWslStatusSource status, ILogger<ProfileService>? logger = null)
 {
     private readonly Lock _gate = new();
+    private readonly ILogger _logger = logger ?? NullLogger<ProfileService>.Instance;
 
     public event EventHandler<ApplyResult>? Applied;
 
@@ -44,6 +46,7 @@ public sealed class ProfileService(IWslConfigFile configFile, IWslStatusSource s
             if (changed)
             {
                 configFile.Save(document);
+                _logger.LogInformation("Applied profile {Profile} ({Source}) to {Path}", profile.Name, source, configFile.FilePath);
             }
         }
 

@@ -21,7 +21,7 @@ public sealed class AppPreferences
     public bool AutomationEnabled { get; set; } = true;
     public bool ShowNotifications { get; set; } = true;
     public bool CheckForUpdates { get; set; } = true;
-    public bool UsbipdPromptDismissed { get; set; }
+    public bool LegacyUninstallDismissed { get; set; }
 }
 
 public sealed class AppConfig

@@ -21,6 +21,9 @@ public sealed record SettingDefinition
     public required string Label { get; init; }
     public required string Description { get; init; }
 
+    /// <summary>Heading the setting is shown under in editors.</summary>
+    public string Group { get; init; } = "General";
+
     /// <summary>What WSL uses when the key is absent, for display only.</summary>
     public string? DefaultText { get; init; }
 
