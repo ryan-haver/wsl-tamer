@@ -2,6 +2,10 @@
 
 **A free, open-source tray app that keeps WSL 2 under control.**
 
+> **2.0 is in testing.** Most features are verified on real WSL; a few (distribution menu
+> actions, the tray menu, disk compaction, USB and disk passthrough) are not yet. See
+> [docs/TESTING.md](docs/TESTING.md).
+
 WSL Tamer lives in the Windows notification area. It lets you switch WSL's memory and
 CPU limits with one click, manage your distributions, and hand USB devices and disks to
 Linux, without hand-editing `.wslconfig` or remembering `wsl.exe` flags.
